@@ -60,6 +60,7 @@ export default function Index() {
   const [apiBaseUrl, setApiBaseUrl] = useState(
     process.env.VITE_API_BASE_URL || "https://votre-api-infractions.com",
   );
+  const [activeTab, setActiveTab] = useState("config");
 
   const handleSearch = async () => {
     setIsLoading(true);
