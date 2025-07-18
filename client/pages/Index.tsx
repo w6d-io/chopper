@@ -64,7 +64,33 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState("config");
 
   const handleSearch = async () => {
+    // Validation des paramètres avant l'appel
+    if (!dateRange.from || !dateRange.to) {
+      toast.error("Validation Error", {
+        description: "Please select both start and end dates.",
+      });
+      return;
+    }
+
+    if (dateRange.from > dateRange.to) {
+      toast.error("Date Range Error", {
+        description: "Start date cannot be greater than end date.",
+      });
+      return;
+    }
+
+    if (!apiBaseUrl || !apiBaseUrl.trim()) {
+      toast.error("Configuration Error", {
+        description:
+          "Please configure the API base URL in the Configuration tab.",
+      });
+      setActiveTab("config");
+      return;
+    }
+
     setIsLoading(true);
+    toast.loading("Searching infractions...", { id: "search-toast" });
+
     try {
       const requestBody: InfractionRequest = {
         start_date: dateRange.from.toISOString(),
@@ -84,17 +110,76 @@ export default function Index() {
       (await import("@/lib/api")).API_CONFIG.BASE_URL = originalBaseUrl;
       setResults(result);
 
-      // Automatically switch to results tab on successful search
+      // Handle different response statuses
       if (result.status === "success") {
+        const totalItems = result.data?.total_items || 0;
+        toast.success("Search completed successfully!", {
+          id: "search-toast",
+          description: `Found ${totalItems} infractions matching your criteria.`,
+        });
         setActiveTab("results");
+      } else if (result.status_code === 404) {
+        toast.warning("No results found", {
+          id: "search-toast",
+          description:
+            result.message ||
+            "No infractions found for the specified criteria.",
+        });
+        setActiveTab("results");
+      } else {
+        toast.error("API Error", {
+          id: "search-toast",
+          description:
+            result.message ||
+            `Server returned status code ${result.status_code}`,
+        });
       }
     } catch (error) {
       console.error("Error fetching infractions:", error);
-      // Afficher un message d'erreur à l'utilisateur
+
+      let errorMessage = "Connection Error";
+      let errorDescription = "Please try again later.";
+
+      if (error instanceof Error) {
+        if (
+          error.message.includes("fetch") ||
+          error.message.includes("NetworkError")
+        ) {
+          errorDescription =
+            "Failed to connect to the API. Please check your network connection and API URL.";
+        } else if (error.message.includes("CORS")) {
+          errorDescription =
+            "Cross-origin request blocked. Please configure CORS on your API server or use a proxy.";
+        } else if (error.message.includes("404")) {
+          errorDescription =
+            "API endpoint not found. Please verify your API base URL.";
+        } else if (
+          error.message.includes("401") ||
+          error.message.includes("403")
+        ) {
+          errorDescription =
+            "Authentication failed. Please check your API credentials.";
+        } else if (error.message.includes("422")) {
+          errorDescription =
+            "Validation error. Please check your request parameters.";
+        } else if (error.message.includes("500")) {
+          errorDescription =
+            "Internal server error. Please contact your API administrator.";
+        } else {
+          errorDescription = error.message;
+        }
+      }
+
+      toast.error(errorMessage, {
+        id: "search-toast",
+        description: errorDescription,
+      });
+
+      // Set error state for display
       setResults({
         status: "error",
         status_code: 500,
-        message: error instanceof Error ? error.message : "Erreur inconnue",
+        message: errorDescription,
         data: null,
       });
     } finally {
