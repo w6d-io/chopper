@@ -69,18 +69,17 @@ export default function Index() {
         per_page: perPage,
       };
 
-      const response = await fetch(`/api/all?page=${currentPage}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const result: ApiResult = await response.json();
+      const result = await callInfractionsAPI(requestBody, currentPage);
       setResults(result);
     } catch (error) {
       console.error("Error fetching infractions:", error);
+      // Afficher un message d'erreur à l'utilisateur
+      setResults({
+        status: "error",
+        status_code: 500,
+        message: error instanceof Error ? error.message : "Erreur inconnue",
+        data: null,
+      });
     } finally {
       setIsLoading(false);
     }
