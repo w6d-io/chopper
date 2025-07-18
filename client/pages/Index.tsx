@@ -72,7 +72,14 @@ export default function Index() {
         per_page: perPage,
       };
 
+      // Mise à jour temporaire de l'URL de base
+      const originalBaseUrl = (await import("@/lib/api")).API_CONFIG.BASE_URL;
+      (await import("@/lib/api")).API_CONFIG.BASE_URL = apiBaseUrl;
+
       const result = await callInfractionsAPI(requestBody, currentPage);
+
+      // Restaurer l'URL de base originale
+      (await import("@/lib/api")).API_CONFIG.BASE_URL = originalBaseUrl;
       setResults(result);
     } catch (error) {
       console.error("Error fetching infractions:", error);
