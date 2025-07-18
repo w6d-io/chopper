@@ -212,7 +212,10 @@ export default function Index() {
 
         {/* Main Interface */}
         <Tabs defaultValue="query" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-auto">
+          <TabsList className="grid w-full grid-cols-3 h-auto">
+            <TabsTrigger value="config" className="text-sm">
+              Configuration
+            </TabsTrigger>
             <TabsTrigger value="query" className="text-sm">
               Query Interface
             </TabsTrigger>
