@@ -347,7 +347,27 @@ export default function Index() {
                     id="api-url"
                     type="url"
                     value={apiBaseUrl}
-                    onChange={(e) => setApiBaseUrl(e.target.value)}
+                    onChange={(e) => {
+                      const newUrl = e.target.value;
+                      setApiBaseUrl(newUrl);
+
+                      // Validate URL format
+                      if (newUrl && newUrl.trim()) {
+                        try {
+                          new URL(newUrl);
+                          toast.success("API URL updated", {
+                            description: "Configuration saved successfully.",
+                            duration: 2000,
+                          });
+                        } catch {
+                          toast.error("Invalid URL format", {
+                            description:
+                              "Please enter a valid URL (e.g., https://example.com).",
+                            duration: 3000,
+                          });
+                        }
+                      }
+                    }}
                     placeholder="https://votre-api-infractions.com"
                   />
                   <p className="text-sm text-muted-foreground">
