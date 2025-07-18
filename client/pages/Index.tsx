@@ -104,13 +104,20 @@ export default function Index() {
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">
-                Infractions API Manager
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                Monitor and analyze driving infractions data
-              </p>
+            <div className="flex items-center space-x-4">
+              <img
+                src="/logo.png"
+                alt="W6D Logo"
+                className="h-12 w-12 object-contain"
+              />
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">
+                  Infractions API Manager
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  Monitor and analyze driving infractions data
+                </p>
+              </div>
             </div>
             <Badge variant="secondary" className="text-sm">
               API v0.1.0
