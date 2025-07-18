@@ -362,22 +362,22 @@ export default function Index() {
                     <div className="space-y-4">
                       <div className="rounded-lg border">
                         <div className="overflow-x-auto">
-                          <table className="w-full">
+                          <table className="w-full min-w-[600px]">
                             <thead>
                               <tr className="border-b bg-muted/50">
-                                <th className="px-4 py-3 text-left text-sm font-medium">
+                                <th className="px-2 md:px-4 py-3 text-left text-xs md:text-sm font-medium">
                                   Driver
                                 </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium">
+                                <th className="px-2 md:px-4 py-3 text-left text-xs md:text-sm font-medium">
                                   Type
                                 </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium">
+                                <th className="px-2 md:px-4 py-3 text-left text-xs md:text-sm font-medium">
                                   Date
                                 </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium">
+                                <th className="px-2 md:px-4 py-3 text-left text-xs md:text-sm font-medium">
                                   Duration
                                 </th>
-                                <th className="px-4 py-3 text-left text-sm font-medium">
+                                <th className="px-2 md:px-4 py-3 text-left text-xs md:text-sm font-medium">
                                   Fine
                                 </th>
                               </tr>
