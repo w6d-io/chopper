@@ -16,7 +16,6 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
-  app.post("/api/all", handleInfractions);
 
   return app;
 }
