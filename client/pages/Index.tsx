@@ -485,8 +485,33 @@ export default function Index() {
                         <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
-                            variant="ghost"
+                            variant="outline"
                             className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              // Load the search parameters and run search immediately
+                              setDateRange(historyItem.dateRange);
+                              setSelectedTypes(historyItem.selectedTypes);
+                              setPerPage(historyItem.query.per_page || 10);
+                              setCurrentPage(1);
+
+                              toast.loading("Running search from history...", {
+                                id: "history-search",
+                              });
+
+                              // Trigger search after state update
+                              setTimeout(() => {
+                                handleSearch();
+                              }, 100);
+                            }}
+                          >
+                            <Search className="h-4 w-4 mr-1" />
+                            Run
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
                             onClick={(e) => {
                               e.stopPropagation();
                               const newHistory = removeFromSearchHistory(
@@ -496,7 +521,7 @@ export default function Index() {
                               toast.success("Search removed from history");
                             }}
                           >
-                            <Search className="h-4 w-4" />
+                            ×
                           </Button>
                         </div>
                       </div>
