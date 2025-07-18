@@ -448,9 +448,12 @@ export default function Index() {
                             variant="outline"
                             size="sm"
                             disabled={!results.data.hasPreviousPage}
-                            onClick={() =>
-                              setCurrentPage((prev) => Math.max(1, prev - 1))
-                            }
+                            onClick={() => {
+                              const newPage = Math.max(1, currentPage - 1);
+                              setCurrentPage(newPage);
+                              // Trigger search with new page
+                              setTimeout(handleSearch, 0);
+                            }}
                           >
                             Previous
                           </Button>
@@ -458,7 +461,12 @@ export default function Index() {
                             variant="outline"
                             size="sm"
                             disabled={!results.data.hasNextPage}
-                            onClick={() => setCurrentPage((prev) => prev + 1)}
+                            onClick={() => {
+                              const newPage = currentPage + 1;
+                              setCurrentPage(newPage);
+                              // Trigger search with new page
+                              setTimeout(handleSearch, 0);
+                            }}
                           >
                             Next
                           </Button>
