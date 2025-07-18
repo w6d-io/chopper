@@ -138,6 +138,18 @@ export default function Index() {
           id: toastId,
           description: `Found ${totalItems} infractions matching your criteria.`,
         });
+
+        // Save to search history only for initial searches (not pagination)
+        if (currentPage === 1) {
+          const newHistory = addToSearchHistory(
+            requestBody,
+            selectedTypes,
+            dateRange,
+            totalItems,
+          );
+          setSearchHistory(newHistory);
+        }
+
         setActiveTab("results");
       } else if (result.status_code === 404) {
         const toastId = currentPage > 1 ? "pagination-toast" : "search-toast";
