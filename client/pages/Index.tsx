@@ -217,7 +217,11 @@ export default function Index() {
         </div>
 
         {/* Main Interface */}
-        <Tabs defaultValue="query" className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3 h-auto">
             <TabsTrigger value="config" className="text-sm">
               Configuration
