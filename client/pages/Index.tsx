@@ -44,6 +44,14 @@ import {
   type ApiResult,
   callInfractionsAPI,
 } from "@/lib/api";
+import {
+  type SearchHistoryItem,
+  loadSearchHistory,
+  addToSearchHistory,
+  removeFromSearchHistory,
+  clearSearchHistory,
+  getRecentSearches,
+} from "@/lib/searchHistory";
 
 export default function Index() {
   const [dateRange, setDateRange] = useState<{
@@ -58,9 +66,7 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<ApiResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [apiBaseUrl, setApiBaseUrl] = useState(
-      "http://localhost:8000",
-  );
+  const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
   const [activeTab, setActiveTab] = useState("config");
 
   const handleSearch = async () => {
