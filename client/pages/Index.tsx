@@ -68,6 +68,12 @@ export default function Index() {
   const [currentPage, setCurrentPage] = useState(1);
   const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
   const [activeTab, setActiveTab] = useState("config");
+  const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
+
+  // Load search history on component mount
+  React.useEffect(() => {
+    setSearchHistory(loadSearchHistory());
+  }, []);
 
   const handleSearch = async () => {
     // Validation des paramètres avant l'appel
