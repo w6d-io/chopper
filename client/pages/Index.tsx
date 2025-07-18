@@ -419,6 +419,81 @@ export default function Index() {
           </TabsContent>
 
           <TabsContent value="query" className="space-y-6">
+            {/* Recent Searches */}
+            {searchHistory.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-lg">Recent Searches</CardTitle>
+                      <CardDescription>
+                        Click on a recent search to rerun it
+                      </CardDescription>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        clearSearchHistory();
+                        setSearchHistory([]);
+                        toast.success("Search history cleared");
+                      }}
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {getRecentSearches().map((historyItem) => (
+                      <div
+                        key={historyItem.id}
+                        className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent cursor-pointer group"
+                        onClick={() => {
+                          // Load the search parameters
+                          setDateRange(historyItem.dateRange);
+                          setSelectedTypes(historyItem.selectedTypes);
+                          setPerPage(historyItem.query.per_page || 10);
+                          setCurrentPage(1);
+
+                          toast.success("Search parameters loaded", {
+                            description:
+                              "Ready to search with previous criteria",
+                          });
+                        }}
+                      >
+                        <div className="flex-1">
+                          <div className="font-medium text-sm">
+                            {historyItem.label}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(historyItem.timestamp).toLocaleString()}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newHistory = removeFromSearchHistory(
+                                historyItem.id,
+                              );
+                              setSearchHistory(newHistory);
+                              toast.success("Search removed from history");
+                            }}
+                          >
+                            <Search className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle>Search Infractions</CardTitle>
