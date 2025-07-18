@@ -181,8 +181,9 @@ export default function Index() {
         }
       }
 
+      const toastId = currentPage > 1 ? "pagination-toast" : "search-toast";
       toast.error(errorMessage, {
-        id: "search-toast",
+        id: toastId,
         description: errorDescription,
       });
 
