@@ -195,9 +195,13 @@ export default function Index() {
 
         {/* Main Interface */}
         <Tabs defaultValue="query" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="query">Query Interface</TabsTrigger>
-            <TabsTrigger value="results">Results & Data</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 h-auto">
+            <TabsTrigger value="query" className="text-sm">
+              Query Interface
+            </TabsTrigger>
+            <TabsTrigger value="results" className="text-sm">
+              Results & Data
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="query" className="space-y-6">
