@@ -113,22 +113,33 @@ export default function Index() {
       // Handle different response statuses
       if (result.status === "success") {
         const totalItems = result.data?.total_items || 0;
-        toast.success("Search completed successfully!", {
-          id: "search-toast",
+        const page = result.data?.page || currentPage;
+
+        // Use different toast id for pagination vs initial search
+        const toastId = currentPage > 1 ? "pagination-toast" : "search-toast";
+        const message =
+          currentPage > 1
+            ? `Page ${page} loaded successfully!`
+            : "Search completed successfully!";
+
+        toast.success(message, {
+          id: toastId,
           description: `Found ${totalItems} infractions matching your criteria.`,
         });
         setActiveTab("results");
       } else if (result.status_code === 404) {
+        const toastId = currentPage > 1 ? "pagination-toast" : "search-toast";
         toast.warning("No results found", {
-          id: "search-toast",
+          id: toastId,
           description:
             result.message ||
             "No infractions found for the specified criteria.",
         });
         setActiveTab("results");
       } else {
+        const toastId = currentPage > 1 ? "pagination-toast" : "search-toast";
         toast.error("API Error", {
-          id: "search-toast",
+          id: toastId,
           description:
             result.message ||
             `Server returned status code ${result.status_code}`,
