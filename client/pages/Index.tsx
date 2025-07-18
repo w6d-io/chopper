@@ -41,7 +41,7 @@ import {
   INFRACTION_TYPES,
   type InfractionRequest,
   type ApiResult,
-} from "@shared/infractions";
+} from "../../shared/infractions";
 
 export default function Index() {
   const [dateRange, setDateRange] = useState<{
