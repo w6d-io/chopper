@@ -5,7 +5,7 @@ import {
   InfractionResponse,
   Infraction,
   INFRACTION_TYPES,
-} from "@shared/infractions";
+} from "../../shared/infractions";
 
 // Mock data generator for demonstration
 function generateMockInfraction(id: number): Infraction {
