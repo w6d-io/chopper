@@ -224,6 +224,60 @@ export default function Index() {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="config" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Configuration de l'API</CardTitle>
+                <CardDescription>
+                  Configurez l'URL de base de votre API d'infractions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="api-url">URL de base de l'API</Label>
+                  <Input
+                    id="api-url"
+                    type="url"
+                    value={apiBaseUrl}
+                    onChange={(e) => setApiBaseUrl(e.target.value)}
+                    placeholder="https://votre-api-infractions.com"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    L'URL de base de votre API d'infractions. L'endpoint
+                    `/api/all` sera automatiquement ajouté.
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-muted p-4">
+                  <h4 className="font-medium mb-2">Information sur l'API</h4>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>
+                      <strong>Endpoint:</strong> POST {apiBaseUrl}/api/all
+                    </p>
+                    <p>
+                      <strong>Version OpenAPI:</strong> 3.1.0
+                    </p>
+                    <p>
+                      <strong>Description:</strong> API sur les exports
+                      spécifiques - Exports sur les infractions
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                  <h4 className="font-medium text-yellow-800 mb-2">
+                    Note importante
+                  </h4>
+                  <p className="text-sm text-yellow-700">
+                    Assurez-vous que votre API supporte les requêtes CORS si
+                    elle est hébergée sur un domaine différent, ou configurez un
+                    proxy pour éviter les erreurs de CORS.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="query" className="space-y-6">
             <Card>
               <CardHeader>
