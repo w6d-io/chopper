@@ -2,7 +2,7 @@
 export const API_CONFIG = {
   // URL de base de l'API infractions - à configurer selon votre environnement
   BASE_URL:
-    process.env.VITE_API_BASE_URL || "https://votre-api-infractions.com",
+    "http://localhost:8000", // Remplacez par l'URL de votre API ou utilisez process.env.VITE_API_BASE_URL dans un environnement de développement
 
   // Endpoints disponibles
   ENDPOINTS: {
