@@ -67,7 +67,7 @@ export default function Index() {
   const [results, setResults] = useState<ApiResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
-  const [activeTab, setActiveTab] = useState("config");
+  const [activeTab, setActiveTab] = useState("query");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
 
   // Load search history on component mount
