@@ -41,7 +41,8 @@ import {
   INFRACTION_TYPES,
   type InfractionRequest,
   type ApiResult,
-} from "../../shared/infractions";
+  callInfractionsAPI,
+} from "@/lib/api";
 
 export default function Index() {
   const [dateRange, setDateRange] = useState<{
