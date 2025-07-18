@@ -392,43 +392,44 @@ export default function Index() {
                                       : "bg-muted/20"
                                   }
                                 >
-                                  <td className="px-4 py-3">
+                                  <td className="px-2 md:px-4 py-3">
                                     <div>
-                                      <div className="font-medium">
+                                      <div className="font-medium text-sm">
                                         {infraction.nomConducteur}
                                       </div>
                                       {infraction.permisNumero && (
-                                        <div className="text-sm text-muted-foreground">
+                                        <div className="text-xs text-muted-foreground">
                                           License: {infraction.permisNumero}
                                         </div>
                                       )}
                                     </div>
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-2 md:px-4 py-3">
                                     <Badge
                                       variant="outline"
                                       className="text-xs"
                                     >
-                                      {infraction.typeInfractionLibelle ||
-                                        "Unknown"}
+                                      {infraction.typeInfractionLibelle
+                                        ?.replace(/([A-Z])/g, " $1")
+                                        .trim() || "Unknown"}
                                     </Badge>
                                   </td>
-                                  <td className="px-4 py-3 text-sm">
+                                  <td className="px-2 md:px-4 py-3 text-xs md:text-sm">
                                     {format(
                                       new Date(infraction.dateInfraction),
                                       "MMM dd, yyyy",
                                     )}
                                   </td>
-                                  <td className="px-4 py-3 text-sm">
+                                  <td className="px-2 md:px-4 py-3 text-xs md:text-sm">
                                     {formatDuration(infraction.dureeEffectuee)}
                                   </td>
-                                  <td className="px-4 py-3">
+                                  <td className="px-2 md:px-4 py-3">
                                     {infraction.amendeMontant ? (
-                                      <span className="font-medium">
+                                      <span className="font-medium text-sm">
                                         €{infraction.amendeMontant}
                                       </span>
                                     ) : (
-                                      <span className="text-muted-foreground">
+                                      <span className="text-muted-foreground text-sm">
                                         —
                                       </span>
                                     )}
