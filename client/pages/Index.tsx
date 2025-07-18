@@ -621,6 +621,9 @@ export default function Index() {
                             onClick={() => {
                               const newPage = Math.max(1, currentPage - 1);
                               setCurrentPage(newPage);
+                              toast.loading(`Loading page ${newPage}...`, {
+                                id: "pagination-toast",
+                              });
                               // Trigger search with new page
                               setTimeout(handleSearch, 0);
                             }}
