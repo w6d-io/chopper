@@ -82,6 +82,11 @@ export default function Index() {
       // Restaurer l'URL de base originale
       (await import("@/lib/api")).API_CONFIG.BASE_URL = originalBaseUrl;
       setResults(result);
+
+      // Automatically switch to results tab on successful search
+      if (result.status === "success") {
+        setActiveTab("results");
+      }
     } catch (error) {
       console.error("Error fetching infractions:", error);
       // Afficher un message d'erreur à l'utilisateur
