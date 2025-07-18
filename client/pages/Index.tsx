@@ -57,6 +57,9 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<ApiResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [apiBaseUrl, setApiBaseUrl] = useState(
+    process.env.VITE_API_BASE_URL || "https://votre-api-infractions.com",
+  );
 
   const handleSearch = async () => {
     setIsLoading(true);
