@@ -71,6 +71,10 @@ export default function Index() {
   const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
     const [activeTab, setActiveTab] = useState("query");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
+  const [tenantNamespace, setTenantNamespace] = useState("dev");
+  const [language, setLanguage] = useState<string>("fr");
+  const [orderByDate, setOrderByDate] = useState(false);
+  const [orderDesc, setOrderDesc] = useState(false);
 
   // Load search history on component mount
   React.useEffect(() => {
