@@ -764,7 +764,8 @@ export default function Index() {
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Leave empty to retrieve all types, or select specific types
-                    to filter. Selected: {selectedTypes.length}/{INFRACTION_TYPES.length}
+                    to filter. Selected: {selectedTypes.length}/
+                    {INFRACTION_TYPES.length}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {INFRACTION_TYPES.map((type) => (
