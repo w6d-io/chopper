@@ -336,7 +336,7 @@ export default function Index() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {results?.data?.total_pages || "—"}
+                {results?.data?.pageCount || "—"}
               </div>
               <p className="text-xs text-muted-foreground">Result pages</p>
             </CardContent>
