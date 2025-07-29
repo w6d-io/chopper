@@ -121,16 +121,9 @@ export async function callInfractionsAPI(
   const searchParams = new URLSearchParams();
 
   // Add ALL infraction types as query parameters (like in the curl example)
-  if (request.typeInfractionLibelles && request.typeInfractionLibelles.length > 0) {
-    request.typeInfractionLibelles.forEach((type) => {
-      searchParams.append("typeInfractionLibelles", type);
-    });
-  } else {
-    // If no types selected, add all types (like in curl example)
-    INFRACTION_TYPES.forEach((type) => {
-      searchParams.append("typeInfractionLibelles", type);
-    });
-  }
+  INFRACTION_TYPES.forEach((type) => {
+    searchParams.append("typeInfractionLibelles", type);
+  });
 
   // Add dates as query parameters (overriding body if provided)
   if (request.dateDebut) {
