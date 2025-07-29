@@ -424,8 +424,38 @@ export default function Index() {
                   />
                   <p className="text-sm text-muted-foreground">
                     L'URL de base de votre API d'infractions. L'endpoint
-                    `/api/all` sera automatiquement ajouté.
+                    `/api/infractions` sera automatiquement ajouté.
                   </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="tenant-namespace">Tenant Namespace *</Label>
+                    <Input
+                      id="tenant-namespace"
+                      value={tenantNamespace}
+                      onChange={(e) => setTenantNamespace(e.target.value)}
+                      placeholder="dev"
+                      required
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Requis comme en-tête HTTP
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="language">Language</Label>
+                    <Select value={language} onValueChange={setLanguage}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="fr">Français (fr)</SelectItem>
+                        <SelectItem value="en">English (en)</SelectItem>
+                        <SelectItem value="es">Español (es)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="rounded-lg bg-muted p-4">
