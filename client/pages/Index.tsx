@@ -695,6 +695,38 @@ export default function Index() {
                   </Select>
                 </div>
 
+                {/* Ordering Options */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="order-by-date"
+                      checked={orderByDate}
+                      onCheckedChange={setOrderByDate}
+                    />
+                    <Label
+                      htmlFor="order-by-date"
+                      className="text-sm font-normal leading-none"
+                    >
+                      Order by date
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="order-desc"
+                      checked={orderDesc}
+                      onCheckedChange={setOrderDesc}
+                      disabled={!orderByDate}
+                    />
+                    <Label
+                      htmlFor="order-desc"
+                      className="text-sm font-normal leading-none"
+                    >
+                      Descending order
+                    </Label>
+                  </div>
+                </div>
+
                 {/* Infraction Types */}
                 <div className="space-y-3">
                   <Label>Infraction Types (optional)</Label>
