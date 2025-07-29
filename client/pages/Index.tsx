@@ -304,7 +304,7 @@ export default function Index() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {results?.data?.total_items || "—"}
+                {results?.data?.totalCount || "—"}
               </div>
               <p className="text-xs text-muted-foreground">From last query</p>
             </CardContent>
