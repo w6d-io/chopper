@@ -120,7 +120,7 @@ export default function Index() {
 
     try {
       const requestBody: SummaryRequest = {
-        typeInfractionLibelles: [], // Empty array like in curl example
+        typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
         dateDebut: dateRange.from.toISOString(),
         dateFin: dateRange.to.toISOString(),
         pageIndex: currentPage - 1, // API uses 0-based indexing
