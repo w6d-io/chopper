@@ -74,10 +74,12 @@ export function saveSearchHistory(history: SearchHistoryItem[]): void {
 
 // Add a new search to history
 export function addToSearchHistory(
-  query: InfractionRequest,
-  selectedTypes: string[],
+  query: SummaryRequest,
+  selectedTypes: InfractionType[],
   dateRange: { from: Date; to: Date },
   resultsCount?: number,
+  tenantNamespace?: string,
+  language?: string,
 ): SearchHistoryItem[] {
   const history = loadSearchHistory();
 
