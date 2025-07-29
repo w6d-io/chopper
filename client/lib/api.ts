@@ -118,21 +118,17 @@ export async function callInfractionsAPI(
   // Build query string
   const searchParams = new URLSearchParams();
 
-  // Add selected infraction types as query parameters (or all if none selected)
-  const typesToSend = selectedTypes.length > 0 ? selectedTypes : INFRACTION_TYPES;
-  typesToSend.forEach((type) => {
-    searchParams.append("typeInfractionLibelles", type);
-  });
+  // Only add query parameters if we want to override body values
+  // According to swagger: query parameters override body values
 
-  // Add dates as query parameters (overriding body if provided)
-  if (request.dateDebut) {
-    searchParams.set("start_date", request.dateDebut);
+  // Add selected types as query parameters only if we want to filter
+  if (selectedTypes.length > 0) {
+    selectedTypes.forEach((type) => {
+      searchParams.append("typeInfractionLibelles", type);
+    });
   }
 
-  if (request.dateFin) {
-    searchParams.set("end_date", request.dateFin);
-  }
-
+  // Add ordering parameters
   if (queryParams?.order_by_date !== undefined) {
     searchParams.set("order_by_date", queryParams.order_by_date.toString());
   }
