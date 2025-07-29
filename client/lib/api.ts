@@ -38,11 +38,11 @@ export interface Infraction {
 }
 
 export interface SummaryRequest {
-  typeInfractionLibelles?: InfractionType[] | null;
-  dateDebut?: string | null;
-  dateFin?: string | null;
-  pageIndex?: number | null;
-  pageSize?: number | null;
+  typeInfractionLibelles: InfractionType[]; // Now required array (can be empty)
+  dateDebut: string;
+  dateFin: string;
+  pageIndex: number;
+  pageSize: number;
 }
 
 export interface SummaryResponse {
