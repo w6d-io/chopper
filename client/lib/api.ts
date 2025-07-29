@@ -120,21 +120,25 @@ export async function callInfractionsAPI(
   // Build query string
   const searchParams = new URLSearchParams();
 
-  if (
-    queryParams?.typeInfractionLibelles &&
-    queryParams.typeInfractionLibelles.length > 0
-  ) {
-    queryParams.typeInfractionLibelles.forEach((type) => {
+  // Add ALL infraction types as query parameters (like in the curl example)
+  if (request.typeInfractionLibelles && request.typeInfractionLibelles.length > 0) {
+    request.typeInfractionLibelles.forEach((type) => {
+      searchParams.append("typeInfractionLibelles", type);
+    });
+  } else {
+    // If no types selected, add all types (like in curl example)
+    INFRACTION_TYPES.forEach((type) => {
       searchParams.append("typeInfractionLibelles", type);
     });
   }
 
-  if (queryParams?.start_date) {
-    searchParams.set("start_date", queryParams.start_date);
+  // Add dates as query parameters (overriding body if provided)
+  if (request.dateDebut) {
+    searchParams.set("start_date", request.dateDebut);
   }
 
-  if (queryParams?.end_date) {
-    searchParams.set("end_date", queryParams.end_date);
+  if (request.dateFin) {
+    searchParams.set("end_date", request.dateFin);
   }
 
   if (queryParams?.order_by_date !== undefined) {
