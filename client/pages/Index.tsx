@@ -697,7 +697,7 @@ export default function Index() {
                       <CardTitle>Search Results</CardTitle>
                       <CardDescription>
                         {results.data
-                          ? `Found ${results.data.total_items} infractions (Page ${results.data.page} of ${results.data.total_pages})`
+                          ? `Found ${results.data.totalCount} infractions (Page ${(results.data.pageIndex || 0) + 1} of ${results.data.pageCount})`
                           : "No results found"}
                       </CardDescription>
                     </div>
