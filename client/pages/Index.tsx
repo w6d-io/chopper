@@ -133,6 +133,7 @@ export default function Index() {
 
       const apiParams: ApiCallParams = {
         request: requestBody,
+        selectedTypes: selectedTypes,
         queryParams: {
           order_by_date: orderByDate,
           order_desc: orderDesc,
