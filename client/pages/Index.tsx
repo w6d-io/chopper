@@ -734,10 +734,36 @@ export default function Index() {
 
                 {/* Infraction Types */}
                 <div className="space-y-3">
-                  <Label>Infraction Types (optional)</Label>
+                  <div className="flex items-center justify-between">
+                    <Label>Infraction Types (optional)</Label>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedTypes([...INFRACTION_TYPES]);
+                          toast.success("All infraction types selected");
+                        }}
+                      >
+                        Select All
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedTypes([]);
+                          toast.success("All infraction types deselected");
+                        }}
+                      >
+                        Deselect All
+                      </Button>
+                    </div>
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Leave empty to retrieve all types, or select specific types
-                    to filter
+                    to filter. Selected: {selectedTypes.length}/{INFRACTION_TYPES.length}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     {INFRACTION_TYPES.map((type) => (
