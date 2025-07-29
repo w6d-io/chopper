@@ -118,12 +118,12 @@ export default function Index() {
     toast.loading("Searching infractions...", { id: "search-toast" });
 
     try {
-      const requestBody: InfractionRequest = {
-        start_date: dateRange.from.toISOString(),
-        end_date: dateRange.to.toISOString(),
-        type_infraction_libelles:
-          selectedTypes.length > 0 ? selectedTypes.join(",") : "",
-        per_page: perPage,
+      const requestBody: SummaryRequest = {
+        typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
+        dateDebut: dateRange.from.toISOString(),
+        dateFin: dateRange.to.toISOString(),
+        pageIndex: currentPage - 1, // API uses 0-based indexing
+        pageSize: perPage,
       };
 
       // Mise à jour temporaire de l'URL de base
