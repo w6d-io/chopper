@@ -526,8 +526,14 @@ export default function Index() {
                               // Load the search parameters and run search immediately
                               setDateRange(historyItem.dateRange);
                               setSelectedTypes(historyItem.selectedTypes);
-                              setPerPage(historyItem.query.per_page || 10);
+                              setPerPage(historyItem.query.pageSize || 10);
                               setCurrentPage(1);
+                              if (historyItem.tenantNamespace) {
+                                setTenantNamespace(historyItem.tenantNamespace);
+                              }
+                              if (historyItem.language) {
+                                setLanguage(historyItem.language);
+                              }
 
                               toast.loading("Running search from history...", { id: "history-search" });
 
