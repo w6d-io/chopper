@@ -1,8 +1,7 @@
 // Configuration de l'API externe
 export const API_CONFIG = {
   // URL de base de l'API infractions - à configurer selon votre environnement
-  BASE_URL:
-    "http://localhost:8000", // Remplacez par l'URL de votre API ou utilisez process.env.VITE_API_BASE_URL dans un environnement de développement
+  BASE_URL: "http://localhost:8000", // Remplacez par l'URL de votre API ou utilisez process.env.VITE_API_BASE_URL dans un environnement de développement
 
   // Endpoints disponibles
   ENDPOINTS: {
@@ -73,7 +72,7 @@ export interface HTTPValidationError {
 // Updated infraction types based on new schema
 export const INFRACTION_TYPES = [
   "ContinuousDriving",
-  "WeeklyDriving", 
+  "WeeklyDriving",
   "DailyDriving",
   "WeeklyRest",
   "ReducedWeeklyRest",
@@ -113,40 +112,45 @@ export interface ApiCallParams {
 }
 
 // Fonction utilitaire pour appeler l'API
-export async function callInfractionsAPI(params: ApiCallParams): Promise<ApiResult> {
+export async function callInfractionsAPI(
+  params: ApiCallParams,
+): Promise<ApiResult> {
   const { request, queryParams, headers } = params;
-  
+
   // Build query string
   const searchParams = new URLSearchParams();
-  
-  if (queryParams?.typeInfractionLibelles && queryParams.typeInfractionLibelles.length > 0) {
-    queryParams.typeInfractionLibelles.forEach(type => {
-      searchParams.append('typeInfractionLibelles', type);
+
+  if (
+    queryParams?.typeInfractionLibelles &&
+    queryParams.typeInfractionLibelles.length > 0
+  ) {
+    queryParams.typeInfractionLibelles.forEach((type) => {
+      searchParams.append("typeInfractionLibelles", type);
     });
   }
-  
+
   if (queryParams?.start_date) {
-    searchParams.set('start_date', queryParams.start_date);
+    searchParams.set("start_date", queryParams.start_date);
   }
-  
+
   if (queryParams?.end_date) {
-    searchParams.set('end_date', queryParams.end_date);
+    searchParams.set("end_date", queryParams.end_date);
   }
-  
+
   if (queryParams?.order_by_date !== undefined) {
-    searchParams.set('order_by_date', queryParams.order_by_date.toString());
+    searchParams.set("order_by_date", queryParams.order_by_date.toString());
   }
-  
+
   if (queryParams?.order_desc !== undefined) {
-    searchParams.set('order_desc', queryParams.order_desc.toString());
+    searchParams.set("order_desc", queryParams.order_desc.toString());
   }
 
   const queryString = searchParams.toString();
-  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INFRACTIONS}${queryString ? `?${queryString}` : ''}`;
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INFRACTIONS}${queryString ? `?${queryString}` : ""}`;
 
   const requestHeaders: Record<string, string> = {
     "Content-Type": "application/json",
-    "Tenantnamespace": headers.Tenantnamespace,
+    Tenantnamespace: headers.Tenantnamespace,
   };
 
   if (headers.Language) {

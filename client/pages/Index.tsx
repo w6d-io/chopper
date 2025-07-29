@@ -69,7 +69,7 @@ export default function Index() {
   const [results, setResults] = useState<ApiResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
-    const [activeTab, setActiveTab] = useState("query");
+  const [activeTab, setActiveTab] = useState("query");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
   const [tenantNamespace, setTenantNamespace] = useState("dev");
   const [language, setLanguage] = useState<string>("fr");
@@ -108,7 +108,8 @@ export default function Index() {
 
     if (!tenantNamespace || !tenantNamespace.trim()) {
       toast.error("Configuration Error", {
-        description: "Please configure the tenant namespace in the Configuration tab.",
+        description:
+          "Please configure the tenant namespace in the Configuration tab.",
       });
       setActiveTab("config");
       return;
@@ -462,10 +463,12 @@ export default function Index() {
                   <h4 className="font-medium mb-2">Information sur l'API</h4>
                   <div className="space-y-1 text-sm text-muted-foreground">
                     <p>
-                      <strong>Endpoint:</strong> POST {apiBaseUrl}/api/infractions
+                      <strong>Endpoint:</strong> POST {apiBaseUrl}
+                      /api/infractions
                     </p>
                     <p>
-                      <strong>Headers:</strong> Tenantnamespace: {tenantNamespace}, Language: {language}
+                      <strong>Headers:</strong> Tenantnamespace:{" "}
+                      {tenantNamespace}, Language: {language}
                     </p>
                     <p>
                       <strong>Version OpenAPI:</strong> 3.1.0
@@ -549,7 +552,7 @@ export default function Index() {
                             {new Date(historyItem.timestamp).toLocaleString()}
                           </div>
                         </div>
-                                                <div className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
                             variant="outline"
@@ -568,7 +571,9 @@ export default function Index() {
                                 setLanguage(historyItem.language);
                               }
 
-                              toast.loading("Running search from history...", { id: "history-search" });
+                              toast.loading("Running search from history...", {
+                                id: "history-search",
+                              });
 
                               // Trigger search after state update
                               setTimeout(() => {
@@ -907,7 +912,8 @@ export default function Index() {
                           </Button>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          Page {(results.data.pageIndex || 0) + 1} of {results.data.pageCount}
+                          Page {(results.data.pageIndex || 0) + 1} of{" "}
+                          {results.data.pageCount}
                         </span>
                       </div>
                     </div>
