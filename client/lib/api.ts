@@ -69,7 +69,7 @@ export interface HTTPValidationError {
   }>;
 }
 
-// Updated infraction types based on new schema
+// Infraction types matching the swagger enum exactly
 export const INFRACTION_TYPES = [
   "ContinuousDriving",
   "WeeklyDriving",
@@ -119,8 +119,7 @@ export async function callInfractionsAPI(
   const searchParams = new URLSearchParams();
 
   // Add selected infraction types as query parameters (or all if none selected)
-  const typesToSend =
-    selectedTypes.length > 0 ? selectedTypes : INFRACTION_TYPES;
+  const typesToSend = selectedTypes.length > 0 ? selectedTypes : INFRACTION_TYPES;
   typesToSend.forEach((type) => {
     searchParams.append("typeInfractionLibelles", type);
   });
