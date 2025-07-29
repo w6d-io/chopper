@@ -462,7 +462,10 @@ export default function Index() {
                   <h4 className="font-medium mb-2">Information sur l'API</h4>
                   <div className="space-y-1 text-sm text-muted-foreground">
                     <p>
-                      <strong>Endpoint:</strong> POST {apiBaseUrl}/api/all
+                      <strong>Endpoint:</strong> POST {apiBaseUrl}/api/infractions
+                    </p>
+                    <p>
+                      <strong>Headers:</strong> Tenantnamespace: {tenantNamespace}, Language: {language}
                     </p>
                     <p>
                       <strong>Version OpenAPI:</strong> 3.1.0
