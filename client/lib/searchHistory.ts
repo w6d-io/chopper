@@ -90,6 +90,8 @@ export function addToSearchHistory(
     selectedTypes,
     dateRange,
     resultsCount,
+    tenantNamespace,
+    language,
   };
 
   // Add label
