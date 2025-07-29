@@ -98,10 +98,8 @@ export type InfractionType = (typeof INFRACTION_TYPES)[number];
 // API call parameters
 export interface ApiCallParams {
   request: SummaryRequest;
+  selectedTypes: InfractionType[]; // Pass selected types separately
   queryParams?: {
-    typeInfractionLibelles?: InfractionType[];
-    start_date?: string;
-    end_date?: string;
     order_by_date?: boolean;
     order_desc?: boolean;
   };
