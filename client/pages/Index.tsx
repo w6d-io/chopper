@@ -63,7 +63,7 @@ export default function Index() {
     from: addDays(new Date(), -30),
     to: new Date(),
   });
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<InfractionType[]>([]);
   const [perPage, setPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<ApiResult | null>(null);
