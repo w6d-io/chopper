@@ -6,68 +6,59 @@ export const API_CONFIG = {
 
   // Endpoints disponibles
   ENDPOINTS: {
-    ALL_INFRACTIONS: "/api/all",
+    INFRACTIONS: "/api/infractions",
   },
 };
 
-// Types pour l'API (basés sur le schéma OpenAPI fourni)
+// Types pour l'API (basés sur le nouveau schéma OpenAPI fourni)
 export interface Duration {
-  ticks?: number | null;
-  days?: number | null;
-  hours?: number | null;
-  milliseconds?: number | null;
-  minutes?: number | null;
-  seconds?: number | null;
-  totalDays?: number | null;
-  totalHours?: number | null;
-  totalMilliseconds?: number | null;
-  totalMinutes?: number | null;
-  totalSeconds?: number | null;
+  ticks: number;
+  days: number;
+  milliseconds: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  totalDays: number;
+  totalHours: number;
+  totalMinutes: number;
+  totalSeconds: number;
+  totalMilliseconds: number;
 }
 
 export interface Infraction {
   infractionId: string;
   conducteurId: string;
   nomConducteur: string;
-  permisNumero?: string | null;
-  carteConducteurNumeroCarteLong?: string | null;
-  typeInfractionCode?: string | null;
-  typeInfractionLibelle?: string | null;
-  causeInfractionLibelle?: string | null;
+  typeInfractionCode: string;
+  typeInfractionLibelle: string;
+  causeInfractionLibelle: string;
   dateInfraction: string;
   dureeAutorisee?: Duration | null;
   dureeEffectuee?: Duration | null;
-  reposAutorise?: Duration | null;
-  reposEffectue?: Duration | null;
-  amenagementAutorise?: Duration | null;
-  amenagementEffectue?: Duration | null;
-  commentaire?: string | null;
   amendeMontant?: number | null;
-  categorieAmende?: string | null;
-  lienTexteLoi?: string | null;
 }
 
-export interface InfractionRequest {
-  per_page?: number;
-  type_infraction_libelles?: string | null;
-  start_date: string;
-  end_date: string;
+export interface SummaryRequest {
+  typeInfractionLibelles?: InfractionType[] | null;
+  dateDebut?: string | null;
+  dateFin?: string | null;
+  pageIndex?: number | null;
+  pageSize?: number | null;
 }
 
-export interface InfractionResponse {
+export interface SummaryResponse {
   items: Infraction[];
-  page: number;
-  per_page: number;
-  total_items: number;
-  total_pages: number;
+  pageIndex: number;
+  pageCount: number;
+  totalCount: number;
+  itemsCount: number;
   hasPreviousPage: boolean;
   hasNextPage: boolean;
 }
 
 export interface ApiResult {
   status: string;
-  status_code: number;
-  data?: InfractionResponse | null;
+  data?: SummaryResponse | null;
   message?: string | null;
 }
 
@@ -79,39 +70,92 @@ export interface HTTPValidationError {
   }>;
 }
 
+// Updated infraction types based on new schema
 export const INFRACTION_TYPES = [
-  "BiweeklyDrivingTime",
   "ContinuousDriving",
-  "WeeklyDriving",
+  "WeeklyDriving", 
   "DailyDriving",
   "WeeklyRest",
   "ReducedWeeklyRest",
-  "UncompensatedReducedWeeklyRest",
+  "NonCompensatedReducedWeeklyRest",
   "DailyRest",
+  "DrivingTime",
+  "BiweeklyDriving",
   "BreakTime",
-  "BreakTime6HContinues",
-  "BreakTime9HContinues",
-  "WeeklyServiceTime",
-  "DailyServiceTime",
-  "AverageWeeklyServiceTime",
-  "FourMonthlyServiceTime",
-  "ThreeMonthlyServiceTime",
+  "BreakTimeOver6Hours",
+  "BreakTimeOver9Hours",
+  "RestTime",
+  "ServiceTime",
+  "WeeklyService",
+  "AverageWeeklyService",
+  "DailyService",
+  "NightServiceTime",
+  "FourMonthService",
+  "QuarterlyService",
 ] as const;
 
 export type InfractionType = (typeof INFRACTION_TYPES)[number];
 
+// API call parameters
+export interface ApiCallParams {
+  request: SummaryRequest;
+  queryParams?: {
+    typeInfractionLibelles?: InfractionType[];
+    start_date?: string;
+    end_date?: string;
+    order_by_date?: boolean;
+    order_desc?: boolean;
+  };
+  headers: {
+    Tenantnamespace: string;
+    Language?: string;
+  };
+}
+
 // Fonction utilitaire pour appeler l'API
-export async function callInfractionsAPI(
-  request: InfractionRequest,
-  page: number = 1,
-): Promise<ApiResult> {
-  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ALL_INFRACTIONS}?page=${page}`;
+export async function callInfractionsAPI(params: ApiCallParams): Promise<ApiResult> {
+  const { request, queryParams, headers } = params;
+  
+  // Build query string
+  const searchParams = new URLSearchParams();
+  
+  if (queryParams?.typeInfractionLibelles && queryParams.typeInfractionLibelles.length > 0) {
+    queryParams.typeInfractionLibelles.forEach(type => {
+      searchParams.append('typeInfractionLibelles', type);
+    });
+  }
+  
+  if (queryParams?.start_date) {
+    searchParams.set('start_date', queryParams.start_date);
+  }
+  
+  if (queryParams?.end_date) {
+    searchParams.set('end_date', queryParams.end_date);
+  }
+  
+  if (queryParams?.order_by_date !== undefined) {
+    searchParams.set('order_by_date', queryParams.order_by_date.toString());
+  }
+  
+  if (queryParams?.order_desc !== undefined) {
+    searchParams.set('order_desc', queryParams.order_desc.toString());
+  }
+
+  const queryString = searchParams.toString();
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INFRACTIONS}${queryString ? `?${queryString}` : ''}`;
+
+  const requestHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    "Tenantnamespace": headers.Tenantnamespace,
+  };
+
+  if (headers.Language) {
+    requestHeaders["Language"] = headers.Language;
+  }
 
   const response = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: requestHeaders,
     body: JSON.stringify(request),
   });
 
