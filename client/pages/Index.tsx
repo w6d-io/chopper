@@ -40,8 +40,10 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import {
   INFRACTION_TYPES,
-  type InfractionRequest,
+  type SummaryRequest,
   type ApiResult,
+  type InfractionType,
+  type ApiCallParams,
   callInfractionsAPI,
 } from "@/lib/api";
 import {
@@ -67,7 +69,7 @@ export default function Index() {
   const [results, setResults] = useState<ApiResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
-  const [activeTab, setActiveTab] = useState("query");
+    const [activeTab, setActiveTab] = useState("query");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
 
   // Load search history on component mount
@@ -482,7 +484,7 @@ export default function Index() {
                             {new Date(historyItem.timestamp).toLocaleString()}
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
+                                                <div className="flex items-center space-x-2">
                           <Button
                             size="sm"
                             variant="outline"
@@ -495,9 +497,7 @@ export default function Index() {
                               setPerPage(historyItem.query.per_page || 10);
                               setCurrentPage(1);
 
-                              toast.loading("Running search from history...", {
-                                id: "history-search",
-                              });
+                              toast.loading("Running search from history...", { id: "history-search" });
 
                               // Trigger search after state update
                               setTimeout(() => {
