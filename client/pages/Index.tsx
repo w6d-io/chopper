@@ -130,7 +130,19 @@ export default function Index() {
       const originalBaseUrl = (await import("@/lib/api")).API_CONFIG.BASE_URL;
       (await import("@/lib/api")).API_CONFIG.BASE_URL = apiBaseUrl;
 
-      const result = await callInfractionsAPI(requestBody, currentPage);
+      const apiParams: ApiCallParams = {
+        request: requestBody,
+        queryParams: {
+          order_by_date: orderByDate,
+          order_desc: orderDesc,
+        },
+        headers: {
+          Tenantnamespace: tenantNamespace,
+          Language: language,
+        },
+      };
+
+      const result = await callInfractionsAPI(apiParams);
 
       // Restaurer l'URL de base originale
       (await import("@/lib/api")).API_CONFIG.BASE_URL = originalBaseUrl;
