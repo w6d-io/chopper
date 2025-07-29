@@ -113,13 +113,14 @@ export interface ApiCallParams {
 export async function callInfractionsAPI(
   params: ApiCallParams,
 ): Promise<ApiResult> {
-  const { request, queryParams, headers } = params;
+  const { request, selectedTypes, queryParams, headers } = params;
 
   // Build query string
   const searchParams = new URLSearchParams();
 
-  // Add ALL infraction types as query parameters (like in the curl example)
-  INFRACTION_TYPES.forEach((type) => {
+  // Add selected infraction types as query parameters (or all if none selected)
+  const typesToSend = selectedTypes.length > 0 ? selectedTypes : INFRACTION_TYPES;
+  typesToSend.forEach((type) => {
     searchParams.append("typeInfractionLibelles", type);
   });
 
