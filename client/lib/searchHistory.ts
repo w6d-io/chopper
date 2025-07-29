@@ -1,16 +1,18 @@
-import { InfractionRequest } from "./api";
+import { SummaryRequest, InfractionType } from "./api";
 
 export interface SearchHistoryItem {
   id: string;
   timestamp: number;
-  query: InfractionRequest;
-  selectedTypes: string[];
+  query: SummaryRequest;
+  selectedTypes: InfractionType[];
   dateRange: {
     from: Date;
     to: Date;
   };
   resultsCount?: number;
   label?: string; // User-friendly label for the search
+  tenantNamespace?: string; // Store tenant namespace
+  language?: string; // Store language preference
 }
 
 const STORAGE_KEY = "infractions_search_history";
