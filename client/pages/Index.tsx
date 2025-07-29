@@ -830,7 +830,7 @@ export default function Index() {
                           </Button>
                         </div>
                         <span className="text-sm text-muted-foreground">
-                          Page {results.data.page} of {results.data.total_pages}
+                          Page {(results.data.pageIndex || 0) + 1} of {results.data.pageCount}
                         </span>
                       </div>
                     </div>
