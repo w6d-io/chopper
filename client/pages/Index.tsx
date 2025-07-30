@@ -461,6 +461,20 @@ export default function Index() {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="api-token">API Token (X-TOKEN-API)</Label>
+                  <Input
+                    id="api-token"
+                    type="password"
+                    value={apiToken}
+                    onChange={(e) => setApiToken(e.target.value)}
+                    placeholder="Enter your API token"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Optional authentication token sent as X-TOKEN-API header
+                  </p>
+                </div>
+
                 <div className="rounded-lg bg-muted p-4">
                   <h4 className="font-medium mb-2">Information sur l'API</h4>
                   <div className="space-y-1 text-sm text-muted-foreground">
