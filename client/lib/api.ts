@@ -150,6 +150,10 @@ export async function callInfractionsAPI(
     requestHeaders["Language"] = headers.Language;
   }
 
+  if (headers["X-TOKEN-API"]) {
+    requestHeaders["X-TOKEN-API"] = headers["X-TOKEN-API"];
+  }
+
   const response = await fetch(url, {
     method: "POST",
     headers: requestHeaders,
