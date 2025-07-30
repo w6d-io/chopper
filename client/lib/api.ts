@@ -106,6 +106,7 @@ export interface ApiCallParams {
   headers: {
     Tenantnamespace: string;
     Language?: string;
+    "X-TOKEN-API"?: string;
   };
 }
 
