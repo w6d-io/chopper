@@ -142,6 +142,7 @@ export default function Index() {
         headers: {
           Tenantnamespace: tenantNamespace,
           Language: language,
+          ...(apiToken && { "X-TOKEN-API": apiToken }),
         },
       };
 
