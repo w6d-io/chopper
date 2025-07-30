@@ -415,7 +415,7 @@ export default function Index() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsList className="grid w-full grid-cols-4 h-auto">
             <TabsTrigger value="config" className="text-sm">
               Configuration
             </TabsTrigger>
@@ -424,6 +424,9 @@ export default function Index() {
             </TabsTrigger>
             <TabsTrigger value="results" className="text-sm">
               Results & Data
+            </TabsTrigger>
+            <TabsTrigger value="docs" className="text-sm">
+              API Docs
             </TabsTrigger>
           </TabsList>
 
