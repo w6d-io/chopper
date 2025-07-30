@@ -75,6 +75,7 @@ export default function Index() {
   const [language, setLanguage] = useState<string>("fr");
   const [orderByDate, setOrderByDate] = useState(false);
   const [orderDesc, setOrderDesc] = useState(false);
+  const [apiToken, setApiToken] = useState("");
 
   // Load search history on component mount
   React.useEffect(() => {
