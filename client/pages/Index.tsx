@@ -1076,6 +1076,148 @@ export default function Index() {
               </Card>
             )}
           </TabsContent>
+
+          <TabsContent value="docs" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>API Documentation</CardTitle>
+                    <CardDescription>
+                      Interactive documentation for the infractions API
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={fetchOpenApiSpec}
+                    disabled={isLoadingSpec}
+                    variant="outline"
+                  >
+                    {isLoadingSpec ? "Loading..." : "Refresh Docs"}
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {!openApiSpec ? (
+                  <div className="text-center py-12">
+                    <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">
+                      Load API Documentation
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Click "Refresh Docs" to fetch the latest OpenAPI specification
+                    </p>
+                    <Button onClick={fetchOpenApiSpec} disabled={isLoadingSpec}>
+                      {isLoadingSpec ? "Loading..." : "Load Documentation"}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* API Info */}
+                    <div className="rounded-lg border p-4">
+                      <h3 className="text-lg font-semibold mb-2">
+                        {openApiSpec.info?.title || "API Documentation"}
+                      </h3>
+                      <p className="text-muted-foreground mb-2">
+                        {openApiSpec.info?.description || "No description available"}
+                      </p>
+                      <div className="flex items-center space-x-4 text-sm">
+                        <span className="text-muted-foreground">
+                          Version: <strong>{openApiSpec.info?.version || "Unknown"}</strong>
+                        </span>
+                        <span className="text-muted-foreground">
+                          OpenAPI: <strong>{openApiSpec.openapi || "Unknown"}</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Endpoints */}
+                    {openApiSpec.paths && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Available Endpoints</h3>
+                        {Object.entries(openApiSpec.paths).map(([path, methods]: [string, any]) => (
+                          <div key={path} className="rounded-lg border p-4">
+                            <h4 className="font-medium text-primary">{path}</h4>
+                            <div className="mt-2 space-y-2">
+                              {Object.entries(methods).map(([method, details]: [string, any]) => (
+                                <div key={method} className="pl-4 border-l-2 border-border">
+                                  <div className="flex items-center space-x-2 mb-1">
+                                    <Badge
+                                      variant={method === 'get' ? 'secondary' : method === 'post' ? 'default' : 'outline'}
+                                      className="text-xs"
+                                    >
+                                      {method.toUpperCase()}
+                                    </Badge>
+                                    <span className="font-medium">{details.summary || "No summary"}</span>
+                                  </div>
+                                  {details.description && (
+                                    <p className="text-sm text-muted-foreground mb-2">
+                                      {details.description}
+                                    </p>
+                                  )}
+                                  {details.parameters && details.parameters.length > 0 && (
+                                    <div className="mt-2">
+                                      <h5 className="text-sm font-medium mb-1">Parameters:</h5>
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        {details.parameters.map((param: any, idx: number) => (
+                                          <div key={idx} className="text-xs bg-muted p-2 rounded">
+                                            <span className="font-medium">{param.name}</span>
+                                            <span className="text-muted-foreground ml-1">
+                                              ({param.in}) {param.required ? "required" : "optional"}
+                                            </span>
+                                            {param.description && (
+                                              <p className="text-muted-foreground mt-1">{param.description}</p>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Schemas */}
+                    {openApiSpec.components?.schemas && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Data Models</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {Object.entries(openApiSpec.components.schemas).map(([name, schema]: [string, any]) => (
+                            <div key={name} className="rounded-lg border p-4">
+                              <h4 className="font-medium mb-2">{name}</h4>
+                              {schema.description && (
+                                <p className="text-sm text-muted-foreground mb-2">{schema.description}</p>
+                              )}
+                              {schema.properties && (
+                                <div className="space-y-1">
+                                  <h5 className="text-sm font-medium">Properties:</h5>
+                                  {Object.entries(schema.properties).map(([propName, prop]: [string, any]) => (
+                                    <div key={propName} className="text-xs bg-muted p-2 rounded">
+                                      <span className="font-medium">{propName}</span>
+                                      <span className="text-muted-foreground ml-1">
+                                        ({prop.type || 'unknown'})
+                                        {schema.required?.includes(propName) ? " required" : " optional"}
+                                      </span>
+                                      {prop.description && (
+                                        <p className="text-muted-foreground mt-1">{prop.description}</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
