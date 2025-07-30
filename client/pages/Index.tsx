@@ -76,11 +76,34 @@ export default function Index() {
   const [orderByDate, setOrderByDate] = useState(false);
   const [orderDesc, setOrderDesc] = useState(false);
   const [apiToken, setApiToken] = useState("");
+  const [openApiSpec, setOpenApiSpec] = useState<any>(null);
+  const [isLoadingSpec, setIsLoadingSpec] = useState(false);
 
   // Load search history on component mount
   React.useEffect(() => {
     setSearchHistory(loadSearchHistory());
   }, []);
+
+  // Function to fetch OpenAPI spec
+  const fetchOpenApiSpec = async () => {
+    setIsLoadingSpec(true);
+    try {
+      const response = await fetch(`${apiBaseUrl}/openapi.json`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch OpenAPI spec: ${response.status}`);
+      }
+      const spec = await response.json();
+      setOpenApiSpec(spec);
+      toast.success("API documentation loaded successfully!");
+    } catch (error) {
+      console.error("Error fetching OpenAPI spec:", error);
+      toast.error("Failed to load API documentation", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setIsLoadingSpec(false);
+    }
+  };
 
   const handleSearch = async () => {
     // Validation des paramètres avant l'appel
