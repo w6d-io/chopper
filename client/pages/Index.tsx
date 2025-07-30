@@ -841,6 +841,29 @@ export default function Index() {
                   </div>
                 </div>
 
+                {/* Curl Command Display */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Generated cURL Command</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        navigator.clipboard.writeText(generateCurlCommand());
+                        toast.success("cURL command copied to clipboard!");
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                  <div className="rounded-lg bg-muted p-3">
+                    <pre className="text-xs overflow-x-auto whitespace-pre-wrap font-mono">
+                      {generateCurlCommand()}
+                    </pre>
+                  </div>
+                </div>
+
                 <Button
                   onClick={handleSearch}
                   disabled={isLoading}
