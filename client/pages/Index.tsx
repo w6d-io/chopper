@@ -268,6 +268,45 @@ export default function Index() {
     return "N/A";
   };
 
+  const generateCurlCommand = () => {
+    const requestBody = {
+      typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
+      dateDebut: dateRange.from.toISOString(),
+      dateFin: dateRange.to.toISOString(),
+      pageIndex: currentPage - 1,
+      pageSize: perPage,
+    };
+
+    // Build query parameters
+    const queryParams = new URLSearchParams();
+    if (selectedTypes.length > 0) {
+      selectedTypes.forEach((type) => {
+        queryParams.append("typeInfractionLibelles", type);
+      });
+    }
+    if (orderByDate !== undefined) {
+      queryParams.set("order_by_date", orderByDate.toString());
+    }
+    if (orderDesc !== undefined) {
+      queryParams.set("order_desc", orderDesc.toString());
+    }
+
+    const queryString = queryParams.toString();
+    const url = `${apiBaseUrl}/api/infractions${queryString ? `?${queryString}` : ""}`;
+
+    let curlCommand = `curl -X 'POST' \\\n  '${url}' \\\n`;
+    curlCommand += `  -H 'accept: application/json' \\\n`;
+    curlCommand += `  -H 'Tenantnamespace: ${tenantNamespace}' \\\n`;
+    curlCommand += `  -H 'Language: ${language}' \\\n`;
+    if (apiToken) {
+      curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
+    }
+    curlCommand += `  -H 'Content-Type: application/json' \\\n`;
+    curlCommand += `  -d '${JSON.stringify(requestBody, null, 2)}'`;
+
+    return curlCommand;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
