@@ -97,14 +97,11 @@ export type InfractionType = (typeof INFRACTION_TYPES)[number];
 
 // API call parameters
 export interface ApiCallParams {
+  method: "GET" | "POST";
   request: SummaryRequest;
   selectedTypes: InfractionType[]; // Pass selected types separately for query params
-  queryParams?: {
-    order_by_date?: boolean;
-    order_desc?: boolean;
-  };
+  tenant: string; // Tenant parameter (header for POST, query for GET)
   headers: {
-    Tenantnamespace: string;
     Language?: string;
     "X-TOKEN-API"?: string;
   };
