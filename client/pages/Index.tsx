@@ -288,42 +288,56 @@ export default function Index() {
   };
 
   const generateCurlCommand = () => {
-    const requestBody = {
-      typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
-      dateDebut: dateRange.from.toISOString(),
-      dateFin: dateRange.to.toISOString(),
-      pageIndex: currentPage - 1,
-      pageSize: perPage,
-    };
+    if (requestMethod === "GET") {
+      // GET method: all parameters in query string
+      const queryParams = new URLSearchParams();
+      queryParams.set("tenant", tenant);
 
-    // Build query parameters
-    const queryParams = new URLSearchParams();
-    if (selectedTypes.length > 0) {
-      selectedTypes.forEach((type) => {
-        queryParams.append("typeInfractionLibelles", type);
-      });
-    }
-    if (orderByDate !== undefined) {
-      queryParams.set("order_by_date", orderByDate.toString());
-    }
-    if (orderDesc !== undefined) {
-      queryParams.set("order_desc", orderDesc.toString());
-    }
+      if (selectedTypes.length > 0) {
+        selectedTypes.forEach((type) => {
+          queryParams.append("typeInfractionLibelles", type);
+        });
+      }
 
-    const queryString = queryParams.toString();
-    const url = `${apiBaseUrl}/api/infractions${queryString ? `?${queryString}` : ""}`;
+      queryParams.set("startDate", dateRange.from.toISOString());
+      queryParams.set("endDate", dateRange.to.toISOString());
+      queryParams.set("page", (currentPage - 1).toString());
+      queryParams.set("perPage", perPage.toString());
 
-    let curlCommand = `curl -X 'POST' \\\n  '${url}' \\\n`;
-    curlCommand += `  -H 'accept: application/json' \\\n`;
-    curlCommand += `  -H 'Tenantnamespace: ${tenantNamespace}' \\\n`;
-    curlCommand += `  -H 'Language: ${language}' \\\n`;
-    if (apiToken) {
-      curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
+      const url = `${apiBaseUrl}/api/infractions?${queryParams.toString()}`;
+
+      let curlCommand = `curl -X 'GET' \\\n  '${url}' \\\n`;
+      curlCommand += `  -H 'accept: application/json' \\\n`;
+      curlCommand += `  -H 'Language: ${language}' \\\n`;
+      if (apiToken) {
+        curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
+      }
+
+      return curlCommand.replace(/\s+\\\n$/, ''); // Remove trailing backslash
+    } else {
+      // POST method: data in body
+      const requestBody = {
+        typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
+        startDate: dateRange.from.toISOString(),
+        endDate: dateRange.to.toISOString(),
+        page: currentPage - 1,
+        perPage: perPage,
+      };
+
+      const url = `${apiBaseUrl}/api/infractions`;
+
+      let curlCommand = `curl -X 'POST' \\\n  '${url}' \\\n`;
+      curlCommand += `  -H 'accept: application/json' \\\n`;
+      curlCommand += `  -H 'Tenant: ${tenant}' \\\n`;
+      curlCommand += `  -H 'Language: ${language}' \\\n`;
+      if (apiToken) {
+        curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
+      }
+      curlCommand += `  -H 'Content-Type: application/json' \\\n`;
+      curlCommand += `  -d '${JSON.stringify(requestBody, null, 2)}'`;
+
+      return curlCommand;
     }
-    curlCommand += `  -H 'Content-Type: application/json' \\\n`;
-    curlCommand += `  -d '${JSON.stringify(requestBody, null, 2)}'`;
-
-    return curlCommand;
   };
 
   return (
