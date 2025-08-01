@@ -39,10 +39,10 @@ export interface Infraction {
 
 export interface SummaryRequest {
   typeInfractionLibelles?: InfractionType[] | null;
-  dateDebut?: string | null;
-  dateFin?: string | null;
-  pageIndex?: number | null;
-  pageSize?: number | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  page?: number | null;
+  perPage?: number | null;
 }
 
 export interface SummaryResponse {
