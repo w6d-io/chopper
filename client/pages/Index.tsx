@@ -1169,71 +1169,104 @@ export default function Index() {
 
                     {/* Endpoints */}
                     {openApiSpec.paths && (
-                      <div className="space-y-4">
-                        <h3 className="text-lg font-semibold">
-                          Available Endpoints
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold border-b pb-2">
+                          API Endpoints
                         </h3>
                         {Object.entries(openApiSpec.paths).map(
                           ([path, methods]: [string, any]) => (
-                            <div key={path} className="rounded-lg border p-4">
-                              <h4 className="font-medium text-primary">
+                            <div key={path} className="space-y-4">
+                              <h4 className="text-lg font-medium text-primary bg-muted/50 px-3 py-2 rounded">
                                 {path}
                               </h4>
-                              <div className="mt-2 space-y-2">
+                              <div className="grid gap-4">
                                 {Object.entries(methods).map(
                                   ([method, details]: [string, any]) => (
                                     <div
                                       key={method}
-                                      className="pl-4 border-l-2 border-border"
+                                      className="border rounded-lg p-4 space-y-3"
                                     >
-                                      <div className="flex items-center space-x-2 mb-1">
-                                        <Badge
-                                          variant={
-                                            method === "get"
-                                              ? "secondary"
-                                              : method === "post"
-                                                ? "default"
-                                                : "outline"
-                                          }
-                                          className="text-xs"
-                                        >
-                                          {method.toUpperCase()}
-                                        </Badge>
-                                        <span className="font-medium">
-                                          {details.summary || "No summary"}
-                                        </span>
+                                      <div className="flex items-start justify-between">
+                                        <div className="flex items-center space-x-3">
+                                          <Badge
+                                            variant={
+                                              method === "get"
+                                                ? "secondary"
+                                                : method === "post"
+                                                  ? "default"
+                                                  : "outline"
+                                            }
+                                            className="text-sm font-mono"
+                                          >
+                                            {method.toUpperCase()}
+                                          </Badge>
+                                          <div>
+                                            <h5 className="font-semibold">
+                                              {details.summary || "No summary"}
+                                            </h5>
+                                            {details.operationId && (
+                                              <p className="text-xs text-muted-foreground font-mono">
+                                                {details.operationId}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
                                       </div>
+
                                       {details.description && (
-                                        <p className="text-sm text-muted-foreground mb-2">
-                                          {details.description}
-                                        </p>
+                                        <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border-l-4 border-blue-500">
+                                          <p className="text-sm whitespace-pre-line">
+                                            {details.description}
+                                          </p>
+                                        </div>
                                       )}
+
+                                      {/* Parameters */}
                                       {details.parameters &&
                                         details.parameters.length > 0 && (
-                                          <div className="mt-2">
-                                            <h5 className="text-sm font-medium mb-1">
-                                              Parameters:
-                                            </h5>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                          <div>
+                                            <h6 className="font-medium mb-2 text-sm">
+                                              Parameters
+                                            </h6>
+                                            <div className="space-y-2">
                                               {details.parameters.map(
                                                 (param: any, idx: number) => (
                                                   <div
                                                     key={idx}
-                                                    className="text-xs bg-muted p-2 rounded"
+                                                    className="bg-muted/50 p-3 rounded border"
                                                   >
-                                                    <span className="font-medium">
-                                                      {param.name}
-                                                    </span>
-                                                    <span className="text-muted-foreground ml-1">
-                                                      ({param.in}){" "}
-                                                      {param.required
-                                                        ? "required"
-                                                        : "optional"}
-                                                    </span>
+                                                    <div className="flex items-start justify-between mb-1">
+                                                      <div className="flex items-center space-x-2">
+                                                        <code className="font-semibold text-sm">
+                                                          {param.name}
+                                                        </code>
+                                                        <Badge variant="outline" className="text-xs">
+                                                          {param.in}
+                                                        </Badge>
+                                                        {param.required && (
+                                                          <Badge variant="destructive" className="text-xs">
+                                                            required
+                                                          </Badge>
+                                                        )}
+                                                      </div>
+                                                      {param.schema?.type && (
+                                                        <span className="text-xs text-muted-foreground font-mono">
+                                                          {param.schema.type}
+                                                        </span>
+                                                      )}
+                                                    </div>
                                                     {param.description && (
-                                                      <p className="text-muted-foreground mt-1">
+                                                      <p className="text-sm text-muted-foreground mt-1">
                                                         {param.description}
                                                       </p>
+                                                    )}
+                                                    {param.example && (
+                                                      <div className="mt-2">
+                                                        <span className="text-xs font-medium">Example: </span>
+                                                        <code className="text-xs bg-background px-1 py-0.5 rounded">
+                                                          {typeof param.example === 'string' ? param.example : JSON.stringify(param.example)}
+                                                        </code>
+                                                      </div>
                                                     )}
                                                   </div>
                                                 ),
@@ -1241,6 +1274,59 @@ export default function Index() {
                                             </div>
                                           </div>
                                         )}
+
+                                      {/* Request Body */}
+                                      {details.requestBody && (
+                                        <div>
+                                          <h6 className="font-medium mb-2 text-sm">
+                                            Request Body
+                                          </h6>
+                                          <div className="bg-muted/50 p-3 rounded border">
+                                            <p className="text-sm">
+                                              Content-Type: application/json
+                                            </p>
+                                            {details.requestBody.content?.["application/json"]?.examples && (
+                                              <div className="mt-2">
+                                                <span className="text-xs font-medium">Examples:</span>
+                                                {Object.entries(details.requestBody.content["application/json"].examples).map(
+                                                  ([exampleName, example]: [string, any]) => (
+                                                    <div key={exampleName} className="mt-2">
+                                                      <div className="text-xs font-medium">{example.summary}</div>
+                                                      <pre className="text-xs bg-background p-2 rounded mt-1 overflow-x-auto">
+                                                        {JSON.stringify(example.value, null, 2)}
+                                                      </pre>
+                                                    </div>
+                                                  )
+                                                )}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
+
+                                      {/* Responses */}
+                                      {details.responses && (
+                                        <div>
+                                          <h6 className="font-medium mb-2 text-sm">
+                                            Responses
+                                          </h6>
+                                          <div className="space-y-1">
+                                            {Object.entries(details.responses).map(
+                                              ([code, response]: [string, any]) => (
+                                                <div key={code} className="flex items-center space-x-2 text-sm">
+                                                  <Badge
+                                                    variant={code.startsWith('2') ? 'default' : code.startsWith('4') ? 'destructive' : 'secondary'}
+                                                    className="font-mono"
+                                                  >
+                                                    {code}
+                                                  </Badge>
+                                                  <span>{response.description}</span>
+                                                </div>
+                                              )
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
                                   ),
                                 )}
