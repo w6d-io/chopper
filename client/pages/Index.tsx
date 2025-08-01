@@ -129,10 +129,10 @@ export default function Index() {
       return;
     }
 
-    if (!tenantNamespace || !tenantNamespace.trim()) {
+    if (!tenant || !tenant.trim()) {
       toast.error("Configuration Error", {
         description:
-          "Please configure the tenant namespace in the Configuration tab.",
+          "Please configure the tenant in the Configuration tab.",
       });
       setActiveTab("config");
       return;
