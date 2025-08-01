@@ -155,14 +155,11 @@ export default function Index() {
       (await import("@/lib/api")).API_CONFIG.BASE_URL = apiBaseUrl;
 
       const apiParams: ApiCallParams = {
+        method: requestMethod,
         request: requestBody,
         selectedTypes: selectedTypes,
-        queryParams: {
-          order_by_date: orderByDate,
-          order_desc: orderDesc,
-        },
+        tenant: tenant,
         headers: {
-          Tenantnamespace: tenantNamespace,
           Language: language,
           ...(apiToken && { "X-TOKEN-API": apiToken }),
         },
