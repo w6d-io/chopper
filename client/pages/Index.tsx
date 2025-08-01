@@ -195,7 +195,7 @@ export default function Index() {
             selectedTypes,
             dateRange,
             totalItems,
-            tenantNamespace,
+            tenant,
             language,
           );
           setSearchHistory(newHistory);
