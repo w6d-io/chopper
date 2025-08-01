@@ -104,6 +104,162 @@ export default function Index() {
     }
   };
 
+  const handleSearchWithPage = async (pageNumber: number) => {
+    // Validation des paramètres avant l'appel
+    if (!dateRange.from || !dateRange.to) {
+      toast.error("Validation Error", {
+        description: "Please select both start and end dates.",
+      });
+      return;
+    }
+
+    if (dateRange.from > dateRange.to) {
+      toast.error("Date Range Error", {
+        description: "Start date cannot be greater than end date.",
+      });
+      return;
+    }
+
+    if (!apiBaseUrl || !apiBaseUrl.trim()) {
+      toast.error("Configuration Error", {
+        description:
+          "Please configure the API base URL in the Configuration tab.",
+      });
+      setActiveTab("config");
+      return;
+    }
+
+    if (!tenant || !tenant.trim()) {
+      toast.error("Configuration Error", {
+        description: "Please configure the tenant in the Configuration tab.",
+      });
+      setActiveTab("config");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Mise à jour temporaire de l'URL de base
+      const originalBaseUrl = (await import("@/lib/api")).API_CONFIG.BASE_URL;
+      (await import("@/lib/api")).API_CONFIG.BASE_URL = apiBaseUrl;
+
+      const requestBody: SummaryRequest = {
+        typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
+        startDate: dateRange.from.toISOString(),
+        endDate: dateRange.to.toISOString(),
+        page: pageNumber - 1, // API uses 0-based indexing, use the passed page number
+        perPage: perPage,
+      };
+
+      const apiParams: ApiCallParams = {
+        method: requestMethod,
+        request: requestBody,
+        selectedTypes: selectedTypes,
+        tenant: tenant,
+        headers: {
+          Language: language,
+          ...(apiToken && { "X-TOKEN-API": apiToken }),
+        },
+      };
+
+      const result = await callInfractionsAPI(apiParams);
+
+      // Restaurer l'URL de base originale
+      (await import("@/lib/api")).API_CONFIG.BASE_URL = originalBaseUrl;
+      setResults(result);
+
+      // Handle different response statuses
+      if (result.status === "success") {
+        const totalItems = result.data?.totalCount || 0;
+        const page = (result.data?.page || 0) + 1; // Convert back to 1-based
+
+        // Use different toast id for pagination vs initial search
+        const toastId = pageNumber > 1 ? "pagination-toast" : "search-toast";
+        const message =
+          pageNumber > 1
+            ? `Page ${page} loaded successfully!`
+            : "Search completed successfully!";
+
+        toast.success(message, {
+          id: toastId,
+          description: `Found ${totalItems} infractions matching your criteria.`,
+        });
+
+        // Save to search history only for initial searches (not pagination)
+        if (pageNumber === 1) {
+          const newHistory = addToSearchHistory(
+            requestBody,
+            selectedTypes,
+            dateRange,
+            totalItems,
+            tenant,
+            language,
+          );
+          setSearchHistory(newHistory);
+        }
+
+        setActiveTab("results");
+      } else if (result.status_code === 404) {
+        const toastId = pageNumber > 1 ? "pagination-toast" : "search-toast";
+        toast.warning("No results found", {
+          id: toastId,
+          description:
+            result.message ||
+            "No infractions found for the specified criteria.",
+        });
+        setActiveTab("results");
+      } else {
+        const toastId = pageNumber > 1 ? "pagination-toast" : "search-toast";
+        toast.error("API Error", {
+          id: toastId,
+          description:
+            result.message ||
+            `Server returned status code ${result.status_code}`,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching infractions:", error);
+
+      let errorMessage = "Connection Error";
+      let errorDescription = "Please try again later.";
+
+      if (error instanceof Error) {
+        if (error.message.includes("fetch") || error.message.includes("NetworkError")) {
+          errorDescription = "Failed to connect to the API. Please check your network connection and API URL.";
+        } else if (error.message.includes("CORS")) {
+          errorDescription = "Cross-origin request blocked. Please configure CORS on your API server or use a proxy.";
+        } else if (error.message.includes("404")) {
+          errorDescription = "API endpoint not found. Please verify your API base URL.";
+        } else if (error.message.includes("401") || error.message.includes("403")) {
+          errorDescription = "Authentication failed. Please check your API credentials.";
+        } else if (error.message.includes("422")) {
+          errorDescription = "Validation error. Please check your request parameters.";
+        } else if (error.message.includes("500")) {
+          errorDescription = "Internal server error. Please contact your API administrator.";
+        } else {
+          errorDescription = error.message;
+        }
+      }
+
+      const toastId = pageNumber > 1 ? "pagination-toast" : "search-toast";
+      toast.error(errorMessage, {
+        id: toastId,
+        description: errorDescription,
+      });
+
+      // Set error state for display
+      setResults({
+        status: "error",
+        status_code: 500,
+        message: errorDescription,
+        data: null,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSearch = async () => {
     // Validation des paramètres avant l'appel
     if (!dateRange.from || !dateRange.to) {
