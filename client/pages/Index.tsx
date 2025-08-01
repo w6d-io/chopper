@@ -228,18 +228,30 @@ export default function Index() {
       let errorDescription = "Please try again later.";
 
       if (error instanceof Error) {
-        if (error.message.includes("fetch") || error.message.includes("NetworkError")) {
-          errorDescription = "Failed to connect to the API. Please check your network connection and API URL.";
+        if (
+          error.message.includes("fetch") ||
+          error.message.includes("NetworkError")
+        ) {
+          errorDescription =
+            "Failed to connect to the API. Please check your network connection and API URL.";
         } else if (error.message.includes("CORS")) {
-          errorDescription = "Cross-origin request blocked. Please configure CORS on your API server or use a proxy.";
+          errorDescription =
+            "Cross-origin request blocked. Please configure CORS on your API server or use a proxy.";
         } else if (error.message.includes("404")) {
-          errorDescription = "API endpoint not found. Please verify your API base URL.";
-        } else if (error.message.includes("401") || error.message.includes("403")) {
-          errorDescription = "Authentication failed. Please check your API credentials.";
+          errorDescription =
+            "API endpoint not found. Please verify your API base URL.";
+        } else if (
+          error.message.includes("401") ||
+          error.message.includes("403")
+        ) {
+          errorDescription =
+            "Authentication failed. Please check your API credentials.";
         } else if (error.message.includes("422")) {
-          errorDescription = "Validation error. Please check your request parameters.";
+          errorDescription =
+            "Validation error. Please check your request parameters.";
         } else if (error.message.includes("500")) {
-          errorDescription = "Internal server error. Please contact your API administrator.";
+          errorDescription =
+            "Internal server error. Please contact your API administrator.";
         } else {
           errorDescription = error.message;
         }
@@ -1015,10 +1027,16 @@ export default function Index() {
                           <Button
                             variant="outline"
                             size="sm"
-                            disabled={!results.data.hasPreviousPage || isLoading}
+                            disabled={
+                              !results.data.hasPreviousPage || isLoading
+                            }
                             onClick={async () => {
-                              const currentPageFromApi = (results.data.page || 0) + 1;
-                              const newPage = Math.max(1, currentPageFromApi - 1);
+                              const currentPageFromApi =
+                                (results.data.page || 0) + 1;
+                              const newPage = Math.max(
+                                1,
+                                currentPageFromApi - 1,
+                              );
 
                               // Verify we have previous page available
                               if (!results.data.hasPreviousPage) return;
@@ -1037,9 +1055,13 @@ export default function Index() {
                             size="sm"
                             disabled={!results.data.hasNextPage || isLoading}
                             onClick={async () => {
-                              const currentPageFromApi = (results.data.page || 0) + 1;
+                              const currentPageFromApi =
+                                (results.data.page || 0) + 1;
                               const totalPages = results.data.pageCount || 1;
-                              const newPage = Math.min(totalPages, currentPageFromApi + 1);
+                              const newPage = Math.min(
+                                totalPages,
+                                currentPageFromApi + 1,
+                              );
 
                               // Verify we have next page available
                               if (!results.data.hasNextPage) return;
