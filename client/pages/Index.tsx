@@ -760,6 +760,26 @@ export default function Index() {
                   </div>
                 </div>
 
+                {/* HTTP Method */}
+                <div className="space-y-2">
+                  <Label htmlFor="method">HTTP Method</Label>
+                  <Select
+                    value={requestMethod}
+                    onValueChange={(value: "GET" | "POST") => setRequestMethod(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="POST">POST (body parameters)</SelectItem>
+                      <SelectItem value="GET">GET (query parameters)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    POST uses request body, GET uses query parameters
+                  </p>
+                </div>
+
                 {/* Per Page */}
                 <div className="space-y-2">
                   <Label htmlFor="per-page">Results per page</Label>
