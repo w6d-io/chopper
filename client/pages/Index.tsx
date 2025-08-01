@@ -496,16 +496,16 @@ export default function Index() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="tenant-namespace">Tenant Namespace *</Label>
+                    <Label htmlFor="tenant">Tenant *</Label>
                     <Input
-                      id="tenant-namespace"
-                      value={tenantNamespace}
-                      onChange={(e) => setTenantNamespace(e.target.value)}
-                      placeholder="dev"
+                      id="tenant"
+                      value={tenant}
+                      onChange={(e) => setTenant(e.target.value)}
+                      placeholder="business"
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      Requis comme en-tête HTTP
+                      Upstream tenant label (header for POST, query for GET)
                     </p>
                   </div>
 
