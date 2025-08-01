@@ -111,51 +111,71 @@ export interface ApiCallParams {
 export async function callInfractionsAPI(
   params: ApiCallParams,
 ): Promise<ApiResult> {
-  const { request, selectedTypes, queryParams, headers } = params;
+  const { method, request, selectedTypes, tenant, headers } = params;
 
-  // Build query string
+  // Build query string and request headers
   const searchParams = new URLSearchParams();
+  const requestHeaders: Record<string, string> = {};
 
-  // Only add query parameters if we want to override body values
-  // According to swagger: query parameters override body values
+  if (method === "GET") {
+    // GET method: all parameters in query string
+    searchParams.set("tenant", tenant);
 
-  // Add selected types as query parameters only if we want to filter
-  if (selectedTypes.length > 0) {
-    selectedTypes.forEach((type) => {
-      searchParams.append("typeInfractionLibelles", type);
-    });
+    if (selectedTypes.length > 0) {
+      selectedTypes.forEach((type) => {
+        searchParams.append("typeInfractionLibelles", type);
+      });
+    }
+
+    if (request.startDate) {
+      searchParams.set("startDate", request.startDate);
+    }
+
+    if (request.endDate) {
+      searchParams.set("endDate", request.endDate);
+    }
+
+    if (request.page !== undefined) {
+      searchParams.set("page", request.page.toString());
+    }
+
+    if (request.perPage !== undefined) {
+      searchParams.set("perPage", request.perPage.toString());
+    }
+
+    // Only Language header for GET
+    if (headers.Language) {
+      requestHeaders["Language"] = headers.Language;
+    }
+  } else {
+    // POST method: data in body, Tenant in header
+    requestHeaders["Content-Type"] = "application/json";
+    requestHeaders["Tenant"] = tenant;
+
+    if (headers.Language) {
+      requestHeaders["Language"] = headers.Language;
+    }
   }
 
-  // Add ordering parameters
-  if (queryParams?.order_by_date !== undefined) {
-    searchParams.set("order_by_date", queryParams.order_by_date.toString());
-  }
-
-  if (queryParams?.order_desc !== undefined) {
-    searchParams.set("order_desc", queryParams.order_desc.toString());
+  // Add optional X-TOKEN-API header for both methods
+  if (headers["X-TOKEN-API"]) {
+    requestHeaders["X-TOKEN-API"] = headers["X-TOKEN-API"];
   }
 
   const queryString = searchParams.toString();
   const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INFRACTIONS}${queryString ? `?${queryString}` : ""}`;
 
-  const requestHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
-    Tenantnamespace: headers.Tenantnamespace,
+  const fetchOptions: RequestInit = {
+    method,
+    headers: requestHeaders,
   };
 
-  if (headers.Language) {
-    requestHeaders["Language"] = headers.Language;
+  // Only add body for POST requests
+  if (method === "POST") {
+    fetchOptions.body = JSON.stringify(request);
   }
 
-  if (headers["X-TOKEN-API"]) {
-    requestHeaders["X-TOKEN-API"] = headers["X-TOKEN-API"];
-  }
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: requestHeaders,
-    body: JSON.stringify(request),
-  });
+  const response = await fetch(url, fetchOptions);
 
   if (!response.ok) {
     // Gérer les erreurs HTTP
