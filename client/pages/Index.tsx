@@ -174,6 +174,9 @@ export default function Index() {
         const totalItems = result.data?.totalCount || 0;
         const page = (result.data?.page || 0) + 1; // Convert back to 1-based
 
+        // Update currentPage state to match API response
+        setCurrentPage(page);
+
         // Use different toast id for pagination vs initial search
         const toastId = pageNumber > 1 ? "pagination-toast" : "search-toast";
         const message =
