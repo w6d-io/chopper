@@ -1018,15 +1018,16 @@ export default function Index() {
                           <Button
                             variant="outline"
                             size="sm"
-                            disabled={!results.data.hasPreviousPage}
-                            onClick={() => {
+                            disabled={!results.data.hasPreviousPage || isLoading}
+                            onClick={async () => {
                               const newPage = Math.max(1, currentPage - 1);
                               setCurrentPage(newPage);
                               toast.loading(`Loading page ${newPage}...`, {
                                 id: "pagination-toast",
                               });
-                              // Trigger search with new page
-                              setTimeout(handleSearch, 0);
+
+                              // Create a modified search function for this specific page
+                              await handleSearchWithPage(newPage);
                             }}
                           >
                             Previous
@@ -1034,15 +1035,16 @@ export default function Index() {
                           <Button
                             variant="outline"
                             size="sm"
-                            disabled={!results.data.hasNextPage}
-                            onClick={() => {
+                            disabled={!results.data.hasNextPage || isLoading}
+                            onClick={async () => {
                               const newPage = currentPage + 1;
                               setCurrentPage(newPage);
                               toast.loading(`Loading page ${newPage}...`, {
                                 id: "pagination-toast",
                               });
-                              // Trigger search with new page
-                              setTimeout(handleSearch, 0);
+
+                              // Create a modified search function for this specific page
+                              await handleSearchWithPage(newPage);
                             }}
                           >
                             Next
