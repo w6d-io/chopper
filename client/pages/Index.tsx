@@ -71,11 +71,10 @@ export default function Index() {
   const [apiBaseUrl, setApiBaseUrl] = useState("http://localhost:8000");
   const [activeTab, setActiveTab] = useState("query");
   const [searchHistory, setSearchHistory] = useState<SearchHistoryItem[]>([]);
-  const [tenantNamespace, setTenantNamespace] = useState("dev");
-  const [language, setLanguage] = useState<string>("fr");
-  const [orderByDate, setOrderByDate] = useState(false);
-  const [orderDesc, setOrderDesc] = useState(false);
+  const [tenant, setTenant] = useState("business");
+  const [language, setLanguage] = useState<string>("en");
   const [apiToken, setApiToken] = useState("");
+  const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [openApiSpec, setOpenApiSpec] = useState<any>(null);
   const [isLoadingSpec, setIsLoadingSpec] = useState(false);
 
