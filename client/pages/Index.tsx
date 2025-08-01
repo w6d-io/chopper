@@ -622,10 +622,10 @@ export default function Index() {
                           // Load the search parameters
                           setDateRange(historyItem.dateRange);
                           setSelectedTypes(historyItem.selectedTypes);
-                          setPerPage(historyItem.query.pageSize || 10);
+                          setPerPage(historyItem.query.perPage || 10);
                           setCurrentPage(1);
                           if (historyItem.tenantNamespace) {
-                            setTenantNamespace(historyItem.tenantNamespace);
+                            setTenant(historyItem.tenantNamespace);
                           }
                           if (historyItem.language) {
                             setLanguage(historyItem.language);
