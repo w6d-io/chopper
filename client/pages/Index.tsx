@@ -144,10 +144,10 @@ export default function Index() {
     try {
       const requestBody: SummaryRequest = {
         typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
-        dateDebut: dateRange.from.toISOString(),
-        dateFin: dateRange.to.toISOString(),
-        pageIndex: currentPage - 1, // API uses 0-based indexing
-        pageSize: perPage,
+        startDate: dateRange.from.toISOString(),
+        endDate: dateRange.to.toISOString(),
+        page: currentPage - 1, // API uses 0-based indexing
+        perPage: perPage,
       };
 
       // Mise à jour temporaire de l'URL de base
