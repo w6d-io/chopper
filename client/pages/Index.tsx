@@ -131,8 +131,7 @@ export default function Index() {
 
     if (!tenant || !tenant.trim()) {
       toast.error("Configuration Error", {
-        description:
-          "Please configure the tenant in the Configuration tab.",
+        description: "Please configure the tenant in the Configuration tab.",
       });
       setActiveTab("config");
       return;
@@ -313,7 +312,7 @@ export default function Index() {
         curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
       }
 
-      return curlCommand.replace(/\s+\\\n$/, ''); // Remove trailing backslash
+      return curlCommand.replace(/\s+\\\n$/, ""); // Remove trailing backslash
     } else {
       // POST method: data in body
       const requestBody = {
@@ -560,7 +559,8 @@ export default function Index() {
                       /api/infractions
                     </p>
                     <p>
-                      <strong>Headers:</strong> Tenant: {tenant}, Language: {language}
+                      <strong>Headers:</strong> Tenant: {tenant}, Language:{" "}
+                      {language}
                       {apiToken && ", X-TOKEN-API: [hidden]"}
                     </p>
                     <p>
@@ -779,14 +779,20 @@ export default function Index() {
                   <Label htmlFor="method">HTTP Method</Label>
                   <Select
                     value={requestMethod}
-                    onValueChange={(value: "GET" | "POST") => setRequestMethod(value)}
+                    onValueChange={(value: "GET" | "POST") =>
+                      setRequestMethod(value)
+                    }
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="POST">POST (body parameters)</SelectItem>
-                      <SelectItem value="GET">GET (query parameters)</SelectItem>
+                      <SelectItem value="POST">
+                        POST (body parameters)
+                      </SelectItem>
+                      <SelectItem value="GET">
+                        GET (query parameters)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
@@ -812,8 +818,6 @@ export default function Index() {
                     </SelectContent>
                   </Select>
                 </div>
-
-
 
                 {/* Infraction Types */}
                 <div className="space-y-3">
@@ -1210,11 +1214,17 @@ export default function Index() {
                                                         <code className="font-semibold text-sm">
                                                           {param.name}
                                                         </code>
-                                                        <Badge variant="outline" className="text-xs">
+                                                        <Badge
+                                                          variant="outline"
+                                                          className="text-xs"
+                                                        >
                                                           {param.in}
                                                         </Badge>
                                                         {param.required && (
-                                                          <Badge variant="destructive" className="text-xs">
+                                                          <Badge
+                                                            variant="destructive"
+                                                            className="text-xs"
+                                                          >
                                                             required
                                                           </Badge>
                                                         )}
@@ -1232,9 +1242,16 @@ export default function Index() {
                                                     )}
                                                     {param.example && (
                                                       <div className="mt-2">
-                                                        <span className="text-xs font-medium">Example: </span>
+                                                        <span className="text-xs font-medium">
+                                                          Example:{" "}
+                                                        </span>
                                                         <code className="text-xs bg-background px-1 py-0.5 rounded">
-                                                          {typeof param.example === 'string' ? param.example : JSON.stringify(param.example)}
+                                                          {typeof param.example ===
+                                                          "string"
+                                                            ? param.example
+                                                            : JSON.stringify(
+                                                                param.example,
+                                                              )}
                                                         </code>
                                                       </div>
                                                     )}
@@ -1255,18 +1272,38 @@ export default function Index() {
                                             <p className="text-sm">
                                               Content-Type: application/json
                                             </p>
-                                            {details.requestBody.content?.["application/json"]?.examples && (
+                                            {details.requestBody.content?.[
+                                              "application/json"
+                                            ]?.examples && (
                                               <div className="mt-2">
-                                                <span className="text-xs font-medium">Examples:</span>
-                                                {Object.entries(details.requestBody.content["application/json"].examples).map(
-                                                  ([exampleName, example]: [string, any]) => (
-                                                    <div key={exampleName} className="mt-2">
-                                                      <div className="text-xs font-medium">{example.summary}</div>
+                                                <span className="text-xs font-medium">
+                                                  Examples:
+                                                </span>
+                                                {Object.entries(
+                                                  details.requestBody.content[
+                                                    "application/json"
+                                                  ].examples,
+                                                ).map(
+                                                  ([exampleName, example]: [
+                                                    string,
+                                                    any,
+                                                  ]) => (
+                                                    <div
+                                                      key={exampleName}
+                                                      className="mt-2"
+                                                    >
+                                                      <div className="text-xs font-medium">
+                                                        {example.summary}
+                                                      </div>
                                                       <pre className="text-xs bg-background p-2 rounded mt-1 overflow-x-auto">
-                                                        {JSON.stringify(example.value, null, 2)}
+                                                        {JSON.stringify(
+                                                          example.value,
+                                                          null,
+                                                          2,
+                                                        )}
                                                       </pre>
                                                     </div>
-                                                  )
+                                                  ),
                                                 )}
                                               </div>
                                             )}
@@ -1281,18 +1318,34 @@ export default function Index() {
                                             Responses
                                           </h6>
                                           <div className="space-y-1">
-                                            {Object.entries(details.responses).map(
-                                              ([code, response]: [string, any]) => (
-                                                <div key={code} className="flex items-center space-x-2 text-sm">
+                                            {Object.entries(
+                                              details.responses,
+                                            ).map(
+                                              ([code, response]: [
+                                                string,
+                                                any,
+                                              ]) => (
+                                                <div
+                                                  key={code}
+                                                  className="flex items-center space-x-2 text-sm"
+                                                >
                                                   <Badge
-                                                    variant={code.startsWith('2') ? 'default' : code.startsWith('4') ? 'destructive' : 'secondary'}
+                                                    variant={
+                                                      code.startsWith("2")
+                                                        ? "default"
+                                                        : code.startsWith("4")
+                                                          ? "destructive"
+                                                          : "secondary"
+                                                    }
                                                     className="font-mono"
                                                   >
                                                     {code}
                                                   </Badge>
-                                                  <span>{response.description}</span>
+                                                  <span>
+                                                    {response.description}
+                                                  </span>
                                                 </div>
-                                              )
+                                              ),
                                             )}
                                           </div>
                                         </div>
