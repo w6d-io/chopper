@@ -174,7 +174,7 @@ export default function Index() {
       // Handle different response statuses
       if (result.status === "success") {
         const totalItems = result.data?.totalCount || 0;
-        const page = (result.data?.pageIndex || 0) + 1; // Convert back to 1-based
+        const page = (result.data?.page || 0) + 1; // Convert back to 1-based
 
         // Use different toast id for pagination vs initial search
         const toastId = currentPage > 1 ? "pagination-toast" : "search-toast";
