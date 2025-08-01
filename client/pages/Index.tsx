@@ -1014,13 +1014,16 @@ export default function Index() {
                             size="sm"
                             disabled={!results.data.hasPreviousPage || isLoading}
                             onClick={async () => {
-                              const newPage = Math.max(1, currentPage - 1);
-                              setCurrentPage(newPage);
+                              const currentPageFromApi = (results.data.page || 0) + 1;
+                              const newPage = Math.max(1, currentPageFromApi - 1);
+
+                              // Verify we have previous page available
+                              if (!results.data.hasPreviousPage) return;
+
                               toast.loading(`Loading page ${newPage}...`, {
                                 id: "pagination-toast",
                               });
 
-                              // Create a modified search function for this specific page
                               await handleSearchWithPage(newPage);
                             }}
                           >
@@ -1031,13 +1034,17 @@ export default function Index() {
                             size="sm"
                             disabled={!results.data.hasNextPage || isLoading}
                             onClick={async () => {
-                              const newPage = currentPage + 1;
-                              setCurrentPage(newPage);
+                              const currentPageFromApi = (results.data.page || 0) + 1;
+                              const totalPages = results.data.pageCount || 1;
+                              const newPage = Math.min(totalPages, currentPageFromApi + 1);
+
+                              // Verify we have next page available
+                              if (!results.data.hasNextPage) return;
+
                               toast.loading(`Loading page ${newPage}...`, {
                                 id: "pagination-toast",
                               });
 
-                              // Create a modified search function for this specific page
                               await handleSearchWithPage(newPage);
                             }}
                           >
