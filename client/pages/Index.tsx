@@ -546,8 +546,8 @@ export default function Index() {
                       /api/infractions
                     </p>
                     <p>
-                      <strong>Headers:</strong> Tenantnamespace:{" "}
-                      {tenantNamespace}, Language: {language}
+                      <strong>Headers:</strong> Tenant: {tenant}, Language: {language}
+                      {apiToken && ", X-TOKEN-API: [hidden]"}
                     </p>
                     <p>
                       <strong>Version OpenAPI:</strong> 3.1.0
