@@ -54,6 +54,11 @@ import {
   clearSearchHistory,
   getRecentSearches,
 } from "@/lib/searchHistory";
+import {
+  saveConfiguration,
+  loadConfiguration,
+  type AppConfiguration,
+} from "@/lib/configStorage";
 
 export default function Index() {
   const [dateRange, setDateRange] = useState<{
@@ -82,6 +87,33 @@ export default function Index() {
   React.useEffect(() => {
     setSearchHistory(loadSearchHistory());
   }, []);
+
+  // Load configuration from localStorage on component mount
+  React.useEffect(() => {
+    const savedConfig = loadConfiguration();
+    if (savedConfig) {
+      if (savedConfig.apiBaseUrl) setApiBaseUrl(savedConfig.apiBaseUrl);
+      if (savedConfig.tenant) setTenant(savedConfig.tenant);
+      if (savedConfig.language) setLanguage(savedConfig.language);
+      if (savedConfig.apiToken) setApiToken(savedConfig.apiToken);
+      if (savedConfig.requestMethod)
+        setRequestMethod(savedConfig.requestMethod);
+      if (savedConfig.perPage) setPerPage(savedConfig.perPage);
+    }
+  }, []);
+
+  // Save configuration to localStorage whenever it changes
+  React.useEffect(() => {
+    const config: AppConfiguration = {
+      apiBaseUrl,
+      tenant,
+      language,
+      apiToken,
+      requestMethod,
+      perPage,
+    };
+    saveConfiguration(config);
+  }, [apiBaseUrl, tenant, language, apiToken, requestMethod, perPage]);
 
   // Function to fetch OpenAPI spec
   const fetchOpenApiSpec = async () => {
@@ -159,7 +191,7 @@ export default function Index() {
         tenant: tenant,
         headers: {
           Language: language,
-          ...(apiToken && { "X-TOKEN-API": apiToken }),
+          ...(apiToken && { Authorization: `Bearer ${apiToken}` }),
         },
       };
 
@@ -318,7 +350,7 @@ export default function Index() {
       curlCommand += `  -H 'accept: application/json' \\\n`;
       curlCommand += `  -H 'Language: ${language}' \\\n`;
       if (apiToken) {
-        curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
+        curlCommand += `  -H 'Authorization: Bearer ${apiToken}' \\\n`;
       }
 
       return curlCommand.replace(/\s+\\\n$/, ""); // Remove trailing backslash
@@ -339,7 +371,7 @@ export default function Index() {
       curlCommand += `  -H 'Tenant: ${tenant}' \\\n`;
       curlCommand += `  -H 'Language: ${language}' \\\n`;
       if (apiToken) {
-        curlCommand += `  -H 'X-TOKEN-API: ${apiToken}' \\\n`;
+        curlCommand += `  -H 'Authorization: Bearer ${apiToken}' \\\n`;
       }
       curlCommand += `  -H 'Content-Type: application/json' \\\n`;
       curlCommand += `  -d '${JSON.stringify(requestBody, null, 2)}'`;
@@ -547,7 +579,7 @@ export default function Index() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="api-token">API Token (X-TOKEN-API)</Label>
+                  <Label htmlFor="api-token">API Token (Bearer)</Label>
                   <Input
                     id="api-token"
                     type="password"
@@ -556,7 +588,8 @@ export default function Index() {
                     placeholder="Enter your API token"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Optional authentication token sent as X-TOKEN-API header
+                    Optional authentication token sent as Authorization: Bearer
+                    header
                   </p>
                 </div>
 
@@ -570,7 +603,7 @@ export default function Index() {
                     <p>
                       <strong>Headers:</strong> Tenant: {tenant}, Language:{" "}
                       {language}
-                      {apiToken && ", X-TOKEN-API: [hidden]"}
+                      {apiToken && ", Authorization: Bearer [hidden]"}
                     </p>
                     <p>
                       <strong>Version OpenAPI:</strong> 3.1.0
@@ -591,6 +624,28 @@ export default function Index() {
                     elle est hébergée sur un domaine différent, ou configurez un
                     proxy pour éviter les erreurs de CORS.
                   </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const confirmClear = window.confirm(
+                        "Are you sure you want to clear all saved configuration? This will reset all fields to their default values.",
+                      );
+                      if (confirmClear) {
+                        setApiBaseUrl("");
+                        setTenant("business");
+                        setLanguage("fr");
+                        setApiToken("");
+                        setRequestMethod("POST");
+                        setPerPage(10);
+                        toast.success("Configuration cleared successfully");
+                      }
+                    }}
+                  >
+                    Clear Saved Config
+                  </Button>
                 </div>
               </CardContent>
             </Card>

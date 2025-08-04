@@ -103,7 +103,7 @@ export interface ApiCallParams {
   tenant: string; // Tenant parameter (header for POST, query for GET)
   headers: {
     Language?: string;
-    "X-TOKEN-API"?: string;
+    Authorization?: string;
   };
 }
 
@@ -157,9 +157,9 @@ export async function callInfractionsAPI(
     }
   }
 
-  // Add optional X-TOKEN-API header for both methods
-  if (headers["X-TOKEN-API"]) {
-    requestHeaders["X-TOKEN-API"] = headers["X-TOKEN-API"];
+  // Add optional Authorization header for both methods
+  if (headers.Authorization) {
+    requestHeaders["Authorization"] = headers.Authorization;
   }
 
   const queryString = searchParams.toString();
