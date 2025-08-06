@@ -21,7 +21,6 @@ const App = () => (
         <Routes>
           <Route path="/" element={<MultiApiDashboard />} />
           <Route path="/legacy" element={<Index />} />
-          <Route path="/infractions" element={<InfractionsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
