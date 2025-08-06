@@ -26,9 +26,9 @@ export function ApiSelector({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadApis = async () => {
+    const loadApis = () => {
       try {
-        await apiManager.initialize();
+        apiManager.initialize();
         const availableApis = apiManager.getApis();
         setApis(availableApis);
 

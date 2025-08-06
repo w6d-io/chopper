@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
-import { handleConfig } from "./routes/config";
 import { createApiProxy } from "./routes/proxy";
 import {
   handleDemoLiveness,
@@ -60,9 +59,6 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
-
-  // API configuration endpoint
-  app.get("/api/config", handleConfig);
 
   // Demo API endpoints (for testing when real APIs are not available)
   // These must come BEFORE the proxy routes to avoid being intercepted
