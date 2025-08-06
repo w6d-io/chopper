@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ApiConfig } from "@shared/apis";
 import { apiManager } from "@/lib/apiManager";
-import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Shield } from "lucide-react";
 
 interface ApiSelectorProps {
   value?: string;
@@ -87,6 +87,17 @@ export function ApiSelector({
                 apis.find((api) => api.name === value)?.status || "unknown",
               )}
               <span>{value}</span>
+              {apis.find((api) => api.name === value)?.label && (
+                <Badge variant="outline" className="text-xs">
+                  {apis.find((api) => api.name === value)?.label}
+                </Badge>
+              )}
+              {apis.find((api) => api.name === value)?.requiresAuth && (
+                <Shield
+                  className="h-3 w-3 text-blue-600"
+                  title="Requires Authentication"
+                />
+              )}
             </div>
           )}
         </SelectValue>
@@ -97,7 +108,25 @@ export function ApiSelector({
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-2">
                 {getStatusIcon(api.status)}
-                <span>{api.name}</span>
+                <div className="flex flex-col">
+                  <div className="flex items-center space-x-2">
+                    <span>{api.name}</span>
+                    {api.label && (
+                      <Badge variant="outline" className="text-xs">
+                        {api.label}
+                      </Badge>
+                    )}
+                    {api.requiresAuth && (
+                      <Shield
+                        className="h-3 w-3 text-blue-600"
+                        title="Requires Authentication"
+                      />
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                    {api.baseUrl}
+                  </span>
+                </div>
               </div>
               <Badge
                 variant={

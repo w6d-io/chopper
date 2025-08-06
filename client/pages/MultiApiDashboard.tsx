@@ -46,6 +46,7 @@ export default function MultiApiDashboard() {
   "page": 0,
   "perPage": 10
 }`);
+  const [bearerToken, setBearerToken] = useState("");
   const [response, setResponse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -78,6 +79,11 @@ export default function MultiApiDashboard() {
       } catch {
         toast.error("Invalid JSON in headers");
         return;
+      }
+
+      // Add Bearer token if provided
+      if (bearerToken.trim()) {
+        headers.Authorization = `Bearer ${bearerToken.trim()}`;
       }
 
       // Prepare request options
@@ -137,6 +143,11 @@ export default function MultiApiDashboard() {
       headers = JSON.parse(requestHeaders);
     } catch {
       headers = {};
+    }
+
+    // Add Bearer token if provided
+    if (bearerToken.trim()) {
+      headers.Authorization = `Bearer ${bearerToken.trim()}`;
     }
 
     let command = `curl -X ${requestMethod} \\\n`;
@@ -258,6 +269,19 @@ export default function MultiApiDashboard() {
                         placeholder="/api/endpoint"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Bearer Token (Optional)</Label>
+                    <Input
+                      type="password"
+                      value={bearerToken}
+                      onChange={(e) => setBearerToken(e.target.value)}
+                      placeholder="Enter Bearer token for authentication"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      If provided, will be added as Authorization: Bearer header
+                    </p>
                   </div>
 
                   <div className="space-y-2">

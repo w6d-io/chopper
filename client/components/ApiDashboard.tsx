@@ -19,6 +19,7 @@ import {
   Zap,
   Globe,
   Settings,
+  Shield,
 } from "lucide-react";
 import { ApiStatus } from "@shared/apis";
 import { apiManager } from "@/lib/apiManager";
@@ -276,6 +277,17 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
                   <div>
                     <div className="flex items-center space-x-2">
                       <h3 className="font-semibold text-lg">{api.name}</h3>
+                      {api.label && (
+                        <Badge variant="secondary" className="text-xs">
+                          {api.label}
+                        </Badge>
+                      )}
+                      {api.requiresAuth && (
+                        <div className="flex items-center space-x-1">
+                          <Shield className="h-4 w-4 text-blue-600" />
+                          <span className="text-xs text-blue-600">Auth</span>
+                        </div>
+                      )}
                       {selectedApi === api.name && (
                         <Badge variant="outline" className="text-xs">
                           Active

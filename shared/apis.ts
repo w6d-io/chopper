@@ -5,6 +5,9 @@ export interface ApiConfig {
   lastChecked?: Date;
   response_time?: number;
   description?: string;
+  label?: string;
+  requiresAuth?: boolean;
+  authToken?: string;
 }
 
 export interface ApiHealthCheck {
@@ -25,25 +28,49 @@ export interface MultiApiResponse<T = any> {
 }
 
 // Parse API configs from environment variable
+// Supports both simple format: "name:url" and enhanced format: "name:url:label:token"
 export function parseApiConfigs(configString?: string): ApiConfig[] {
   if (!configString) return [];
 
   return configString
     .split(",")
     .map((config) => {
-      const colonIndex = config.indexOf(":");
-      if (colonIndex === -1) {
-        console.warn(`Invalid API config format: ${config}`);
+      const parts = config.split(":").map((part) => part.trim());
+
+      if (parts.length < 2) {
+        console.warn(
+          `Invalid API config format: ${config}. Expected at least name:url`,
+        );
         return null;
       }
 
-      const name = config.substring(0, colonIndex).trim();
-      const baseUrl = config.substring(colonIndex + 1).trim();
+      const [name, baseUrl, label, authToken] = parts;
+
+      // Reconstruct URL if it was split by colons (for http/https protocols)
+      let finalBaseUrl = baseUrl;
+      if (parts.length > 2 && (baseUrl === "http" || baseUrl === "https")) {
+        finalBaseUrl = `${baseUrl}:${parts[2]}`;
+        // Adjust other parts if URL contained protocol
+        const adjustedParts = [name, finalBaseUrl, ...parts.slice(3)];
+        const [, , adjustedLabel, adjustedAuthToken] = adjustedParts;
+
+        return {
+          name,
+          baseUrl: finalBaseUrl,
+          status: "unknown" as const,
+          label: adjustedLabel || undefined,
+          requiresAuth: adjustedAuthToken ? true : false,
+          authToken: adjustedAuthToken || undefined,
+        };
+      }
 
       return {
         name,
-        baseUrl,
+        baseUrl: finalBaseUrl,
         status: "unknown" as const,
+        label: label || undefined,
+        requiresAuth: authToken ? true : false,
+        authToken: authToken || undefined,
       };
     })
     .filter((config) => config !== null) as ApiConfig[];
