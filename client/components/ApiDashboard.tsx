@@ -16,7 +16,6 @@ import {
   Clock,
   RefreshCw,
   Server,
-  Zap,
   Globe,
   Settings,
   Shield,
