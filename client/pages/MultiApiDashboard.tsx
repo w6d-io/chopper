@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 export default function MultiApiDashboard() {
   const [selectedApi, setSelectedApi] = useState<string>("");
   const [activeTab, setActiveTab] = useState("overview");
-  const [requestEndpoint, setRequestEndpoint] = useState("/api/infractions");
+  const [requestEndpoint, setRequestEndpoint] = useState("");
   const [requestMethod, setRequestMethod] = useState<
     "GET" | "POST" | "PUT" | "DELETE"
   >("POST");
@@ -50,7 +50,7 @@ export default function MultiApiDashboard() {
   const [response, setResponse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Auto-select first API on mount
+  // Auto-select first API on mount and update endpoint
   useEffect(() => {
     const initializeApi = async () => {
       await apiManager.initialize();
@@ -60,6 +60,13 @@ export default function MultiApiDashboard() {
       }
     };
     initializeApi();
+  }, [selectedApi]);
+
+  // Update endpoint when selectedApi changes
+  useEffect(() => {
+    if (selectedApi) {
+      setRequestEndpoint(`/api/${selectedApi}`);
+    }
   }, [selectedApi]);
 
   const makeApiRequest = async () => {
