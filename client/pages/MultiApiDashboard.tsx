@@ -313,12 +313,6 @@ export default function MultiApiDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Link to="/infractions">
-                <Button variant="outline" size="sm">
-                  <FileText className="mr-2 h-4 w-4" />
-                  Infractions Builder
-                </Button>
-              </Link>
               <ApiSelector
                 value={selectedApi}
                 onValueChange={setSelectedApi}
