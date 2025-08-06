@@ -45,11 +45,9 @@ export const createApiProxy: RequestHandler = async (req, res) => {
       "Content-Type": "application/json",
     };
 
-    // Forward authorization header if present, otherwise use API config token
+    // Forward authorization header if present
     if (req.headers.authorization) {
       headers.Authorization = req.headers.authorization;
-    } else if (apiConfig.requiresAuth && apiConfig.authToken) {
-      headers.Authorization = `Bearer ${apiConfig.authToken}`;
     }
 
     // Forward custom headers (tenant, language, etc.)

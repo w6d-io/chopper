@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils";
 export default function MultiApiDashboard() {
   const [selectedApi, setSelectedApi] = useState<string>("");
   const [activeTab, setActiveTab] = useState("overview");
-  const [requestEndpoint, setRequestEndpoint] = useState("/api/infractions");
+  const [requestEndpoint, setRequestEndpoint] = useState("");
   const [requestMethod, setRequestMethod] = useState<
     "GET" | "POST" | "PUT" | "DELETE"
   >("POST");
@@ -50,7 +50,7 @@ export default function MultiApiDashboard() {
   const [response, setResponse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Auto-select first API on mount
+  // Auto-select first API on mount and update endpoint
   useEffect(() => {
     const initializeApi = async () => {
       await apiManager.initialize();
@@ -60,6 +60,13 @@ export default function MultiApiDashboard() {
       }
     };
     initializeApi();
+  }, [selectedApi]);
+
+  // Update endpoint when selectedApi changes
+  useEffect(() => {
+    if (selectedApi) {
+      setRequestEndpoint(`/api/${selectedApi}`);
+    }
   }, [selectedApi]);
 
   const makeApiRequest = async () => {
@@ -266,8 +273,14 @@ export default function MultiApiDashboard() {
                       <Input
                         value={requestEndpoint}
                         onChange={(e) => setRequestEndpoint(e.target.value)}
-                        placeholder="/api/endpoint"
+                        placeholder={
+                          selectedApi ? `/api/${selectedApi}` : "/api/endpoint"
+                        }
                       />
+                      <p className="text-xs text-muted-foreground">
+                        Endpoint path (automatically updates when API is
+                        selected)
+                      </p>
                     </div>
                   </div>
 
@@ -435,13 +448,17 @@ export default function MultiApiDashboard() {
                       APIs are configured via environment variables. Each API
                       follows the pattern:
                       <code className="bg-background px-1 py-0.5 rounded mx-1">
-                        name:base_url
+                        name:base_url[:label]
                       </code>
+                      <br />
+                      <strong>Security Note:</strong> Bearer tokens should be
+                      entered at runtime in the API Tester tab, not stored in
+                      environment variables.
                     </p>
                     <div className="space-y-3">
                       <div>
                         <p className="text-xs font-medium mb-1">
-                          Single API Example:
+                          Simple API Example:
                         </p>
                         <pre className="text-xs bg-background p-3 rounded border">
                           API_CONFIGS=infractions:http://localhost:8000
@@ -449,11 +466,18 @@ export default function MultiApiDashboard() {
                       </div>
 
                       <div>
+                        <p className="text-xs font-medium mb-1">With Labels:</p>
+                        <pre className="text-xs bg-background p-3 rounded border">
+                          API_CONFIGS=infractions:http://localhost:8000:local,users:http://localhost:8001:staging
+                        </pre>
+                      </div>
+
+                      <div>
                         <p className="text-xs font-medium mb-1">
-                          Multiple APIs Example:
+                          Complete Configuration:
                         </p>
                         <pre className="text-xs bg-background p-3 rounded border">
-                          {`API_CONFIGS=infractions:http://localhost:8000,users:http://localhost:8001,orders:http://api.example.com
+                          {`API_CONFIGS=infractions:http://localhost:8000:local,oathkeeper:https://api.example.com:production
 DEFAULT_TENANT=business
 DEFAULT_LANGUAGE=en`}
                         </pre>
