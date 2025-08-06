@@ -82,6 +82,10 @@ export default function Index() {
   const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [openApiSpec, setOpenApiSpec] = useState<any>(null);
   const [isLoadingSpec, setIsLoadingSpec] = useState(false);
+  const [apiHealth, setApiHealth] = useState<{
+    liveness: { status: string; timestamp?: string; uptime?: number } | null;
+    readiness: { status: string; timestamp?: string; checks?: any } | null;
+  }>({ liveness: null, readiness: null });
 
   // Load search history on component mount
   React.useEffect(() => {
@@ -114,6 +118,38 @@ export default function Index() {
     };
     saveConfiguration(config);
   }, [apiBaseUrl, tenant, language, apiToken, requestMethod, perPage]);
+
+  // Function to check API health
+  const checkApiHealth = async () => {
+    try {
+      // Check liveness
+      const livenessResponse = await fetch("/api/liveness");
+      const livenessData = await livenessResponse.json();
+
+      // Check readiness
+      const readinessResponse = await fetch("/api/readiness");
+      const readinessData = await readinessResponse.json();
+
+      setApiHealth({
+        liveness: livenessData,
+        readiness: readinessData,
+      });
+    } catch (error) {
+      console.error("Error checking API health:", error);
+      setApiHealth({
+        liveness: { status: "error" },
+        readiness: { status: "error" },
+      });
+    }
+  };
+
+  // Check API health on component mount
+  React.useEffect(() => {
+    checkApiHealth();
+    // Check health every 30 seconds
+    const interval = setInterval(checkApiHealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Function to fetch OpenAPI spec
   const fetchOpenApiSpec = async () => {
@@ -429,8 +465,7 @@ export default function Index() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Unique Drivers Test
-                <br />
+                Unique Drivers
               </CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -505,6 +540,111 @@ export default function Index() {
           </TabsList>
 
           <TabsContent value="config" className="space-y-6">
+            {/* API Health Status */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>API Health Status</CardTitle>
+                    <CardDescription>
+                      Real-time status of the API base endpoints
+                    </CardDescription>
+                  </div>
+                  <Button variant="outline" size="sm" onClick={checkApiHealth}>
+                    <Clock className="mr-2 h-4 w-4" />
+                    Refresh
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={`w-3 h-3 rounded-full ${
+                          apiHealth.liveness?.status === "ok"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      />
+                      <Label className="font-medium">Liveness Check</Label>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>
+                        Status:{" "}
+                        <span className="font-medium">
+                          {apiHealth.liveness?.status || "unknown"}
+                        </span>
+                      </p>
+                      {apiHealth.liveness?.uptime && (
+                        <p>
+                          Uptime: {Math.floor(apiHealth.liveness.uptime)}{" "}
+                          seconds
+                        </p>
+                      )}
+                      {apiHealth.liveness?.timestamp && (
+                        <p>
+                          Last check:{" "}
+                          {new Date(
+                            apiHealth.liveness.timestamp,
+                          ).toLocaleTimeString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className={`w-3 h-3 rounded-full ${
+                          apiHealth.readiness?.status === "ready"
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                        }`}
+                      />
+                      <Label className="font-medium">Readiness Check</Label>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <p>
+                        Status:{" "}
+                        <span className="font-medium">
+                          {apiHealth.readiness?.status || "unknown"}
+                        </span>
+                      </p>
+                      {apiHealth.readiness?.checks && (
+                        <div className="mt-1">
+                          {Object.entries(apiHealth.readiness.checks).map(
+                            ([key, value]) => (
+                              <p key={key} className="text-xs">
+                                {key}:{" "}
+                                <span
+                                  className={
+                                    value === "ok"
+                                      ? "text-green-600"
+                                      : "text-red-600"
+                                  }
+                                >
+                                  {value as string}
+                                </span>
+                              </p>
+                            ),
+                          )}
+                        </div>
+                      )}
+                      {apiHealth.readiness?.timestamp && (
+                        <p>
+                          Last check:{" "}
+                          {new Date(
+                            apiHealth.readiness.timestamp,
+                          ).toLocaleTimeString()}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Configuration de l'API</CardTitle>
