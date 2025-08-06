@@ -38,7 +38,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
   const loadApiStatuses = async () => {
     setIsLoading(true);
     try {
-      await apiManager.initialize();
+      apiManager.initialize();
       const statuses = await apiManager.checkAllApisHealth();
       setApiStatuses(statuses);
       setLastRefresh(new Date());
