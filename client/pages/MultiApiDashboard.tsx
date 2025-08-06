@@ -43,6 +43,33 @@ import { apiManager } from "@/lib/apiManager";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
+import { format, addDays } from "date-fns";
+
+// Infraction types for the specialized interface
+const INFRACTION_TYPES = [
+  "ContinuousDriving",
+  "WeeklyDriving",
+  "DailyDriving",
+  "WeeklyRest",
+  "ReducedWeeklyRest",
+  "NonCompensatedReducedWeeklyRest",
+  "DailyRest",
+  "DrivingTime",
+  "BiweeklyDriving",
+  "BreakTime",
+  "BreakTimeOver6Hours",
+  "BreakTimeOver9Hours",
+  "RestTime",
+  "ServiceTime",
+  "WeeklyService",
+  "AverageWeeklyService",
+  "DailyService",
+  "NightServiceTime",
+  "FourMonthService",
+  "QuarterlyService",
+] as const;
+
+type InfractionType = (typeof INFRACTION_TYPES)[number];
 
 export default function MultiApiDashboard() {
   const [selectedApi, setSelectedApi] = useState<string>("");
