@@ -191,6 +191,51 @@ export default function MultiApiDashboard() {
     toast.success("Copied to clipboard");
   };
 
+  // Infractions-specific helper functions
+  const handleTypeToggle = (type: InfractionType) => {
+    setSelectedTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    );
+  };
+
+  const selectAllTypes = () => {
+    setSelectedTypes([...INFRACTION_TYPES]);
+    toast.success("All infraction types selected");
+  };
+
+  const deselectAllTypes = () => {
+    setSelectedTypes([]);
+    toast.success("All infraction types deselected");
+  };
+
+  const updateInfractionsRequestBody = () => {
+    const requestBody = {
+      typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
+      startDate: dateRange.from.toISOString(),
+      endDate: dateRange.to.toISOString(),
+      page: currentPage,
+      perPage: perPage,
+    };
+    setRequestBody(JSON.stringify(requestBody, null, 2));
+  };
+
+  const updateInfractionsHeaders = () => {
+    const headers = {
+      "Content-Type": "application/json",
+      "Tenant": tenant,
+      "Language": language,
+    };
+    setRequestHeaders(JSON.stringify(headers, null, 2));
+  };
+
+  // Update request body and headers when infractions parameters change
+  useEffect(() => {
+    if (selectedApi === "infractions") {
+      updateInfractionsRequestBody();
+      updateInfractionsHeaders();
+    }
+  }, [selectedApi, selectedTypes, dateRange, tenant, language, perPage, currentPage]);
+
   const generateCurlCommand = () => {
     if (!selectedApi) return "";
 
