@@ -398,6 +398,168 @@ export default function MultiApiDashboard() {
                     </p>
                   </div>
 
+                  {/* Infractions-specific UI */}
+                  {selectedApi === "infractions" && (
+                    <>
+                      <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
+                        <h3 className="font-semibold text-primary">Infractions API Builder</h3>
+
+                        {/* Date Range */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Start Date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !dateRange.from && "text-muted-foreground"
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {dateRange.from ? format(dateRange.from, "PPP") : "Pick a date"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={dateRange.from}
+                                  onSelect={date => date && setDateRange(prev => ({ ...prev, from: date }))}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>End Date</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full justify-start text-left font-normal",
+                                    !dateRange.to && "text-muted-foreground"
+                                  )}
+                                >
+                                  <CalendarIcon className="mr-2 h-4 w-4" />
+                                  {dateRange.to ? format(dateRange.to, "PPP") : "Pick a date"}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={dateRange.to}
+                                  onSelect={date => date && setDateRange(prev => ({ ...prev, to: date }))}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </div>
+
+                        {/* Tenant and Language */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <Label>Tenant</Label>
+                            <Input
+                              value={tenant}
+                              onChange={e => setTenant(e.target.value)}
+                              placeholder="premium"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Language</Label>
+                            <Select value={language} onValueChange={setLanguage}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="en">English (en)</SelectItem>
+                                <SelectItem value="fr">Français (fr)</SelectItem>
+                                <SelectItem value="es">Español (es)</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>Per Page</Label>
+                            <Select value={perPage.toString()} onValueChange={value => setPerPage(parseInt(value))}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="10">10 results</SelectItem>
+                                <SelectItem value="25">25 results</SelectItem>
+                                <SelectItem value="50">50 results</SelectItem>
+                                <SelectItem value="100">100 results</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        {/* Page Number */}
+                        <div className="space-y-2">
+                          <Label>Page Number (0-based)</Label>
+                          <Input
+                            type="number"
+                            min="0"
+                            value={currentPage}
+                            onChange={e => setCurrentPage(parseInt(e.target.value) || 0)}
+                            placeholder="0"
+                          />
+                        </div>
+
+                        {/* Infraction Types */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Label>Infraction Types (optional)</Label>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={selectAllTypes}
+                              >
+                                Select All
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={deselectAllTypes}
+                              >
+                                Clear All
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            Selected: {selectedTypes.length}/{INFRACTION_TYPES.length}
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-lg p-3">
+                            {INFRACTION_TYPES.map(type => (
+                              <div key={type} className="flex items-center space-x-2">
+                                <Checkbox
+                                  id={`type-${type}`}
+                                  checked={selectedTypes.includes(type)}
+                                  onCheckedChange={() => handleTypeToggle(type)}
+                                />
+                                <Label
+                                  htmlFor={`type-${type}`}
+                                  className="text-sm font-normal leading-none cursor-pointer"
+                                >
+                                  {type.replace(/([A-Z])/g, " $1").trim()}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   <div className="space-y-2">
                     <Label>Headers (JSON)</Label>
                     <Textarea
