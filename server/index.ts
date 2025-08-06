@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { handleConfig } from "./routes/config";
+import { createApiProxy } from "./routes/proxy";
 
 export function createServer() {
   const app = express();
@@ -52,6 +54,14 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // API configuration endpoint
+  app.get("/api/config", handleConfig);
+
+  // Dynamic API proxy routes
+  // Matches /api/{apiname}/* and forwards to configured API
+  app.all("/api/:apiname/*", createApiProxy);
+  app.all("/api/:apiname", createApiProxy);
 
   return app;
 }
