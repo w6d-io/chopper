@@ -31,7 +31,7 @@ export interface MultiApiResponse<T = any> {
 // Supports formats:
 // Simple: "name:url"
 // With label: "name:url:label"
-// Legacy with token (discouraged): "name:url:label:token"
+// Note: Bearer tokens should be provided at runtime, not stored in config
 export function parseApiConfigs(configString?: string): ApiConfig[] {
   if (!configString) return [];
 
@@ -90,8 +90,8 @@ export function parseApiConfigs(configString?: string): ApiConfig[] {
         baseUrl,
         status: "unknown" as const,
         label: label || undefined,
-        requiresAuth: authToken ? true : false,
-        authToken: authToken || undefined,
+        requiresAuth: false, // Auth determined at runtime
+        authToken: undefined, // Tokens provided at runtime only
       };
     })
     .filter((config) => config !== null) as ApiConfig[];
