@@ -4,12 +4,7 @@ import { parseApiConfigs } from "../../shared/apis";
 export const handleConfig: RequestHandler = (req, res) => {
   try {
     const apiConfigString = process.env.API_CONFIGS || "";
-    console.log("API_CONFIGS from env:", apiConfigString);
-    console.log("DEFAULT_TENANT from env:", process.env.DEFAULT_TENANT);
-    console.log("DEFAULT_LANGUAGE from env:", process.env.DEFAULT_LANGUAGE);
-
     const apis = parseApiConfigs(apiConfigString);
-    console.log("Parsed APIs:", apis);
 
     const config = {
       apis,
