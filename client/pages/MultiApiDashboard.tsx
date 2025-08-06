@@ -702,20 +702,236 @@ export default function MultiApiDashboard() {
           <TabsContent value="docs" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>API Documentation</CardTitle>
-                <CardDescription>
-                  Access documentation for your APIs
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>API Documentation</CardTitle>
+                    <CardDescription>
+                      Interactive OpenAPI documentation for {selectedApi || "selected API"}
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={fetchOpenApiDocs}
+                    disabled={isLoadingDocs || !selectedApi}
+                    variant="outline"
+                  >
+                    {isLoadingDocs ? "Loading..." : "Load Documentation"}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Documentation</h3>
-                  <p className="text-muted-foreground">
-                    API documentation will be loaded dynamically based on
-                    OpenAPI specs.
-                  </p>
-                </div>
+                {!openApiSpec ? (
+                  <div className="text-center py-12">
+                    <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium mb-2">Load Documentation</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Click "Load Documentation" to fetch the OpenAPI specification for {selectedApi || "the selected API"}
+                    </p>
+                    {selectedApi && (
+                      <Button onClick={fetchOpenApiDocs} disabled={isLoadingDocs}>
+                        {isLoadingDocs ? "Loading..." : "Load Documentation"}
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {/* API Info */}
+                    <div className="rounded-lg border p-4">
+                      <h3 className="text-lg font-semibold mb-2">
+                        {openApiSpec.info?.title || "API Documentation"}
+                      </h3>
+                      <p className="text-muted-foreground mb-2">
+                        {openApiSpec.info?.description || "No description available"}
+                      </p>
+                      <div className="flex items-center space-x-4 text-sm">
+                        <span className="text-muted-foreground">
+                          Version: <strong>{openApiSpec.info?.version || "Unknown"}</strong>
+                        </span>
+                        <span className="text-muted-foreground">
+                          OpenAPI: <strong>{openApiSpec.openapi || "Unknown"}</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Endpoints */}
+                    {openApiSpec.paths && (
+                      <div className="space-y-6">
+                        <h3 className="text-lg font-semibold border-b pb-2">API Endpoints</h3>
+                        {Object.entries(openApiSpec.paths).map(([path, methods]: [string, any]) => (
+                          <div key={path} className="space-y-4">
+                            <h4 className="text-lg font-medium text-primary bg-muted/50 px-3 py-2 rounded">
+                              {path}
+                            </h4>
+                            <div className="grid gap-4">
+                              {Object.entries(methods).map(([method, details]: [string, any]) => (
+                                <div key={method} className="border rounded-lg p-4 space-y-3">
+                                  <div className="flex items-start justify-between">
+                                    <div className="flex items-center space-x-3">
+                                      <Badge
+                                        variant={
+                                          method === "get"
+                                            ? "secondary"
+                                            : method === "post"
+                                              ? "default"
+                                              : "outline"
+                                        }
+                                        className="text-sm font-mono"
+                                      >
+                                        {method.toUpperCase()}
+                                      </Badge>
+                                      <div>
+                                        <h5 className="font-semibold">
+                                          {details.summary || "No summary"}
+                                        </h5>
+                                        {details.operationId && (
+                                          <p className="text-xs text-muted-foreground font-mono">
+                                            {details.operationId}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {details.description && (
+                                    <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border-l-4 border-blue-500">
+                                      <p className="text-sm whitespace-pre-line">
+                                        {details.description}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {/* Parameters */}
+                                  {details.parameters && details.parameters.length > 0 && (
+                                    <div>
+                                      <h6 className="font-medium mb-2 text-sm">Parameters</h6>
+                                      <div className="space-y-2">
+                                        {details.parameters.map((param: any, idx: number) => (
+                                          <div key={idx} className="bg-muted/50 p-3 rounded border">
+                                            <div className="flex items-start justify-between mb-1">
+                                              <div className="flex items-center space-x-2">
+                                                <code className="font-semibold text-sm">
+                                                  {param.name}
+                                                </code>
+                                                <Badge variant="outline" className="text-xs">
+                                                  {param.in}
+                                                </Badge>
+                                                {param.required && (
+                                                  <Badge variant="destructive" className="text-xs">
+                                                    required
+                                                  </Badge>
+                                                )}
+                                              </div>
+                                              {param.schema?.type && (
+                                                <span className="text-xs text-muted-foreground font-mono">
+                                                  {param.schema.type}
+                                                </span>
+                                              )}
+                                            </div>
+                                            {param.description && (
+                                              <p className="text-sm text-muted-foreground mt-1">
+                                                {param.description}
+                                              </p>
+                                            )}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Request Body */}
+                                  {details.requestBody && (
+                                    <div>
+                                      <h6 className="font-medium mb-2 text-sm">Request Body</h6>
+                                      <div className="bg-muted/50 p-3 rounded border">
+                                        <p className="text-sm">Content-Type: application/json</p>
+                                        {details.requestBody.content?.["application/json"]?.examples && (
+                                          <div className="mt-2">
+                                            <span className="text-xs font-medium">Examples:</span>
+                                            {Object.entries(
+                                              details.requestBody.content["application/json"].examples
+                                            ).map(([exampleName, example]: [string, any]) => (
+                                              <div key={exampleName} className="mt-2">
+                                                <div className="text-xs font-medium">{example.summary}</div>
+                                                <pre className="text-xs bg-background p-2 rounded mt-1 overflow-x-auto">
+                                                  {JSON.stringify(example.value, null, 2)}
+                                                </pre>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Responses */}
+                                  {details.responses && (
+                                    <div>
+                                      <h6 className="font-medium mb-2 text-sm">Responses</h6>
+                                      <div className="space-y-1">
+                                        {Object.entries(details.responses).map(([code, response]: [string, any]) => (
+                                          <div key={code} className="flex items-center space-x-2 text-sm">
+                                            <Badge
+                                              variant={
+                                                code.startsWith("2")
+                                                  ? "default"
+                                                  : code.startsWith("4")
+                                                    ? "destructive"
+                                                    : "secondary"
+                                              }
+                                              className="font-mono"
+                                            >
+                                              {code}
+                                            </Badge>
+                                            <span>{response.description}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Schemas */}
+                    {openApiSpec.components?.schemas && (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Data Models</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {Object.entries(openApiSpec.components.schemas).map(([name, schema]: [string, any]) => (
+                            <div key={name} className="rounded-lg border p-4">
+                              <h4 className="font-medium mb-2">{name}</h4>
+                              {schema.description && (
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {schema.description}
+                                </p>
+                              )}
+                              {schema.properties && (
+                                <div className="space-y-1">
+                                  <h5 className="text-sm font-medium">Properties:</h5>
+                                  {Object.entries(schema.properties).map(([propName, prop]: [string, any]) => (
+                                    <div key={propName} className="text-xs bg-muted p-2 rounded">
+                                      <span className="font-medium">{propName}</span>
+                                      <span className="text-muted-foreground ml-1">
+                                        ({prop.type || "unknown"})
+                                        {schema.required?.includes(propName) ? " required" : " optional"}
+                                      </span>
+                                      {prop.description && (
+                                        <p className="text-muted-foreground mt-1">{prop.description}</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
