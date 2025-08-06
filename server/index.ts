@@ -64,17 +64,18 @@ export function createServer() {
   // API configuration endpoint
   app.get("/api/config", handleConfig);
 
-  // Dynamic API proxy routes
-  // Matches /api/{apiname}/* and forwards to configured API
-  app.all("/api/:apiname/*", createApiProxy);
-  app.all("/api/:apiname", createApiProxy);
-
   // Demo infractions API endpoints (for testing when real API is not available)
+  // These must come BEFORE the proxy routes to avoid being intercepted
   app.get("/api/infractions/liveness", handleDemoLiveness);
   app.get("/api/infractions/readiness", handleDemoReadiness);
   app.get("/api/infractions/openapi.json", handleDemoOpenApi);
   app.post("/api/infractions", handleDemoInfractions);
   app.get("/api/infractions", handleDemoInfractions);
+
+  // Dynamic API proxy routes (catch-all, must be last)
+  // Matches /api/{apiname}/* and forwards to configured API
+  app.all("/api/:apiname/*", createApiProxy);
+  app.all("/api/:apiname", createApiProxy);
 
   // Special endpoint for OpenAPI docs
   app.get("/api/:apiname/docs", (req, res) => {
