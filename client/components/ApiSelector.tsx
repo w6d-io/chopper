@@ -87,6 +87,14 @@ export function ApiSelector({
                 apis.find((api) => api.name === value)?.status || "unknown",
               )}
               <span>{value}</span>
+              {apis.find((api) => api.name === value)?.label && (
+                <Badge variant="outline" className="text-xs">
+                  {apis.find((api) => api.name === value)?.label}
+                </Badge>
+              )}
+              {apis.find((api) => api.name === value)?.requiresAuth && (
+                <Shield className="h-3 w-3 text-blue-600" title="Requires Authentication" />
+              )}
             </div>
           )}
         </SelectValue>
