@@ -82,6 +82,10 @@ export default function Index() {
   const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [openApiSpec, setOpenApiSpec] = useState<any>(null);
   const [isLoadingSpec, setIsLoadingSpec] = useState(false);
+  const [apiHealth, setApiHealth] = useState<{
+    liveness: { status: string; timestamp?: string; uptime?: number } | null;
+    readiness: { status: string; timestamp?: string; checks?: any } | null;
+  }>({ liveness: null, readiness: null });
 
   // Load search history on component mount
   React.useEffect(() => {
