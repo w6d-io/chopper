@@ -751,7 +751,8 @@ export default function Index() {
                       <strong>OpenAPI Version:</strong> 3.1.0
                     </p>
                     <p>
-                      <strong>Description:</strong> API for specific exports - Infractions exports
+                      <strong>Description:</strong> API for specific exports -
+                      Infractions exports
                     </p>
                   </div>
                 </div>
@@ -761,8 +762,9 @@ export default function Index() {
                     Important Note
                   </h4>
                   <p className="text-sm text-yellow-700">
-                    Make sure your API supports CORS requests if it's hosted on a
-                    different domain, or configure a proxy to avoid CORS errors.
+                    Make sure your API supports CORS requests if it's hosted on
+                    a different domain, or configure a proxy to avoid CORS
+                    errors.
                   </p>
                 </div>
 
