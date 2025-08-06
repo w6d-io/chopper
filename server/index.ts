@@ -60,7 +60,6 @@ export function createServer() {
 
   app.get("/api/demo", handleDemo);
 
-
   // Demo API endpoints (for testing when real APIs are not available)
   // These must come BEFORE the proxy routes to avoid being intercepted
 

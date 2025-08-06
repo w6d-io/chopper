@@ -21,7 +21,9 @@ export default defineConfig(({ mode }) => ({
   },
   define: {
     __API_CONFIGS__: JSON.stringify(process.env.API_CONFIGS || ""),
-    __DEFAULT_TENANT__: JSON.stringify(process.env.DEFAULT_TENANT || "business"),
+    __DEFAULT_TENANT__: JSON.stringify(
+      process.env.DEFAULT_TENANT || "business",
+    ),
     __DEFAULT_LANGUAGE__: JSON.stringify(process.env.DEFAULT_LANGUAGE || "en"),
   },
 }));
