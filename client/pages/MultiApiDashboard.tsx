@@ -32,9 +32,7 @@ export default function MultiApiDashboard() {
   const [selectedApi, setSelectedApi] = useState<string>("");
   const [activeTab, setActiveTab] = useState("overview");
   const [requestEndpoint, setRequestEndpoint] = useState("");
-  const [requestMethod, setRequestMethod] = useState<
-    "GET" | "POST" | "PUT" | "DELETE"
-  >("POST");
+  const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [requestHeaders, setRequestHeaders] = useState(`{
   "Content-Type": "application/json",
   "Tenant": "business",
@@ -99,8 +97,8 @@ export default function MultiApiDashboard() {
         headers,
       };
 
-      // Add body for POST/PUT requests
-      if (["POST", "PUT"].includes(requestMethod) && requestBody.trim()) {
+      // Add body for POST requests
+      if (requestMethod === "POST" && requestBody.trim()) {
         try {
           JSON.parse(requestBody); // Validate JSON
           options.body = requestBody;
@@ -164,7 +162,7 @@ export default function MultiApiDashboard() {
       command += `  -H '${key}: ${value}' \\\n`;
     });
 
-    if (["POST", "PUT"].includes(requestMethod) && requestBody.trim()) {
+    if (requestMethod === "POST" && requestBody.trim()) {
       command += `  -d '${requestBody.replace(/'/g, "'\\''")}' \\\n`;
     }
 
@@ -264,8 +262,6 @@ export default function MultiApiDashboard() {
                       >
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="DELETE">DELETE</option>
                       </select>
                     </div>
                     <div className="col-span-2 space-y-2">
@@ -307,7 +303,7 @@ export default function MultiApiDashboard() {
                     />
                   </div>
 
-                  {["POST", "PUT"].includes(requestMethod) && (
+                  {requestMethod === "POST" && (
                     <div className="space-y-2">
                       <Label>Request Body (JSON)</Label>
                       <Textarea

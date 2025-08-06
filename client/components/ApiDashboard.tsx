@@ -16,7 +16,6 @@ import {
   Clock,
   RefreshCw,
   Server,
-  Zap,
   Globe,
   Settings,
   Shield,
@@ -344,126 +343,6 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* Detailed Health Information */}
-      {selectedApi && apiStatuses.find((api) => api.name === selectedApi) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Zap className="h-5 w-5" />
-              <span>{selectedApi} API Health Details</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {(() => {
-              const api = apiStatuses.find((api) => api.name === selectedApi);
-              if (!api) return null;
-
-              return (
-                <Tabs defaultValue="liveness" className="space-y-4">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="liveness">Liveness Check</TabsTrigger>
-                    <TabsTrigger value="readiness">Readiness Check</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="liveness" className="space-y-4">
-                    <div className="rounded-lg border p-4">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <div
-                          className={cn(
-                            "w-3 h-3 rounded-full",
-                            api.health.liveness?.status === "ok"
-                              ? "bg-green-500"
-                              : "bg-red-500",
-                          )}
-                        />
-                        <h4 className="font-medium">Liveness Status</h4>
-                      </div>
-                      <div className="text-sm space-y-2">
-                        <p>
-                          <strong>Status:</strong>{" "}
-                          {api.health.liveness?.status || "unknown"}
-                        </p>
-                        {api.health.liveness?.uptime && (
-                          <p>
-                            <strong>Uptime:</strong>{" "}
-                            {Math.floor(api.health.liveness.uptime)} seconds
-                          </p>
-                        )}
-                        {api.health.liveness?.timestamp && (
-                          <p>
-                            <strong>Timestamp:</strong>{" "}
-                            {new Date(
-                              api.health.liveness.timestamp,
-                            ).toLocaleString()}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="readiness" className="space-y-4">
-                    <div className="rounded-lg border p-4">
-                      <div className="flex items-center space-x-2 mb-3">
-                        <div
-                          className={cn(
-                            "w-3 h-3 rounded-full",
-                            api.health.readiness?.status === "ready"
-                              ? "bg-green-500"
-                              : "bg-red-500",
-                          )}
-                        />
-                        <h4 className="font-medium">Readiness Status</h4>
-                      </div>
-                      <div className="text-sm space-y-2">
-                        <p>
-                          <strong>Status:</strong>{" "}
-                          {api.health.readiness?.status || "unknown"}
-                        </p>
-                        {api.health.readiness?.timestamp && (
-                          <p>
-                            <strong>Timestamp:</strong>{" "}
-                            {new Date(
-                              api.health.readiness.timestamp,
-                            ).toLocaleString()}
-                          </p>
-                        )}
-                        {api.health.readiness?.checks && (
-                          <div className="mt-3">
-                            <p className="font-medium mb-2">Health Checks:</p>
-                            <div className="space-y-1">
-                              {Object.entries(api.health.readiness.checks).map(
-                                ([check, status]) => (
-                                  <div
-                                    key={check}
-                                    className="flex items-center justify-between text-xs"
-                                  >
-                                    <span>{check}:</span>
-                                    <Badge
-                                      variant={
-                                        status === "ok"
-                                          ? "default"
-                                          : "destructive"
-                                      }
-                                      className="text-xs"
-                                    >
-                                      {status as string}
-                                    </Badge>
-                                  </div>
-                                ),
-                              )}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-              );
-            })()}
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }
