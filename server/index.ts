@@ -63,5 +63,10 @@ export function createServer() {
   app.all("/api/:apiname/*", createApiProxy);
   app.all("/api/:apiname", createApiProxy);
 
+  // Special endpoint for OpenAPI docs
+  app.get("/api/:apiname/docs", (req, res) => {
+    res.redirect(`/api/${req.params.apiname}/openapi.json`);
+  });
+
   return app;
 }
