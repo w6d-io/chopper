@@ -46,6 +46,7 @@ export default function MultiApiDashboard() {
   "page": 0,
   "perPage": 10
 }`);
+  const [bearerToken, setBearerToken] = useState("");
   const [response, setResponse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
