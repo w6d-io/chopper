@@ -145,6 +145,11 @@ export default function MultiApiDashboard() {
       headers = {};
     }
 
+    // Add Bearer token if provided
+    if (bearerToken.trim()) {
+      headers.Authorization = `Bearer ${bearerToken.trim()}`;
+    }
+
     let command = `curl -X ${requestMethod} \\\n`;
     command += `  '${api.baseUrl}${requestEndpoint}' \\\n`;
 
