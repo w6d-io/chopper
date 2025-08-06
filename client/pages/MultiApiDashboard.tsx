@@ -164,7 +164,7 @@ export default function MultiApiDashboard() {
       command += `  -H '${key}: ${value}' \\\n`;
     });
 
-    if (["POST", "PUT"].includes(requestMethod) && requestBody.trim()) {
+    if (requestMethod === "POST" && requestBody.trim()) {
       command += `  -d '${requestBody.replace(/'/g, "'\\''")}' \\\n`;
     }
 
