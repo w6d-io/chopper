@@ -37,7 +37,19 @@ export const createApiProxy: RequestHandler = async (req, res) => {
     // We append the endpoint path directly to the base URL
     // The path already includes the necessary structure
     const targetPath = path ? `/${path}` : "";
-    const targetUrl = `${apiConfig.baseUrl}/api/${apiname}${targetPath}`;
+
+    // Special handling for OpenAPI documentation and health endpoints
+    let targetUrl: string;
+    if (targetPath === "/openapi.json") {
+      // OpenAPI spec is usually at the root of the API server
+      targetUrl = `${apiConfig.baseUrl}/openapi.json`;
+    } else if (targetPath === "/liveness" || targetPath === "/readiness") {
+      // Health endpoints are typically at the root level
+      targetUrl = `${apiConfig.baseUrl}${targetPath}`;
+    } else {
+      // Regular API endpoints go through the API path
+      targetUrl = `${apiConfig.baseUrl}/api/${apiname}${targetPath}`;
+    }
 
     // Prepare headers
     const headers: Record<string, string> = {

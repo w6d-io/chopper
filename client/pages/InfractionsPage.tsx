@@ -81,7 +81,7 @@ interface ApiConfiguration {
 export default function InfractionsPage() {
   // Configuration state
   const [config, setConfig] = useState<ApiConfiguration>({
-    baseUrl: "http://localhost:8000",
+    baseUrl: "https://api.infractions.com",
     tenant: "premium",
     language: "en",
     apiToken: "",
