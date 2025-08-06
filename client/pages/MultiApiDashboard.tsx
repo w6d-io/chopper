@@ -99,8 +99,8 @@ export default function MultiApiDashboard() {
         headers,
       };
 
-      // Add body for POST/PUT requests
-      if (["POST", "PUT"].includes(requestMethod) && requestBody.trim()) {
+      // Add body for POST requests
+      if (requestMethod === "POST" && requestBody.trim()) {
         try {
           JSON.parse(requestBody); // Validate JSON
           options.body = requestBody;
