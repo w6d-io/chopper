@@ -102,6 +102,10 @@ export default function MultiApiDashboard() {
   const [perPage, setPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(0);
 
+  // Documentation state
+  const [openApiSpec, setOpenApiSpec] = useState<any>(null);
+  const [isLoadingDocs, setIsLoadingDocs] = useState(false);
+
   // Auto-select first API on mount and update endpoint
   useEffect(() => {
     const initializeApi = () => {
