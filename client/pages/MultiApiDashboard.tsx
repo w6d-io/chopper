@@ -91,6 +91,17 @@ export default function MultiApiDashboard() {
   const [response, setResponse] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Infractions-specific state
+  const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
+    from: addDays(new Date(), -30),
+    to: new Date(),
+  });
+  const [selectedTypes, setSelectedTypes] = useState<InfractionType[]>([]);
+  const [tenant, setTenant] = useState("premium");
+  const [language, setLanguage] = useState("en");
+  const [perPage, setPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(0);
+
   // Auto-select first API on mount and update endpoint
   useEffect(() => {
     const initializeApi = () => {
