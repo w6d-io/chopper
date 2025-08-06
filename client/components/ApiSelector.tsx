@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ApiConfig } from "@shared/apis";
 import { apiManager } from "@/lib/apiManager";
-import { CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import { CheckCircle2, AlertCircle, Clock, Shield } from "lucide-react";
 
 interface ApiSelectorProps {
   value?: string;
