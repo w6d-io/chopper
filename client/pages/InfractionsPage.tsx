@@ -46,7 +46,7 @@ import { Link } from "react-router-dom";
 // Infraction types matching the API exactly
 const INFRACTION_TYPES = [
   "ContinuousDriving",
-  "WeeklyDriving", 
+  "WeeklyDriving",
   "DailyDriving",
   "WeeklyRest",
   "ReducedWeeklyRest",
@@ -110,7 +110,7 @@ export default function InfractionsPage() {
     if (savedConfig) {
       try {
         const parsed = JSON.parse(savedConfig);
-        setConfig(prev => ({ ...prev, ...parsed }));
+        setConfig((prev) => ({ ...prev, ...parsed }));
       } catch (error) {
         console.error("Failed to load saved configuration:", error);
       }
@@ -125,8 +125,8 @@ export default function InfractionsPage() {
   };
 
   const handleTypeToggle = (type: InfractionType) => {
-    setSelectedTypes(prev =>
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
@@ -142,15 +142,15 @@ export default function InfractionsPage() {
 
   const generateUrl = () => {
     const queryParams = new URLSearchParams();
-    
+
     queryParams.set("tenant", config.tenant);
-    
+
     if (selectedTypes.length > 0) {
-      selectedTypes.forEach(type => {
+      selectedTypes.forEach((type) => {
         queryParams.append("typeInfractionLibelles", type);
       });
     }
-    
+
     queryParams.set("startDate", dateRange.from.toISOString());
     queryParams.set("endDate", dateRange.to.toISOString());
     queryParams.set("page", currentPage.toString());
@@ -180,7 +180,7 @@ export default function InfractionsPage() {
       };
 
       const url = `${config.baseUrl}/api/infractions`;
-      
+
       let curlCommand = `curl -X 'POST' \\\n  '${url}' \\\n`;
       curlCommand += `  -H 'accept: application/json' \\\n`;
       curlCommand += `  -H 'Tenant: ${config.tenant}' \\\n`;
@@ -190,18 +190,18 @@ export default function InfractionsPage() {
       }
       curlCommand += `  -H 'Content-Type: application/json' \\\n`;
       curlCommand += `  -d '${JSON.stringify(requestBody, null, 2)}'`;
-      
+
       return curlCommand;
     }
   };
 
   const executeRequest = async () => {
     setIsLoading(true);
-    
+
     try {
       const headers: Record<string, string> = {
-        "accept": "application/json",
-        "Language": config.language,
+        accept: "application/json",
+        Language: config.language,
       };
 
       if (config.apiToken) {
@@ -219,15 +219,16 @@ export default function InfractionsPage() {
         fetchOptions.method = "POST";
         headers["Tenant"] = config.tenant;
         headers["Content-Type"] = "application/json";
-        
+
         const requestBody = {
-          typeInfractionLibelles: selectedTypes.length > 0 ? selectedTypes : null,
+          typeInfractionLibelles:
+            selectedTypes.length > 0 ? selectedTypes : null,
           startDate: dateRange.from.toISOString(),
           endDate: dateRange.to.toISOString(),
           page: currentPage,
           perPage: config.perPage,
         };
-        
+
         fetchOptions.body = JSON.stringify(requestBody);
       }
 
@@ -241,14 +242,18 @@ export default function InfractionsPage() {
         });
         setActiveTab("results");
       } else {
-        throw new Error(`HTTP ${response.status}: ${data.message || response.statusText}`);
+        throw new Error(
+          `HTTP ${response.status}: ${data.message || response.statusText}`,
+        );
       }
     } catch (error) {
       console.error("Request failed:", error);
       toast.error("Request failed", {
         description: error instanceof Error ? error.message : "Unknown error",
       });
-      setResults({ error: error instanceof Error ? error.message : "Unknown error" });
+      setResults({
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -273,7 +278,10 @@ export default function InfractionsPage() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/" className="text-muted-foreground hover:text-foreground">
+              <Link
+                to="/"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Home className="h-6 w-6" />
               </Link>
               <div>
@@ -281,7 +289,8 @@ export default function InfractionsPage() {
                   Infractions API Builder
                 </h1>
                 <p className="text-muted-foreground mt-1">
-                  Specialized interface for infractions API requests with all available fields
+                  Specialized interface for infractions API requests with all
+                  available fields
                 </p>
               </div>
             </div>
@@ -293,7 +302,11 @@ export default function InfractionsPage() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-4 h-auto">
             <TabsTrigger value="builder" className="text-sm">
               <Settings className="mr-2 h-4 w-4" />
@@ -315,7 +328,8 @@ export default function InfractionsPage() {
               <CardHeader>
                 <CardTitle>Infractions API Request Builder</CardTitle>
                 <CardDescription>
-                  Configure all available fields for your infractions API request
+                  Configure all available fields for your infractions API
+                  request
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -329,18 +343,23 @@ export default function InfractionsPage() {
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !dateRange.from && "text-muted-foreground"
+                            !dateRange.from && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dateRange.from ? format(dateRange.from, "PPP") : "Pick a date"}
+                          {dateRange.from
+                            ? format(dateRange.from, "PPP")
+                            : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={dateRange.from}
-                          onSelect={date => date && setDateRange(prev => ({ ...prev, from: date }))}
+                          onSelect={(date) =>
+                            date &&
+                            setDateRange((prev) => ({ ...prev, from: date }))
+                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -355,18 +374,23 @@ export default function InfractionsPage() {
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !dateRange.to && "text-muted-foreground"
+                            !dateRange.to && "text-muted-foreground",
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {dateRange.to ? format(dateRange.to, "PPP") : "Pick a date"}
+                          {dateRange.to
+                            ? format(dateRange.to, "PPP")
+                            : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
                           selected={dateRange.to}
-                          onSelect={date => date && setDateRange(prev => ({ ...prev, to: date }))}
+                          onSelect={(date) =>
+                            date &&
+                            setDateRange((prev) => ({ ...prev, to: date }))
+                          }
                           initialFocus
                         />
                       </PopoverContent>
@@ -398,11 +422,12 @@ export default function InfractionsPage() {
                     </div>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Leave empty to retrieve all types, or select specific types to filter. 
-                    Selected: {selectedTypes.length}/{INFRACTION_TYPES.length}
+                    Leave empty to retrieve all types, or select specific types
+                    to filter. Selected: {selectedTypes.length}/
+                    {INFRACTION_TYPES.length}
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto border rounded-lg p-4">
-                    {INFRACTION_TYPES.map(type => (
+                    {INFRACTION_TYPES.map((type) => (
                       <div key={type} className="flex items-center space-x-2">
                         <Checkbox
                           id={type}
@@ -429,7 +454,9 @@ export default function InfractionsPage() {
                       type="number"
                       min="0"
                       value={currentPage}
-                      onChange={e => setCurrentPage(parseInt(e.target.value) || 0)}
+                      onChange={(e) =>
+                        setCurrentPage(parseInt(e.target.value) || 0)
+                      }
                       placeholder="0"
                     />
                     <p className="text-xs text-muted-foreground">
@@ -441,7 +468,9 @@ export default function InfractionsPage() {
                     <Label htmlFor="per-page">Results per page</Label>
                     <Select
                       value={config.perPage.toString()}
-                      onValueChange={value => saveConfig({ perPage: parseInt(value) })}
+                      onValueChange={(value) =>
+                        saveConfig({ perPage: parseInt(value) })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -506,7 +535,7 @@ export default function InfractionsPage() {
                     id="base-url"
                     type="url"
                     value={config.baseUrl}
-                    onChange={e => saveConfig({ baseUrl: e.target.value })}
+                    onChange={(e) => saveConfig({ baseUrl: e.target.value })}
                     placeholder="http://localhost:8000"
                   />
                 </div>
@@ -517,7 +546,7 @@ export default function InfractionsPage() {
                     <Input
                       id="tenant"
                       value={config.tenant}
-                      onChange={e => saveConfig({ tenant: e.target.value })}
+                      onChange={(e) => saveConfig({ tenant: e.target.value })}
                       placeholder="premium"
                     />
                   </div>
@@ -526,7 +555,7 @@ export default function InfractionsPage() {
                     <Label htmlFor="language">Language</Label>
                     <Select
                       value={config.language}
-                      onValueChange={language => saveConfig({ language })}
+                      onValueChange={(language) => saveConfig({ language })}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -544,13 +573,17 @@ export default function InfractionsPage() {
                   <Label htmlFor="method">HTTP Method</Label>
                   <Select
                     value={config.requestMethod}
-                    onValueChange={(value: "GET" | "POST") => saveConfig({ requestMethod: value })}
+                    onValueChange={(value: "GET" | "POST") =>
+                      saveConfig({ requestMethod: value })
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="GET">GET (query parameters)</SelectItem>
+                      <SelectItem value="GET">
+                        GET (query parameters)
+                      </SelectItem>
                       <SelectItem value="POST">POST (request body)</SelectItem>
                     </SelectContent>
                   </Select>
@@ -562,7 +595,7 @@ export default function InfractionsPage() {
                     id="api-token"
                     type="password"
                     value={config.apiToken}
-                    onChange={e => saveConfig({ apiToken: e.target.value })}
+                    onChange={(e) => saveConfig({ apiToken: e.target.value })}
                     placeholder="Bearer token for authentication"
                   />
                 </div>
@@ -583,7 +616,9 @@ export default function InfractionsPage() {
                   {results.error ? (
                     <div className="text-center py-12">
                       <AlertTriangle className="mx-auto h-12 w-12 text-destructive mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Request Failed</h3>
+                      <h3 className="text-lg font-medium mb-2">
+                        Request Failed
+                      </h3>
                       <p className="text-muted-foreground">{results.error}</p>
                     </div>
                   ) : (
@@ -592,19 +627,27 @@ export default function InfractionsPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                           <div>
                             <span className="font-medium">Total Count:</span>
-                            <div className="text-lg font-bold">{results.totalCount || 0}</div>
+                            <div className="text-lg font-bold">
+                              {results.totalCount || 0}
+                            </div>
                           </div>
                           <div>
                             <span className="font-medium">Page:</span>
-                            <div className="text-lg font-bold">{(results.pageIndex || 0) + 1}</div>
+                            <div className="text-lg font-bold">
+                              {(results.pageIndex || 0) + 1}
+                            </div>
                           </div>
                           <div>
                             <span className="font-medium">Items:</span>
-                            <div className="text-lg font-bold">{results.itemsCount || 0}</div>
+                            <div className="text-lg font-bold">
+                              {results.itemsCount || 0}
+                            </div>
                           </div>
                           <div>
                             <span className="font-medium">Pages:</span>
-                            <div className="text-lg font-bold">{results.pageCount || 0}</div>
+                            <div className="text-lg font-bold">
+                              {results.pageCount || 0}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -622,7 +665,9 @@ export default function InfractionsPage() {
               <Card>
                 <CardContent className="text-center py-12">
                   <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No request executed yet</h3>
+                  <h3 className="text-lg font-medium mb-2">
+                    No request executed yet
+                  </h3>
                   <p className="text-muted-foreground">
                     Use the Request Builder tab to execute your first request.
                   </p>
@@ -636,7 +681,8 @@ export default function InfractionsPage() {
               <CardHeader>
                 <CardTitle>Generated Code & Documentation</CardTitle>
                 <CardDescription>
-                  Copy the generated cURL command or use the URL for your applications
+                  Copy the generated cURL command or use the URL for your
+                  applications
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -646,7 +692,9 @@ export default function InfractionsPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => copyToClipboard(generateCurlCommand(), "cURL command")}
+                      onClick={() =>
+                        copyToClipboard(generateCurlCommand(), "cURL command")
+                      }
                     >
                       <Copy className="mr-2 h-4 w-4" />
                       Copy
@@ -685,12 +733,27 @@ export default function InfractionsPage() {
                     Available Fields Summary
                   </h4>
                   <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                    <p><strong>tenant:</strong> {config.tenant}</p>
-                    <p><strong>typeInfractionLibelles:</strong> {selectedTypes.length > 0 ? selectedTypes.join(", ") : "All types"}</p>
-                    <p><strong>startDate:</strong> {dateRange.from.toISOString()}</p>
-                    <p><strong>endDate:</strong> {dateRange.to.toISOString()}</p>
-                    <p><strong>page:</strong> {currentPage}</p>
-                    <p><strong>perPage:</strong> {config.perPage}</p>
+                    <p>
+                      <strong>tenant:</strong> {config.tenant}
+                    </p>
+                    <p>
+                      <strong>typeInfractionLibelles:</strong>{" "}
+                      {selectedTypes.length > 0
+                        ? selectedTypes.join(", ")
+                        : "All types"}
+                    </p>
+                    <p>
+                      <strong>startDate:</strong> {dateRange.from.toISOString()}
+                    </p>
+                    <p>
+                      <strong>endDate:</strong> {dateRange.to.toISOString()}
+                    </p>
+                    <p>
+                      <strong>page:</strong> {currentPage}
+                    </p>
+                    <p>
+                      <strong>perPage:</strong> {config.perPage}
+                    </p>
                   </div>
                 </div>
               </CardContent>

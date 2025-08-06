@@ -69,7 +69,8 @@ export const handleDemoOpenApi: RequestHandler = (req, res) => {
               name: "typeInfractionLibelles",
               in: "query",
               required: false,
-              description: "Filter by specific infraction types. Can be specified multiple times.",
+              description:
+                "Filter by specific infraction types. Can be specified multiple times.",
               style: "form",
               explode: true,
               schema: {
@@ -105,7 +106,8 @@ export const handleDemoOpenApi: RequestHandler = (req, res) => {
               name: "startDate",
               in: "query",
               required: false,
-              description: "Start date for filtering infractions (ISO 8601 format)",
+              description:
+                "Start date for filtering infractions (ISO 8601 format)",
               schema: {
                 type: "string",
                 format: "date-time",
@@ -116,7 +118,8 @@ export const handleDemoOpenApi: RequestHandler = (req, res) => {
               name: "endDate",
               in: "query",
               required: false,
-              description: "End date for filtering infractions (ISO 8601 format)",
+              description:
+                "End date for filtering infractions (ISO 8601 format)",
               schema: {
                 type: "string",
                 format: "date-time",
@@ -728,24 +731,27 @@ export const handleDemoInfractions: RequestHandler = (req, res) => {
 
   // Filter by infraction types if specified
   let filteredInfractions = allMockInfractions;
-  if (params.typeInfractionLibelles && params.typeInfractionLibelles.length > 0) {
-    filteredInfractions = allMockInfractions.filter(infraction =>
-      params.typeInfractionLibelles.includes(infraction.typeInfractionLibelle)
+  if (
+    params.typeInfractionLibelles &&
+    params.typeInfractionLibelles.length > 0
+  ) {
+    filteredInfractions = allMockInfractions.filter((infraction) =>
+      params.typeInfractionLibelles.includes(infraction.typeInfractionLibelle),
     );
   }
 
   // Apply date filtering if specified
   if (params.startDate) {
     const startDate = new Date(params.startDate);
-    filteredInfractions = filteredInfractions.filter(infraction =>
-      new Date(infraction.dateInfraction) >= startDate
+    filteredInfractions = filteredInfractions.filter(
+      (infraction) => new Date(infraction.dateInfraction) >= startDate,
     );
   }
 
   if (params.endDate) {
     const endDate = new Date(params.endDate);
-    filteredInfractions = filteredInfractions.filter(infraction =>
-      new Date(infraction.dateInfraction) <= endDate
+    filteredInfractions = filteredInfractions.filter(
+      (infraction) => new Date(infraction.dateInfraction) <= endDate,
     );
   }
 

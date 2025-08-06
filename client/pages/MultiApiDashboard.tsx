@@ -197,8 +197,8 @@ export default function MultiApiDashboard() {
 
   // Infractions-specific helper functions
   const handleTypeToggle = (type: InfractionType) => {
-    setSelectedTypes(prev =>
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
@@ -226,8 +226,8 @@ export default function MultiApiDashboard() {
   const updateInfractionsHeaders = () => {
     const headers = {
       "Content-Type": "application/json",
-      "Tenant": tenant,
-      "Language": language,
+      Tenant: tenant,
+      Language: language,
     };
     setRequestHeaders(JSON.stringify(headers, null, 2));
   };
@@ -238,7 +238,15 @@ export default function MultiApiDashboard() {
       updateInfractionsRequestBody();
       updateInfractionsHeaders();
     }
-  }, [selectedApi, selectedTypes, dateRange, tenant, language, perPage, currentPage]);
+  }, [
+    selectedApi,
+    selectedTypes,
+    dateRange,
+    tenant,
+    language,
+    perPage,
+    currentPage,
+  ]);
 
   // Function to fetch OpenAPI documentation
   const fetchOpenApiDocs = async () => {
@@ -423,7 +431,9 @@ export default function MultiApiDashboard() {
                   {selectedApi === "infractions" && (
                     <>
                       <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
-                        <h3 className="font-semibold text-primary">Infractions API Builder</h3>
+                        <h3 className="font-semibold text-primary">
+                          Infractions API Builder
+                        </h3>
 
                         {/* Date Range */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -435,18 +445,29 @@ export default function MultiApiDashboard() {
                                   variant="outline"
                                   className={cn(
                                     "w-full justify-start text-left font-normal",
-                                    !dateRange.from && "text-muted-foreground"
+                                    !dateRange.from && "text-muted-foreground",
                                   )}
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {dateRange.from ? format(dateRange.from, "PPP") : "Pick a date"}
+                                  {dateRange.from
+                                    ? format(dateRange.from, "PPP")
+                                    : "Pick a date"}
                                 </Button>
                               </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
                                 <Calendar
                                   mode="single"
                                   selected={dateRange.from}
-                                  onSelect={date => date && setDateRange(prev => ({ ...prev, from: date }))}
+                                  onSelect={(date) =>
+                                    date &&
+                                    setDateRange((prev) => ({
+                                      ...prev,
+                                      from: date,
+                                    }))
+                                  }
                                   initialFocus
                                 />
                               </PopoverContent>
@@ -461,18 +482,29 @@ export default function MultiApiDashboard() {
                                   variant="outline"
                                   className={cn(
                                     "w-full justify-start text-left font-normal",
-                                    !dateRange.to && "text-muted-foreground"
+                                    !dateRange.to && "text-muted-foreground",
                                   )}
                                 >
                                   <CalendarIcon className="mr-2 h-4 w-4" />
-                                  {dateRange.to ? format(dateRange.to, "PPP") : "Pick a date"}
+                                  {dateRange.to
+                                    ? format(dateRange.to, "PPP")
+                                    : "Pick a date"}
                                 </Button>
                               </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
+                              <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                              >
                                 <Calendar
                                   mode="single"
                                   selected={dateRange.to}
-                                  onSelect={date => date && setDateRange(prev => ({ ...prev, to: date }))}
+                                  onSelect={(date) =>
+                                    date &&
+                                    setDateRange((prev) => ({
+                                      ...prev,
+                                      to: date,
+                                    }))
+                                  }
                                   initialFocus
                                 />
                               </PopoverContent>
@@ -486,20 +518,25 @@ export default function MultiApiDashboard() {
                             <Label>Tenant</Label>
                             <Input
                               value={tenant}
-                              onChange={e => setTenant(e.target.value)}
+                              onChange={(e) => setTenant(e.target.value)}
                               placeholder="premium"
                             />
                           </div>
 
                           <div className="space-y-2">
                             <Label>Language</Label>
-                            <Select value={language} onValueChange={setLanguage}>
+                            <Select
+                              value={language}
+                              onValueChange={setLanguage}
+                            >
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="en">English (en)</SelectItem>
-                                <SelectItem value="fr">Français (fr)</SelectItem>
+                                <SelectItem value="fr">
+                                  Français (fr)
+                                </SelectItem>
                                 <SelectItem value="es">Español (es)</SelectItem>
                               </SelectContent>
                             </Select>
@@ -507,7 +544,12 @@ export default function MultiApiDashboard() {
 
                           <div className="space-y-2">
                             <Label>Per Page</Label>
-                            <Select value={perPage.toString()} onValueChange={value => setPerPage(parseInt(value))}>
+                            <Select
+                              value={perPage.toString()}
+                              onValueChange={(value) =>
+                                setPerPage(parseInt(value))
+                              }
+                            >
                               <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
@@ -528,7 +570,9 @@ export default function MultiApiDashboard() {
                             type="number"
                             min="0"
                             value={currentPage}
-                            onChange={e => setCurrentPage(parseInt(e.target.value) || 0)}
+                            onChange={(e) =>
+                              setCurrentPage(parseInt(e.target.value) || 0)
+                            }
                             placeholder="0"
                           />
                         </div>
@@ -557,11 +601,15 @@ export default function MultiApiDashboard() {
                             </div>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            Selected: {selectedTypes.length}/{INFRACTION_TYPES.length}
+                            Selected: {selectedTypes.length}/
+                            {INFRACTION_TYPES.length}
                           </p>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-40 overflow-y-auto border rounded-lg p-3">
-                            {INFRACTION_TYPES.map(type => (
-                              <div key={type} className="flex items-center space-x-2">
+                            {INFRACTION_TYPES.map((type) => (
+                              <div
+                                key={type}
+                                className="flex items-center space-x-2"
+                              >
                                 <Checkbox
                                   id={`type-${type}`}
                                   checked={selectedTypes.includes(type)}
@@ -700,7 +748,8 @@ export default function MultiApiDashboard() {
                   <div>
                     <CardTitle>API Documentation</CardTitle>
                     <CardDescription>
-                      Interactive OpenAPI documentation for {selectedApi || "selected API"}
+                      Interactive OpenAPI documentation for{" "}
+                      {selectedApi || "selected API"}
                     </CardDescription>
                   </div>
                   <Button
@@ -716,12 +765,18 @@ export default function MultiApiDashboard() {
                 {!openApiSpec ? (
                   <div className="text-center py-12">
                     <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">Load Documentation</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      Load Documentation
+                    </h3>
                     <p className="text-muted-foreground mb-4">
-                      Click "Load Documentation" to fetch the OpenAPI specification for {selectedApi || "the selected API"}
+                      Click "Load Documentation" to fetch the OpenAPI
+                      specification for {selectedApi || "the selected API"}
                     </p>
                     {selectedApi && (
-                      <Button onClick={fetchOpenApiDocs} disabled={isLoadingDocs}>
+                      <Button
+                        onClick={fetchOpenApiDocs}
+                        disabled={isLoadingDocs}
+                      >
                         {isLoadingDocs ? "Loading..." : "Load Documentation"}
                       </Button>
                     )}
@@ -734,14 +789,19 @@ export default function MultiApiDashboard() {
                         {openApiSpec.info?.title || "API Documentation"}
                       </h3>
                       <p className="text-muted-foreground mb-2">
-                        {openApiSpec.info?.description || "No description available"}
+                        {openApiSpec.info?.description ||
+                          "No description available"}
                       </p>
                       <div className="flex items-center space-x-4 text-sm">
                         <span className="text-muted-foreground">
-                          Version: <strong>{openApiSpec.info?.version || "Unknown"}</strong>
+                          Version:{" "}
+                          <strong>
+                            {openApiSpec.info?.version || "Unknown"}
+                          </strong>
                         </span>
                         <span className="text-muted-foreground">
-                          OpenAPI: <strong>{openApiSpec.openapi || "Unknown"}</strong>
+                          OpenAPI:{" "}
+                          <strong>{openApiSpec.openapi || "Unknown"}</strong>
                         </span>
                       </div>
                     </div>
@@ -749,143 +809,204 @@ export default function MultiApiDashboard() {
                     {/* Endpoints */}
                     {openApiSpec.paths && (
                       <div className="space-y-6">
-                        <h3 className="text-lg font-semibold border-b pb-2">API Endpoints</h3>
-                        {Object.entries(openApiSpec.paths).map(([path, methods]: [string, any]) => (
-                          <div key={path} className="space-y-4">
-                            <h4 className="text-lg font-medium text-primary bg-muted/50 px-3 py-2 rounded">
-                              {path}
-                            </h4>
-                            <div className="grid gap-4">
-                              {Object.entries(methods).map(([method, details]: [string, any]) => (
-                                <div key={method} className="border rounded-lg p-4 space-y-3">
-                                  <div className="flex items-start justify-between">
-                                    <div className="flex items-center space-x-3">
-                                      <Badge
-                                        variant={
-                                          method === "get"
-                                            ? "secondary"
-                                            : method === "post"
-                                              ? "default"
-                                              : "outline"
-                                        }
-                                        className="text-sm font-mono"
-                                      >
-                                        {method.toUpperCase()}
-                                      </Badge>
-                                      <div>
-                                        <h5 className="font-semibold">
-                                          {details.summary || "No summary"}
-                                        </h5>
-                                        {details.operationId && (
-                                          <p className="text-xs text-muted-foreground font-mono">
-                                            {details.operationId}
-                                          </p>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  {details.description && (
-                                    <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border-l-4 border-blue-500">
-                                      <p className="text-sm whitespace-pre-line">
-                                        {details.description}
-                                      </p>
-                                    </div>
-                                  )}
-
-                                  {/* Parameters */}
-                                  {details.parameters && details.parameters.length > 0 && (
-                                    <div>
-                                      <h6 className="font-medium mb-2 text-sm">Parameters</h6>
-                                      <div className="space-y-2">
-                                        {details.parameters.map((param: any, idx: number) => (
-                                          <div key={idx} className="bg-muted/50 p-3 rounded border">
-                                            <div className="flex items-start justify-between mb-1">
-                                              <div className="flex items-center space-x-2">
-                                                <code className="font-semibold text-sm">
-                                                  {param.name}
-                                                </code>
-                                                <Badge variant="outline" className="text-xs">
-                                                  {param.in}
-                                                </Badge>
-                                                {param.required && (
-                                                  <Badge variant="destructive" className="text-xs">
-                                                    required
-                                                  </Badge>
-                                                )}
-                                              </div>
-                                              {param.schema?.type && (
-                                                <span className="text-xs text-muted-foreground font-mono">
-                                                  {param.schema.type}
-                                                </span>
-                                              )}
-                                            </div>
-                                            {param.description && (
-                                              <p className="text-sm text-muted-foreground mt-1">
-                                                {param.description}
+                        <h3 className="text-lg font-semibold border-b pb-2">
+                          API Endpoints
+                        </h3>
+                        {Object.entries(openApiSpec.paths).map(
+                          ([path, methods]: [string, any]) => (
+                            <div key={path} className="space-y-4">
+                              <h4 className="text-lg font-medium text-primary bg-muted/50 px-3 py-2 rounded">
+                                {path}
+                              </h4>
+                              <div className="grid gap-4">
+                                {Object.entries(methods).map(
+                                  ([method, details]: [string, any]) => (
+                                    <div
+                                      key={method}
+                                      className="border rounded-lg p-4 space-y-3"
+                                    >
+                                      <div className="flex items-start justify-between">
+                                        <div className="flex items-center space-x-3">
+                                          <Badge
+                                            variant={
+                                              method === "get"
+                                                ? "secondary"
+                                                : method === "post"
+                                                  ? "default"
+                                                  : "outline"
+                                            }
+                                            className="text-sm font-mono"
+                                          >
+                                            {method.toUpperCase()}
+                                          </Badge>
+                                          <div>
+                                            <h5 className="font-semibold">
+                                              {details.summary || "No summary"}
+                                            </h5>
+                                            {details.operationId && (
+                                              <p className="text-xs text-muted-foreground font-mono">
+                                                {details.operationId}
                                               </p>
                                             )}
                                           </div>
-                                        ))}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
 
-                                  {/* Request Body */}
-                                  {details.requestBody && (
-                                    <div>
-                                      <h6 className="font-medium mb-2 text-sm">Request Body</h6>
-                                      <div className="bg-muted/50 p-3 rounded border">
-                                        <p className="text-sm">Content-Type: application/json</p>
-                                        {details.requestBody.content?.["application/json"]?.examples && (
-                                          <div className="mt-2">
-                                            <span className="text-xs font-medium">Examples:</span>
-                                            {Object.entries(
-                                              details.requestBody.content["application/json"].examples
-                                            ).map(([exampleName, example]: [string, any]) => (
-                                              <div key={exampleName} className="mt-2">
-                                                <div className="text-xs font-medium">{example.summary}</div>
-                                                <pre className="text-xs bg-background p-2 rounded mt-1 overflow-x-auto">
-                                                  {JSON.stringify(example.value, null, 2)}
-                                                </pre>
-                                              </div>
-                                            ))}
+                                      {details.description && (
+                                        <div className="bg-blue-50 dark:bg-blue-950/20 p-3 rounded border-l-4 border-blue-500">
+                                          <p className="text-sm whitespace-pre-line">
+                                            {details.description}
+                                          </p>
+                                        </div>
+                                      )}
+
+                                      {/* Parameters */}
+                                      {details.parameters &&
+                                        details.parameters.length > 0 && (
+                                          <div>
+                                            <h6 className="font-medium mb-2 text-sm">
+                                              Parameters
+                                            </h6>
+                                            <div className="space-y-2">
+                                              {details.parameters.map(
+                                                (param: any, idx: number) => (
+                                                  <div
+                                                    key={idx}
+                                                    className="bg-muted/50 p-3 rounded border"
+                                                  >
+                                                    <div className="flex items-start justify-between mb-1">
+                                                      <div className="flex items-center space-x-2">
+                                                        <code className="font-semibold text-sm">
+                                                          {param.name}
+                                                        </code>
+                                                        <Badge
+                                                          variant="outline"
+                                                          className="text-xs"
+                                                        >
+                                                          {param.in}
+                                                        </Badge>
+                                                        {param.required && (
+                                                          <Badge
+                                                            variant="destructive"
+                                                            className="text-xs"
+                                                          >
+                                                            required
+                                                          </Badge>
+                                                        )}
+                                                      </div>
+                                                      {param.schema?.type && (
+                                                        <span className="text-xs text-muted-foreground font-mono">
+                                                          {param.schema.type}
+                                                        </span>
+                                                      )}
+                                                    </div>
+                                                    {param.description && (
+                                                      <p className="text-sm text-muted-foreground mt-1">
+                                                        {param.description}
+                                                      </p>
+                                                    )}
+                                                  </div>
+                                                ),
+                                              )}
+                                            </div>
                                           </div>
                                         )}
-                                      </div>
-                                    </div>
-                                  )}
 
-                                  {/* Responses */}
-                                  {details.responses && (
-                                    <div>
-                                      <h6 className="font-medium mb-2 text-sm">Responses</h6>
-                                      <div className="space-y-1">
-                                        {Object.entries(details.responses).map(([code, response]: [string, any]) => (
-                                          <div key={code} className="flex items-center space-x-2 text-sm">
-                                            <Badge
-                                              variant={
-                                                code.startsWith("2")
-                                                  ? "default"
-                                                  : code.startsWith("4")
-                                                    ? "destructive"
-                                                    : "secondary"
-                                              }
-                                              className="font-mono"
-                                            >
-                                              {code}
-                                            </Badge>
-                                            <span>{response.description}</span>
+                                      {/* Request Body */}
+                                      {details.requestBody && (
+                                        <div>
+                                          <h6 className="font-medium mb-2 text-sm">
+                                            Request Body
+                                          </h6>
+                                          <div className="bg-muted/50 p-3 rounded border">
+                                            <p className="text-sm">
+                                              Content-Type: application/json
+                                            </p>
+                                            {details.requestBody.content?.[
+                                              "application/json"
+                                            ]?.examples && (
+                                              <div className="mt-2">
+                                                <span className="text-xs font-medium">
+                                                  Examples:
+                                                </span>
+                                                {Object.entries(
+                                                  details.requestBody.content[
+                                                    "application/json"
+                                                  ].examples,
+                                                ).map(
+                                                  ([exampleName, example]: [
+                                                    string,
+                                                    any,
+                                                  ]) => (
+                                                    <div
+                                                      key={exampleName}
+                                                      className="mt-2"
+                                                    >
+                                                      <div className="text-xs font-medium">
+                                                        {example.summary}
+                                                      </div>
+                                                      <pre className="text-xs bg-background p-2 rounded mt-1 overflow-x-auto">
+                                                        {JSON.stringify(
+                                                          example.value,
+                                                          null,
+                                                          2,
+                                                        )}
+                                                      </pre>
+                                                    </div>
+                                                  ),
+                                                )}
+                                              </div>
+                                            )}
                                           </div>
-                                        ))}
-                                      </div>
+                                        </div>
+                                      )}
+
+                                      {/* Responses */}
+                                      {details.responses && (
+                                        <div>
+                                          <h6 className="font-medium mb-2 text-sm">
+                                            Responses
+                                          </h6>
+                                          <div className="space-y-1">
+                                            {Object.entries(
+                                              details.responses,
+                                            ).map(
+                                              ([code, response]: [
+                                                string,
+                                                any,
+                                              ]) => (
+                                                <div
+                                                  key={code}
+                                                  className="flex items-center space-x-2 text-sm"
+                                                >
+                                                  <Badge
+                                                    variant={
+                                                      code.startsWith("2")
+                                                        ? "default"
+                                                        : code.startsWith("4")
+                                                          ? "destructive"
+                                                          : "secondary"
+                                                    }
+                                                    className="font-mono"
+                                                  >
+                                                    {code}
+                                                  </Badge>
+                                                  <span>
+                                                    {response.description}
+                                                  </span>
+                                                </div>
+                                              ),
+                                            )}
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                              ))}
+                                  ),
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ),
+                        )}
                       </div>
                     )}
 
@@ -894,33 +1015,48 @@ export default function MultiApiDashboard() {
                       <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Data Models</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {Object.entries(openApiSpec.components.schemas).map(([name, schema]: [string, any]) => (
-                            <div key={name} className="rounded-lg border p-4">
-                              <h4 className="font-medium mb-2">{name}</h4>
-                              {schema.description && (
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  {schema.description}
-                                </p>
-                              )}
-                              {schema.properties && (
-                                <div className="space-y-1">
-                                  <h5 className="text-sm font-medium">Properties:</h5>
-                                  {Object.entries(schema.properties).map(([propName, prop]: [string, any]) => (
-                                    <div key={propName} className="text-xs bg-muted p-2 rounded">
-                                      <span className="font-medium">{propName}</span>
-                                      <span className="text-muted-foreground ml-1">
-                                        ({prop.type || "unknown"})
-                                        {schema.required?.includes(propName) ? " required" : " optional"}
-                                      </span>
-                                      {prop.description && (
-                                        <p className="text-muted-foreground mt-1">{prop.description}</p>
-                                      )}
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          ))}
+                          {Object.entries(openApiSpec.components.schemas).map(
+                            ([name, schema]: [string, any]) => (
+                              <div key={name} className="rounded-lg border p-4">
+                                <h4 className="font-medium mb-2">{name}</h4>
+                                {schema.description && (
+                                  <p className="text-sm text-muted-foreground mb-2">
+                                    {schema.description}
+                                  </p>
+                                )}
+                                {schema.properties && (
+                                  <div className="space-y-1">
+                                    <h5 className="text-sm font-medium">
+                                      Properties:
+                                    </h5>
+                                    {Object.entries(schema.properties).map(
+                                      ([propName, prop]: [string, any]) => (
+                                        <div
+                                          key={propName}
+                                          className="text-xs bg-muted p-2 rounded"
+                                        >
+                                          <span className="font-medium">
+                                            {propName}
+                                          </span>
+                                          <span className="text-muted-foreground ml-1">
+                                            ({prop.type || "unknown"})
+                                            {schema.required?.includes(propName)
+                                              ? " required"
+                                              : " optional"}
+                                          </span>
+                                          {prop.description && (
+                                            <p className="text-muted-foreground mt-1">
+                                              {prop.description}
+                                            </p>
+                                          )}
+                                        </div>
+                                      ),
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ),
+                          )}
                         </div>
                       </div>
                     )}
