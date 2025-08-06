@@ -21,7 +21,7 @@ export function createServer() {
       status: "ok",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      service: "Infractions API Manager"
+      service: "Infractions API Manager",
     });
   });
 
@@ -36,8 +36,8 @@ export function createServer() {
         timestamp: new Date().toISOString(),
         checks: {
           database: "ok",
-          external_api: "ok"
-        }
+          external_api: "ok",
+        },
       });
     } else {
       res.status(503).json({
@@ -45,8 +45,8 @@ export function createServer() {
         timestamp: new Date().toISOString(),
         checks: {
           database: "error",
-          external_api: "error"
-        }
+          external_api: "error",
+        },
       });
     }
   });
