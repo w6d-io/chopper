@@ -3,6 +3,12 @@ import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { handleConfig } from "./routes/config";
 import { createApiProxy } from "./routes/proxy";
+import {
+  handleDemoLiveness,
+  handleDemoReadiness,
+  handleDemoOpenApi,
+  handleDemoInfractions
+} from "./routes/demo-infractions";
 
 export function createServer() {
   const app = express();
@@ -62,6 +68,13 @@ export function createServer() {
   // Matches /api/{apiname}/* and forwards to configured API
   app.all("/api/:apiname/*", createApiProxy);
   app.all("/api/:apiname", createApiProxy);
+
+  // Demo infractions API endpoints (for testing when real API is not available)
+  app.get("/api/infractions/liveness", handleDemoLiveness);
+  app.get("/api/infractions/readiness", handleDemoReadiness);
+  app.get("/api/infractions/openapi.json", handleDemoOpenApi);
+  app.post("/api/infractions", handleDemoInfractions);
+  app.get("/api/infractions", handleDemoInfractions);
 
   // Special endpoint for OpenAPI docs
   app.get("/api/:apiname/docs", (req, res) => {
