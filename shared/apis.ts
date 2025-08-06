@@ -27,15 +27,23 @@ export interface MultiApiResponse<T = any> {
 // Parse API configs from environment variable
 export function parseApiConfigs(configString?: string): ApiConfig[] {
   if (!configString) return [];
-  
+
   return configString.split(',').map(config => {
-    const [name, baseUrl] = config.split(':');
+    const colonIndex = config.indexOf(':');
+    if (colonIndex === -1) {
+      console.warn(`Invalid API config format: ${config}`);
+      return null;
+    }
+
+    const name = config.substring(0, colonIndex).trim();
+    const baseUrl = config.substring(colonIndex + 1).trim();
+
     return {
-      name: name.trim(),
-      baseUrl: baseUrl.trim(),
+      name,
+      baseUrl,
       status: 'unknown' as const,
     };
-  });
+  }).filter(config => config !== null) as ApiConfig[];
 }
 
 // Generate API endpoint for a specific API
