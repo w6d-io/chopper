@@ -419,10 +419,10 @@ DEFAULT_LANGUAGE=en`}
                       Each configured API should provide these endpoints:
                     </p>
                     <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 font-mono">
-                      <li>• <strong>/api/{{apiname}}</strong> - Main API endpoint</li>
-                      <li>• <strong>/api/{{apiname}}/liveness</strong> - Health check (should return {{"status": "ok"}})</li>
-                      <li>• <strong>/api/{{apiname}}/readiness</strong> - Readiness check (should return {{"status": "ready"}})</li>
-                      <li>• <strong>/api/{{apiname}}/openapi.json</strong> - OpenAPI specification</li>
+                      <li>• <strong>/api/{'{apiname}'}</strong> - Main API endpoint</li>
+                      <li>• <strong>/api/{'{apiname}'}/liveness</strong> - Health check (should return {'{"status": "ok"}'})</li>
+                      <li>• <strong>/api/{'{apiname}'}/readiness</strong> - Readiness check (should return {'{"status": "ready"}'})</li>
+                      <li>• <strong>/api/{'{apiname}'}/openapi.json</strong> - OpenAPI specification</li>
                     </ul>
                   </div>
 
@@ -433,7 +433,7 @@ DEFAULT_LANGUAGE=en`}
                     <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                       <li>• Restart the server after changing environment variables</li>
                       <li>• Ensure your APIs support CORS or use proper proxy configuration</li>
-                      <li>• APIs are accessed through the proxy at <code>/api/{{apiname}}/*</code></li>
+                      <li>• APIs are accessed through the proxy at <code>/api/{'{apiname}'}/*</code></li>
                       <li>• Headers (Tenant, Language, Authorization) are automatically forwarded</li>
                     </ul>
                   </div>
