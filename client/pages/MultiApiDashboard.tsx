@@ -81,6 +81,11 @@ export default function MultiApiDashboard() {
         return;
       }
 
+      // Add Bearer token if provided
+      if (bearerToken.trim()) {
+        headers.Authorization = `Bearer ${bearerToken.trim()}`;
+      }
+
       // Prepare request options
       const options: RequestInit = {
         method: requestMethod,
