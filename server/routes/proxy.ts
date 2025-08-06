@@ -34,11 +34,10 @@ export const createApiProxy: RequestHandler = async (req, res) => {
     }
 
     // Construct the target URL
-    // The API already includes the /api/{apiname} prefix in its structure
-    // So we need to forward the full path including /api/{apiname}
+    // We append the endpoint path directly to the base URL
+    // The path already includes the necessary structure
     const targetPath = path ? `/${path}` : "";
-    const fullApiPath = `/api/${apiname}${targetPath}`;
-    const targetUrl = `${apiConfig.baseUrl}${fullApiPath}`;
+    const targetUrl = `${apiConfig.baseUrl}/api/${apiname}${targetPath}`;
 
     // Prepare headers
     const headers: Record<string, string> = {
