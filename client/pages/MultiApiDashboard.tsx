@@ -442,13 +442,15 @@ export default function MultiApiDashboard() {
                       APIs are configured via environment variables. Each API
                       follows the pattern:
                       <code className="bg-background px-1 py-0.5 rounded mx-1">
-                        name:base_url
+                        name:base_url[:label]
                       </code>
+                      <br />
+                      <strong>Security Note:</strong> Bearer tokens should be entered at runtime in the API Tester tab, not stored in environment variables.
                     </p>
                     <div className="space-y-3">
                       <div>
                         <p className="text-xs font-medium mb-1">
-                          Single API Example:
+                          Simple API Example:
                         </p>
                         <pre className="text-xs bg-background p-3 rounded border">
                           API_CONFIGS=infractions:http://localhost:8000
@@ -457,10 +459,19 @@ export default function MultiApiDashboard() {
 
                       <div>
                         <p className="text-xs font-medium mb-1">
-                          Multiple APIs Example:
+                          With Labels:
                         </p>
                         <pre className="text-xs bg-background p-3 rounded border">
-                          {`API_CONFIGS=infractions:http://localhost:8000,users:http://localhost:8001,orders:http://api.example.com
+                          API_CONFIGS=infractions:http://localhost:8000:local,users:http://localhost:8001:staging
+                        </pre>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-medium mb-1">
+                          Complete Configuration:
+                        </p>
+                        <pre className="text-xs bg-background p-3 rounded border">
+                          {`API_CONFIGS=infractions:http://localhost:8000:local,oathkeeper:https://api.example.com:production
 DEFAULT_TENANT=business
 DEFAULT_LANGUAGE=en`}
                         </pre>
