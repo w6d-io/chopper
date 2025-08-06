@@ -273,8 +273,11 @@ export default function MultiApiDashboard() {
                       <Input
                         value={requestEndpoint}
                         onChange={(e) => setRequestEndpoint(e.target.value)}
-                        placeholder="/api/endpoint"
+                        placeholder={selectedApi ? `/api/${selectedApi}` : "/api/endpoint"}
                       />
+                      <p className="text-xs text-muted-foreground">
+                        Endpoint path (automatically updates when API is selected)
+                      </p>
                     </div>
                   </div>
 
