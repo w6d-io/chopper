@@ -19,6 +19,7 @@ import {
   Zap,
   Globe,
   Settings,
+  Shield,
 } from "lucide-react";
 import { ApiStatus } from "@shared/apis";
 import { apiManager } from "@/lib/apiManager";
