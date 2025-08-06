@@ -27,6 +27,7 @@ import { ApiSelector } from "@/components/ApiSelector";
 import { apiManager } from "@/lib/apiManager";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
 
 export default function MultiApiDashboard() {
   const [selectedApi, setSelectedApi] = useState<string>("");
