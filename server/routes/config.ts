@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { parseApiConfigs } from "@shared/apis";
+import { parseApiConfigs } from "../../shared/apis";
 
 export const handleConfig: RequestHandler = (req, res) => {
   try {
