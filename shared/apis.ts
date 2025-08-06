@@ -5,6 +5,9 @@ export interface ApiConfig {
   lastChecked?: Date;
   response_time?: number;
   description?: string;
+  label?: string;
+  requiresAuth?: boolean;
+  authToken?: string;
 }
 
 export interface ApiHealthCheck {
