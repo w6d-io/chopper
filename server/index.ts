@@ -16,7 +16,7 @@ export function createServer() {
   });
 
   // Health check endpoints
-  app.get("/api/liveness", (_req, res) => {
+  app.get("/liveness", (_req, res) => {
     res.json({
       status: "ok",
       timestamp: new Date().toISOString(),
@@ -25,7 +25,7 @@ export function createServer() {
     });
   });
 
-  app.get("/api/readiness", (_req, res) => {
+  app.get("/readiness", (_req, res) => {
     // Check if the service is ready to serve requests
     // You can add more complex checks here (database, external services, etc.)
     const isReady = true; // Add your readiness logic here

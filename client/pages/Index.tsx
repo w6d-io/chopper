@@ -123,11 +123,11 @@ export default function Index() {
   const checkApiHealth = async () => {
     try {
       // Check liveness
-      const livenessResponse = await fetch(`${apiBaseUrl}/api/liveness`);
+      const livenessResponse = await fetch(`${apiBaseUrl}/liveness`);
       const livenessData = await livenessResponse.json();
 
       // Check readiness
-      const readinessResponse = await fetch(`${apiBaseUrl}/api/readiness`);
+      const readinessResponse = await fetch(`${apiBaseUrl}/readiness`);
       const readinessData = await readinessResponse.json();
 
       setApiHealth({
