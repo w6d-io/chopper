@@ -272,6 +272,19 @@ export default function MultiApiDashboard() {
                   </div>
 
                   <div className="space-y-2">
+                    <Label>Bearer Token (Optional)</Label>
+                    <Input
+                      type="password"
+                      value={bearerToken}
+                      onChange={(e) => setBearerToken(e.target.value)}
+                      placeholder="Enter Bearer token for authentication"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      If provided, will be added as Authorization: Bearer header
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label>Headers (JSON)</Label>
                     <Textarea
                       value={requestHeaders}
