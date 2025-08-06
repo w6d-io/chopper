@@ -264,8 +264,6 @@ export default function MultiApiDashboard() {
                       >
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
-                        <option value="PUT">PUT</option>
-                        <option value="DELETE">DELETE</option>
                       </select>
                     </div>
                     <div className="col-span-2 space-y-2">
