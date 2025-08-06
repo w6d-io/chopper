@@ -119,6 +119,38 @@ export default function Index() {
     saveConfiguration(config);
   }, [apiBaseUrl, tenant, language, apiToken, requestMethod, perPage]);
 
+  // Function to check API health
+  const checkApiHealth = async () => {
+    try {
+      // Check liveness
+      const livenessResponse = await fetch("/api/liveness");
+      const livenessData = await livenessResponse.json();
+
+      // Check readiness
+      const readinessResponse = await fetch("/api/readiness");
+      const readinessData = await readinessResponse.json();
+
+      setApiHealth({
+        liveness: livenessData,
+        readiness: readinessData
+      });
+    } catch (error) {
+      console.error("Error checking API health:", error);
+      setApiHealth({
+        liveness: { status: "error" },
+        readiness: { status: "error" }
+      });
+    }
+  };
+
+  // Check API health on component mount
+  React.useEffect(() => {
+    checkApiHealth();
+    // Check health every 30 seconds
+    const interval = setInterval(checkApiHealth, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Function to fetch OpenAPI spec
   const fetchOpenApiSpec = async () => {
     setIsLoadingSpec(true);
