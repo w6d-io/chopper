@@ -28,45 +28,66 @@ export interface MultiApiResponse<T = any> {
 }
 
 // Parse API configs from environment variable
-// Supports both simple format: "name:url" and enhanced format: "name:url:label:token"
+// Supports formats:
+// Simple: "name:url"
+// With label: "name:url:label"
+// Legacy with token (discouraged): "name:url:label:token"
 export function parseApiConfigs(configString?: string): ApiConfig[] {
   if (!configString) return [];
 
   return configString
     .split(",")
     .map((config) => {
-      const parts = config.split(":").map((part) => part.trim());
+      const trimmedConfig = config.trim();
 
-      if (parts.length < 2) {
+      // Find first colon for name
+      const firstColonIndex = trimmedConfig.indexOf(":");
+      if (firstColonIndex === -1) {
         console.warn(
           `Invalid API config format: ${config}. Expected at least name:url`,
         );
         return null;
       }
 
-      const [name, baseUrl, label, authToken] = parts;
+      const name = trimmedConfig.substring(0, firstColonIndex).trim();
+      const remainder = trimmedConfig.substring(firstColonIndex + 1);
 
-      // Reconstruct URL if it was split by colons (for http/https protocols)
-      let finalBaseUrl = baseUrl;
-      if (parts.length > 2 && (baseUrl === "http" || baseUrl === "https")) {
-        finalBaseUrl = `${baseUrl}:${parts[2]}`;
-        // Adjust other parts if URL contained protocol
-        const adjustedParts = [name, finalBaseUrl, ...parts.slice(3)];
-        const [, , adjustedLabel, adjustedAuthToken] = adjustedParts;
+      // For URL part, we need to be smarter about parsing
+      // URLs can contain colons (http://localhost:8000)
+      // So we look for the pattern that suggests end of URL
+      let baseUrl: string;
+      let label: string | undefined;
+      let authToken: string | undefined;
 
-        return {
-          name,
-          baseUrl: finalBaseUrl,
-          status: "unknown" as const,
-          label: adjustedLabel || undefined,
-          requiresAuth: adjustedAuthToken ? true : false,
-          authToken: adjustedAuthToken || undefined,
-        };
+      // Try to find if there are additional components after the URL
+      // Look for patterns like :label or :label:token at the end
+      const urlPattern = /^(https?:\/\/[^:]+(?::[0-9]+)?(?:\/[^:]*)?)(.*)/;
+      const match = remainder.match(urlPattern);
+
+      if (match) {
+        baseUrl = match[1].trim();
+        const additionalParts = match[2];
+
+        if (additionalParts && additionalParts.startsWith(":")) {
+          const extraParts = additionalParts.substring(1).split(":");
+          label = extraParts[0]?.trim() || undefined;
+          authToken = extraParts[1]?.trim() || undefined;
+        }
+      } else {
+        // If it doesn't match URL pattern, treat the whole remainder as URL
+        // and assume no additional parts
+        const parts = remainder.split(":");
+        baseUrl = parts[0].trim();
+        label = parts[1]?.trim() || undefined;
+        authToken = parts[2]?.trim() || undefined;
       }
+
+      // Clean up baseUrl - remove trailing slashes
+      baseUrl = baseUrl.replace(/\/$/, "");
 
       return {
         name,
-        baseUrl: finalBaseUrl,
+        baseUrl,
         status: "unknown" as const,
         label: label || undefined,
         requiresAuth: authToken ? true : false,
