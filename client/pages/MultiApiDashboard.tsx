@@ -32,9 +32,7 @@ export default function MultiApiDashboard() {
   const [selectedApi, setSelectedApi] = useState<string>("");
   const [activeTab, setActiveTab] = useState("overview");
   const [requestEndpoint, setRequestEndpoint] = useState("");
-  const [requestMethod, setRequestMethod] = useState<
-    "GET" | "POST"
-  >("POST");
+  const [requestMethod, setRequestMethod] = useState<"GET" | "POST">("POST");
   const [requestHeaders, setRequestHeaders] = useState(`{
   "Content-Type": "application/json",
   "Tenant": "business",

@@ -343,7 +343,6 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
           </div>
         </CardContent>
       </Card>
-
     </div>
   );
 }
