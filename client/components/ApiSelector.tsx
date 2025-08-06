@@ -97,7 +97,22 @@ export function ApiSelector({
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-2">
                 {getStatusIcon(api.status)}
-                <span>{api.name}</span>
+                <div className="flex flex-col">
+                  <div className="flex items-center space-x-2">
+                    <span>{api.name}</span>
+                    {api.label && (
+                      <Badge variant="outline" className="text-xs">
+                        {api.label}
+                      </Badge>
+                    )}
+                    {api.requiresAuth && (
+                      <Shield className="h-3 w-3 text-blue-600" title="Requires Authentication" />
+                    )}
+                  </div>
+                  <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                    {api.baseUrl}
+                  </span>
+                </div>
               </div>
               <Badge
                 variant={
