@@ -305,7 +305,7 @@ export default function MultiApiDashboard() {
                     />
                   </div>
 
-                  {["POST", "PUT"].includes(requestMethod) && (
+                  {requestMethod === "POST" && (
                     <div className="space-y-2">
                       <Label>Request Body (JSON)</Label>
                       <Textarea
