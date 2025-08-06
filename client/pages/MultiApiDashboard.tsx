@@ -240,6 +240,29 @@ export default function MultiApiDashboard() {
     }
   }, [selectedApi, selectedTypes, dateRange, tenant, language, perPage, currentPage]);
 
+  // Function to fetch OpenAPI documentation
+  const fetchOpenApiDocs = async () => {
+    if (!selectedApi) {
+      toast.error("Please select an API first");
+      return;
+    }
+
+    setIsLoadingDocs(true);
+    try {
+      const result = await apiManager.callApi(selectedApi, "/openapi.json");
+      setOpenApiSpec(result);
+      toast.success("Documentation loaded successfully!");
+    } catch (error) {
+      console.error("Error fetching OpenAPI docs:", error);
+      toast.error("Failed to load documentation", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+      setOpenApiSpec(null);
+    } finally {
+      setIsLoadingDocs(false);
+    }
+  };
+
   const generateCurlCommand = () => {
     if (!selectedApi) return "";
 
