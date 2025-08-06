@@ -93,7 +93,10 @@ export function ApiSelector({
                 </Badge>
               )}
               {apis.find((api) => api.name === value)?.requiresAuth && (
-                <Shield className="h-3 w-3 text-blue-600" title="Requires Authentication" />
+                <Shield
+                  className="h-3 w-3 text-blue-600"
+                  title="Requires Authentication"
+                />
               )}
             </div>
           )}
@@ -114,7 +117,10 @@ export function ApiSelector({
                       </Badge>
                     )}
                     {api.requiresAuth && (
-                      <Shield className="h-3 w-3 text-blue-600" title="Requires Authentication" />
+                      <Shield
+                        className="h-3 w-3 text-blue-600"
+                        title="Requires Authentication"
+                      />
                     )}
                   </div>
                   <span className="text-xs text-muted-foreground truncate max-w-[200px]">

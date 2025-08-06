@@ -35,10 +35,12 @@ export function parseApiConfigs(configString?: string): ApiConfig[] {
   return configString
     .split(",")
     .map((config) => {
-      const parts = config.split(":").map(part => part.trim());
+      const parts = config.split(":").map((part) => part.trim());
 
       if (parts.length < 2) {
-        console.warn(`Invalid API config format: ${config}. Expected at least name:url`);
+        console.warn(
+          `Invalid API config format: ${config}. Expected at least name:url`,
+        );
         return null;
       }
 
