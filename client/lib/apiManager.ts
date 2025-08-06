@@ -47,27 +47,32 @@ class ApiManager {
 
     try {
       // Use our proxy endpoints
-      const [livenessResponse, readinessResponse] = await Promise.all([
-        fetch(`/api/${apiName}/liveness`),
-        fetch(`/api/${apiName}/readiness`)
+      const [livenessResponse, readinessResponse] = await Promise.allSettled([
+        fetch(`/api/${apiName}/liveness`, { signal: AbortSignal.timeout(5000) }),
+        fetch(`/api/${apiName}/readiness`, { signal: AbortSignal.timeout(5000) })
       ]);
 
-      const liveness = livenessResponse.ok ? await livenessResponse.json() : { status: 'error' };
-      const readiness = readinessResponse.ok ? await readinessResponse.json() : { status: 'error' };
+      const liveness = livenessResponse.status === 'fulfilled' && livenessResponse.value.ok
+        ? await livenessResponse.value.json()
+        : { status: 'error', error: livenessResponse.status === 'rejected' ? 'Connection failed' : 'API error' };
+
+      const readiness = readinessResponse.status === 'fulfilled' && readinessResponse.value.ok
+        ? await readinessResponse.value.json()
+        : { status: 'error', error: readinessResponse.status === 'rejected' ? 'Connection failed' : 'API error' };
 
       const health: ApiHealthCheck = { liveness, readiness };
-      
+
       // Cache the result
       this.healthCache.set(apiName, { health, timestamp: now });
-      
+
       return health;
     } catch (error) {
       console.error(`Error checking health for ${apiName}:`, error);
       const errorHealth: ApiHealthCheck = {
-        liveness: { status: 'error' },
-        readiness: { status: 'error' }
+        liveness: { status: 'error', error: 'Connection timeout or network error' },
+        readiness: { status: 'error', error: 'Connection timeout or network error' }
       };
-      
+
       this.healthCache.set(apiName, { health: errorHealth, timestamp: now });
       return errorHealth;
     }
