@@ -623,40 +623,158 @@ export const handleDemoOpenApi: RequestHandler = (req, res) => {
 
 // Demo infractions data endpoint
 export const handleDemoInfractions: RequestHandler = (req, res) => {
-  // Mock data response
-  const mockResponse = {
-    status: "success",
-    data: {
-      items: [
-        {
-          infractionId: "demo-001",
-          conducteurId: "driver-001",
-          nomConducteur: "John Doe",
-          typeInfractionCode: "DailyDriving",
-          typeInfractionLibelle: "Daily Driving",
-          causeInfractionLibelle: "Exceeded daily driving limit",
-          dateInfraction: "2024-01-15T10:30:00Z",
-          amendeMontant: 150.0,
-        },
-        {
-          infractionId: "demo-002",
-          conducteurId: "driver-002",
-          nomConducteur: "Jane Smith",
-          typeInfractionCode: "WeeklyRest",
-          typeInfractionLibelle: "Weekly Rest",
-          causeInfractionLibelle: "Insufficient weekly rest period",
-          dateInfraction: "2024-01-14T08:15:00Z",
-          amendeMontant: 200.0,
-        },
-      ],
-      page: 0,
-      pageCount: 1,
-      totalCount: 2,
-      itemsCount: 2,
-      hasPreviousPage: false,
-      hasNextPage: false,
+  // Extract parameters based on method
+  let params: any = {};
+
+  if (req.method === "GET") {
+    // GET method: parameters from query string
+    params = {
+      tenant: req.query.tenant,
+      typeInfractionLibelles: Array.isArray(req.query.typeInfractionLibelles)
+        ? req.query.typeInfractionLibelles
+        : req.query.typeInfractionLibelles
+          ? [req.query.typeInfractionLibelles]
+          : [],
+      startDate: req.query.startDate,
+      endDate: req.query.endDate,
+      page: parseInt(req.query.page as string) || 0,
+      perPage: parseInt(req.query.perPage as string) || 10,
+    };
+  } else if (req.method === "POST") {
+    // POST method: parameters from request body and headers
+    params = {
+      tenant: req.headers.tenant,
+      typeInfractionLibelles: req.body?.typeInfractionLibelles || [],
+      startDate: req.body?.startDate,
+      endDate: req.body?.endDate,
+      page: req.body?.page || 0,
+      perPage: req.body?.perPage || 10,
+    };
+  }
+
+  // Validate required tenant parameter
+  if (!params.tenant) {
+    return res.status(400).json({
+      status: "error",
+      status_code: 400,
+      message: "Tenant parameter is required",
+      data: null,
+    });
+  }
+
+  // Extended mock data with various infraction types
+  const allMockInfractions = [
+    {
+      infractionId: "demo-001",
+      conducteurId: "driver-001",
+      nomConducteur: "John Doe",
+      typeInfractionCode: "DailyDriving",
+      typeInfractionLibelle: "DailyDriving",
+      causeInfractionLibelle: "Exceeded daily driving limit",
+      dateInfraction: "2024-01-15T10:30:00Z",
+      dureeEffectuee: { totalHours: 11.5, totalMinutes: 690 },
+      amendeMontant: 150.0,
+      permisNumero: "DL123456789",
     },
+    {
+      infractionId: "demo-002",
+      conducteurId: "driver-002",
+      nomConducteur: "Jane Smith",
+      typeInfractionCode: "WeeklyRest",
+      typeInfractionLibelle: "WeeklyRest",
+      causeInfractionLibelle: "Insufficient weekly rest period",
+      dateInfraction: "2024-01-14T08:15:00Z",
+      dureeEffectuee: { totalHours: 40.0, totalMinutes: 2400 },
+      amendeMontant: 200.0,
+      permisNumero: "DL987654321",
+    },
+    {
+      infractionId: "demo-003",
+      conducteurId: "driver-003",
+      nomConducteur: "Mike Johnson",
+      typeInfractionCode: "ContinuousDriving",
+      typeInfractionLibelle: "ContinuousDriving",
+      causeInfractionLibelle: "Driving without proper break",
+      dateInfraction: "2024-01-13T14:45:00Z",
+      dureeEffectuee: { totalHours: 6.5, totalMinutes: 390 },
+      amendeMontant: 100.0,
+      permisNumero: "DL456789123",
+    },
+    {
+      infractionId: "demo-004",
+      conducteurId: "driver-004",
+      nomConducteur: "Sarah Wilson",
+      typeInfractionCode: "BreakTime",
+      typeInfractionLibelle: "BreakTime",
+      causeInfractionLibelle: "Insufficient break time",
+      dateInfraction: "2024-01-12T16:20:00Z",
+      dureeEffectuee: { totalHours: 0.75, totalMinutes: 45 },
+      amendeMontant: 75.0,
+      permisNumero: "DL789123456",
+    },
+    {
+      infractionId: "demo-005",
+      conducteurId: "driver-005",
+      nomConducteur: "Robert Brown",
+      typeInfractionCode: "WeeklyDriving",
+      typeInfractionLibelle: "WeeklyDriving",
+      causeInfractionLibelle: "Exceeded weekly driving hours",
+      dateInfraction: "2024-01-11T09:00:00Z",
+      dureeEffectuee: { totalHours: 58.0, totalMinutes: 3480 },
+      amendeMontant: 300.0,
+      permisNumero: "DL321654987",
+    },
+  ];
+
+  // Filter by infraction types if specified
+  let filteredInfractions = allMockInfractions;
+  if (params.typeInfractionLibelles && params.typeInfractionLibelles.length > 0) {
+    filteredInfractions = allMockInfractions.filter(infraction =>
+      params.typeInfractionLibelles.includes(infraction.typeInfractionLibelle)
+    );
+  }
+
+  // Apply date filtering if specified
+  if (params.startDate) {
+    const startDate = new Date(params.startDate);
+    filteredInfractions = filteredInfractions.filter(infraction =>
+      new Date(infraction.dateInfraction) >= startDate
+    );
+  }
+
+  if (params.endDate) {
+    const endDate = new Date(params.endDate);
+    filteredInfractions = filteredInfractions.filter(infraction =>
+      new Date(infraction.dateInfraction) <= endDate
+    );
+  }
+
+  // Calculate pagination
+  const totalCount = filteredInfractions.length;
+  const pageCount = Math.ceil(totalCount / params.perPage);
+  const startIndex = params.page * params.perPage;
+  const endIndex = startIndex + params.perPage;
+  const paginatedItems = filteredInfractions.slice(startIndex, endIndex);
+
+  const mockResponse = {
+    items: paginatedItems,
+    pageIndex: params.page,
+    pageCount: Math.max(1, pageCount),
+    totalCount: totalCount,
+    itemsCount: paginatedItems.length,
+    hasPreviousPage: params.page > 0,
+    hasNextPage: params.page < pageCount - 1,
   };
+
+  // Log request details for debugging
+  console.log(`Demo Infractions API called:`, {
+    method: req.method,
+    tenant: params.tenant,
+    typesFilter: params.typeInfractionLibelles,
+    dateRange: { start: params.startDate, end: params.endDate },
+    pagination: { page: params.page, perPage: params.perPage },
+    resultCount: paginatedItems.length,
+  });
 
   res.json(mockResponse);
 };
