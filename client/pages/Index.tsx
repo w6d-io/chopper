@@ -123,11 +123,11 @@ export default function Index() {
   const checkApiHealth = async () => {
     try {
       // Check liveness
-      const livenessResponse = await fetch("/api/liveness");
+      const livenessResponse = await fetch(`${apiBaseUrl}/api/liveness`);
       const livenessData = await livenessResponse.json();
 
       // Check readiness
-      const readinessResponse = await fetch("/api/readiness");
+      const readinessResponse = await fetch(`${apiBaseUrl}/api/readiness`);
       const readinessData = await readinessResponse.json();
 
       setApiHealth({
@@ -143,13 +143,15 @@ export default function Index() {
     }
   };
 
-  // Check API health on component mount
+  // Check API health when apiBaseUrl changes
   React.useEffect(() => {
-    checkApiHealth();
-    // Check health every 30 seconds
-    const interval = setInterval(checkApiHealth, 30000);
-    return () => clearInterval(interval);
-  }, []);
+    if (apiBaseUrl && apiBaseUrl.trim()) {
+      checkApiHealth();
+      // Check health every 30 seconds
+      const interval = setInterval(checkApiHealth, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [apiBaseUrl]);
 
   // Function to fetch OpenAPI spec
   const fetchOpenApiSpec = async () => {
@@ -173,7 +175,7 @@ export default function Index() {
   };
 
   const handleSearchWithPage = async (pageNumber: number) => {
-    // Validation des paramètres avant l'appel
+    // Parameter validation before API call
     if (!dateRange.from || !dateRange.to) {
       toast.error("Validation Error", {
         description: "Please select both start and end dates.",
@@ -208,7 +210,7 @@ export default function Index() {
     setIsLoading(true);
 
     try {
-      // Mise à jour temporaire de l'URL de base
+      // Temporary update of the base URL
       const originalBaseUrl = (await import("@/lib/api")).API_CONFIG.BASE_URL;
       (await import("@/lib/api")).API_CONFIG.BASE_URL = apiBaseUrl;
 
@@ -233,7 +235,7 @@ export default function Index() {
 
       const result = await callInfractionsAPI(apiParams);
 
-      // Restaurer l'URL de base originale
+      // Restore the original base URL
       (await import("@/lib/api")).API_CONFIG.BASE_URL = originalBaseUrl;
       setResults(result);
 
@@ -647,14 +649,14 @@ export default function Index() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Configuration de l'API</CardTitle>
+                <CardTitle>API Configuration</CardTitle>
                 <CardDescription>
-                  Configurez l'URL de base de votre API d'infractions
+                  Configure the base URL for your infractions API
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="api-url">URL de base de l'API</Label>
+                  <Label htmlFor="api-url">API Base URL</Label>
                   <Input
                     id="api-url"
                     type="url"
@@ -680,11 +682,11 @@ export default function Index() {
                         }
                       }
                     }}
-                    placeholder="https://votre-api-infractions.com"
+                    placeholder="https://your-infractions-api.com"
                   />
                   <p className="text-sm text-muted-foreground">
-                    L'URL de base de votre API d'infractions. L'endpoint
-                    `/api/infractions` sera automatiquement ajouté.
+                    The base URL of your infractions API. The endpoint
+                    `/api/infractions` will be automatically added.
                   </p>
                 </div>
 
@@ -734,7 +736,7 @@ export default function Index() {
                 </div>
 
                 <div className="rounded-lg bg-muted p-4">
-                  <h4 className="font-medium mb-2">Information sur l'API</h4>
+                  <h4 className="font-medium mb-2">API Information</h4>
                   <div className="space-y-1 text-sm text-muted-foreground">
                     <p>
                       <strong>Endpoint:</strong> POST {apiBaseUrl}
@@ -746,23 +748,21 @@ export default function Index() {
                       {apiToken && ", Authorization: Bearer [hidden]"}
                     </p>
                     <p>
-                      <strong>Version OpenAPI:</strong> 3.1.0
+                      <strong>OpenAPI Version:</strong> 3.1.0
                     </p>
                     <p>
-                      <strong>Description:</strong> API sur les exports
-                      spécifiques - Exports sur les infractions
+                      <strong>Description:</strong> API for specific exports - Infractions exports
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                   <h4 className="font-medium text-yellow-800 mb-2">
-                    Note importante
+                    Important Note
                   </h4>
                   <p className="text-sm text-yellow-700">
-                    Assurez-vous que votre API supporte les requêtes CORS si
-                    elle est hébergée sur un domaine différent, ou configurez un
-                    proxy pour éviter les erreurs de CORS.
+                    Make sure your API supports CORS requests if it's hosted on a
+                    different domain, or configure a proxy to avoid CORS errors.
                   </p>
                 </div>
 
@@ -776,7 +776,7 @@ export default function Index() {
                       if (confirmClear) {
                         setApiBaseUrl("");
                         setTenant("business");
-                        setLanguage("fr");
+                        setLanguage("en");
                         setApiToken("");
                         setRequestMethod("POST");
                         setPerPage(10);
