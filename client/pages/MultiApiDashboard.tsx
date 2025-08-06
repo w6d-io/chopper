@@ -381,13 +381,35 @@ export default function MultiApiDashboard() {
                   <div className="rounded-lg bg-muted p-4">
                     <h4 className="font-medium mb-2">Environment Configuration</h4>
                     <p className="text-sm text-muted-foreground mb-3">
-                      APIs are configured via environment variables. Update your .env file:
+                      APIs are configured via environment variables. Each API follows the pattern:
+                      <code className="bg-background px-1 py-0.5 rounded mx-1">name:base_url</code>
                     </p>
-                    <pre className="text-xs bg-background p-3 rounded border">
-{`API_CONFIGS=infractions:http://localhost:8000,users:http://localhost:8001
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-xs font-medium mb-1">Single API Example:</p>
+                        <pre className="text-xs bg-background p-3 rounded border">
+API_CONFIGS=infractions:http://localhost:8000
+                        </pre>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-medium mb-1">Multiple APIs Example:</p>
+                        <pre className="text-xs bg-background p-3 rounded border">
+{`API_CONFIGS=infractions:http://localhost:8000,users:http://localhost:8001,orders:http://api.example.com
 DEFAULT_TENANT=business
 DEFAULT_LANGUAGE=en`}
-                    </pre>
+                        </pre>
+                      </div>
+
+                      <div>
+                        <p className="text-xs font-medium mb-1">Current Configuration:</p>
+                        <pre className="text-xs bg-background p-3 rounded border">
+{`API_CONFIGS=${process.env.API_CONFIGS || 'Not set'}
+DEFAULT_TENANT=${process.env.DEFAULT_TENANT || 'business'}
+DEFAULT_LANGUAGE=${process.env.DEFAULT_LANGUAGE || 'en'}`}
+                        </pre>
+                      </div>
+                    </div>
                   </div>
                   
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20 p-4">
