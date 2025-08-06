@@ -403,11 +403,10 @@ DEFAULT_LANGUAGE=en`}
 
                       <div>
                         <p className="text-xs font-medium mb-1">Current Configuration:</p>
-                        <pre className="text-xs bg-background p-3 rounded border">
-{`API_CONFIGS=${process.env.API_CONFIGS || 'Not set'}
-DEFAULT_TENANT=${process.env.DEFAULT_TENANT || 'business'}
-DEFAULT_LANGUAGE=${process.env.DEFAULT_LANGUAGE || 'en'}`}
-                        </pre>
+                        <p className="text-xs text-muted-foreground mb-2">
+                          Current configuration is loaded from server environment variables.
+                          Check the Overview tab to see active APIs.
+                        </p>
                       </div>
                     </div>
                   </div>
