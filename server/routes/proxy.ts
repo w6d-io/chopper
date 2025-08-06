@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { parseApiConfigs, isValidApiName } from "@shared/apis";
+import { parseApiConfigs, isValidApiName } from "../../shared/apis";
 
 // Create a proxy handler for API requests
 export const createApiProxy: RequestHandler = async (req, res) => {
