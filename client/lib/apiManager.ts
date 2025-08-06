@@ -1,18 +1,26 @@
-import { ApiConfig, ApiStatus, ApiHealthCheck, parseApiConfigs } from '@shared/apis';
+import {
+  ApiConfig,
+  ApiStatus,
+  ApiHealthCheck,
+  parseApiConfigs,
+} from "@shared/apis";
 
 class ApiManager {
   private configs: ApiConfig[] = [];
-  private healthCache: Map<string, { health: ApiHealthCheck; timestamp: number }> = new Map();
+  private healthCache: Map<
+    string,
+    { health: ApiHealthCheck; timestamp: number }
+  > = new Map();
   private readonly CACHE_DURATION = 30000; // 30 seconds
 
   // Initialize API configurations
   async initialize(): Promise<void> {
     try {
-      const response = await fetch('/api/config');
+      const response = await fetch("/api/config");
       const data = await response.json();
       this.configs = data.apis || [];
     } catch (error) {
-      console.error('Failed to load API configurations:', error);
+      console.error("Failed to load API configurations:", error);
       this.configs = [];
     }
   }
@@ -24,23 +32,23 @@ class ApiManager {
 
   // Get API by name
   getApi(name: string): ApiConfig | undefined {
-    return this.configs.find(api => api.name === name);
+    return this.configs.find((api) => api.name === name);
   }
 
   // Check health of a specific API
   async checkApiHealth(apiName: string): Promise<ApiHealthCheck> {
     const cached = this.healthCache.get(apiName);
     const now = Date.now();
-    
-    if (cached && (now - cached.timestamp) < this.CACHE_DURATION) {
+
+    if (cached && now - cached.timestamp < this.CACHE_DURATION) {
       return cached.health;
     }
 
     const api = this.getApi(apiName);
     if (!api) {
       const errorHealth: ApiHealthCheck = {
-        liveness: { status: 'error' },
-        readiness: { status: 'error' }
+        liveness: { status: "error" },
+        readiness: { status: "error" },
       };
       return errorHealth;
     }
@@ -48,17 +56,35 @@ class ApiManager {
     try {
       // Use our proxy endpoints
       const [livenessResponse, readinessResponse] = await Promise.allSettled([
-        fetch(`/api/${apiName}/liveness`, { signal: AbortSignal.timeout(5000) }),
-        fetch(`/api/${apiName}/readiness`, { signal: AbortSignal.timeout(5000) })
+        fetch(`/api/${apiName}/liveness`, {
+          signal: AbortSignal.timeout(5000),
+        }),
+        fetch(`/api/${apiName}/readiness`, {
+          signal: AbortSignal.timeout(5000),
+        }),
       ]);
 
-      const liveness = livenessResponse.status === 'fulfilled' && livenessResponse.value.ok
-        ? await livenessResponse.value.json()
-        : { status: 'error', error: livenessResponse.status === 'rejected' ? 'Connection failed' : 'API error' };
+      const liveness =
+        livenessResponse.status === "fulfilled" && livenessResponse.value.ok
+          ? await livenessResponse.value.json()
+          : {
+              status: "error",
+              error:
+                livenessResponse.status === "rejected"
+                  ? "Connection failed"
+                  : "API error",
+            };
 
-      const readiness = readinessResponse.status === 'fulfilled' && readinessResponse.value.ok
-        ? await readinessResponse.value.json()
-        : { status: 'error', error: readinessResponse.status === 'rejected' ? 'Connection failed' : 'API error' };
+      const readiness =
+        readinessResponse.status === "fulfilled" && readinessResponse.value.ok
+          ? await readinessResponse.value.json()
+          : {
+              status: "error",
+              error:
+                readinessResponse.status === "rejected"
+                  ? "Connection failed"
+                  : "API error",
+            };
 
       const health: ApiHealthCheck = { liveness, readiness };
 
@@ -69,8 +95,14 @@ class ApiManager {
     } catch (error) {
       console.error(`Error checking health for ${apiName}:`, error);
       const errorHealth: ApiHealthCheck = {
-        liveness: { status: 'error', error: 'Connection timeout or network error' },
-        readiness: { status: 'error', error: 'Connection timeout or network error' }
+        liveness: {
+          status: "error",
+          error: "Connection timeout or network error",
+        },
+        readiness: {
+          status: "error",
+          error: "Connection timeout or network error",
+        },
       };
 
       this.healthCache.set(apiName, { health: errorHealth, timestamp: now });
@@ -82,13 +114,15 @@ class ApiManager {
   async checkAllApisHealth(): Promise<ApiStatus[]> {
     const promises = this.configs.map(async (api): Promise<ApiStatus> => {
       const health = await this.checkApiHealth(api.name);
-      const isHealthy = health.liveness?.status === 'ok' && health.readiness?.status === 'ready';
-      
+      const isHealthy =
+        health.liveness?.status === "ok" &&
+        health.readiness?.status === "ready";
+
       return {
         ...api,
-        status: isHealthy ? 'healthy' : 'unhealthy',
+        status: isHealthy ? "healthy" : "unhealthy",
         health,
-        lastChecked: new Date()
+        lastChecked: new Date(),
       };
     });
 
@@ -96,7 +130,11 @@ class ApiManager {
   }
 
   // Make API call to specific API
-  async callApi<T = any>(apiName: string, endpoint: string, options: RequestInit = {}): Promise<T> {
+  async callApi<T = any>(
+    apiName: string,
+    endpoint: string,
+    options: RequestInit = {},
+  ): Promise<T> {
     const api = this.getApi(apiName);
     if (!api) {
       throw new Error(`API '${apiName}' not found`);
@@ -105,14 +143,16 @@ class ApiManager {
     const url = `/api/${apiName}${endpoint}`;
     const response = await fetch(url, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
       ...options,
     });
 
     if (!response.ok) {
-      throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `API call failed: ${response.status} ${response.statusText}`,
+      );
     }
 
     return response.json();
@@ -127,13 +167,13 @@ class ApiManager {
   getCachedHealth(apiName: string): ApiHealthCheck | null {
     const cached = this.healthCache.get(apiName);
     if (!cached) return null;
-    
+
     const now = Date.now();
-    if ((now - cached.timestamp) >= this.CACHE_DURATION) {
+    if (now - cached.timestamp >= this.CACHE_DURATION) {
       this.healthCache.delete(apiName);
       return null;
     }
-    
+
     return cached.health;
   }
 }

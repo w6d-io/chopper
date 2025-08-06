@@ -25,76 +25,78 @@ export const handleDemoReadiness: RequestHandler = (req, res) => {
 // Demo OpenAPI spec endpoint
 export const handleDemoOpenApi: RequestHandler = (req, res) => {
   const openApiSpec = {
-    "openapi": "3.1.0",
-    "info": {
-      "title": "Demo Strada API",
-      "description": "Multi‑tenant proxy over Strada Time infractions endpoints (Demo).",
-      "version": "0.1.0"
+    openapi: "3.1.0",
+    info: {
+      title: "Demo Strada API",
+      description:
+        "Multi‑tenant proxy over Strada Time infractions endpoints (Demo).",
+      version: "0.1.0",
     },
-    "paths": {
+    paths: {
       "/api/infractions": {
-        "post": {
-          "tags": ["Infractions"],
-          "summary": "Get infractions summary (POST, only body)",
-          "description": "Get a paginated summary of infractions by label (POST).",
-          "operationId": "summary_post_api_infractions_post",
-          "parameters": [
+        post: {
+          tags: ["Infractions"],
+          summary: "Get infractions summary (POST, only body)",
+          description:
+            "Get a paginated summary of infractions by label (POST).",
+          operationId: "summary_post_api_infractions_post",
+          parameters: [
             {
-              "name": "Language",
-              "in": "header",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "default": "en"
-              }
+              name: "Language",
+              in: "header",
+              required: false,
+              schema: {
+                type: "string",
+                default: "en",
+              },
             },
             {
-              "name": "Tenant",
-              "in": "header",
-              "required": false,
-              "schema": {
-                "type": "string",
-                "default": "business"
-              }
-            }
+              name: "Tenant",
+              in: "header",
+              required: false,
+              schema: {
+                type: "string",
+                default: "business",
+              },
+            },
           ],
-          "requestBody": {
-            "required": true,
-            "content": {
+          requestBody: {
+            required: true,
+            content: {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SummaryRequest"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Successful Response"
-            }
-          }
-        }
-      }
-    },
-    "components": {
-      "schemas": {
-        "SummaryRequest": {
-          "type": "object",
-          "properties": {
-            "typeInfractionLibelles": {
-              "type": "array",
-              "items": { "type": "string" }
+                schema: {
+                  $ref: "#/components/schemas/SummaryRequest",
+                },
+              },
             },
-            "startDate": { "type": "string" },
-            "endDate": { "type": "string" },
-            "page": { "type": "integer", "default": 0 },
-            "perPage": { "type": "integer", "default": 100 }
-          }
-        }
-      }
-    }
+          },
+          responses: {
+            "200": {
+              description: "Successful Response",
+            },
+          },
+        },
+      },
+    },
+    components: {
+      schemas: {
+        SummaryRequest: {
+          type: "object",
+          properties: {
+            typeInfractionLibelles: {
+              type: "array",
+              items: { type: "string" },
+            },
+            startDate: { type: "string" },
+            endDate: { type: "string" },
+            page: { type: "integer", default: 0 },
+            perPage: { type: "integer", default: 100 },
+          },
+        },
+      },
+    },
   };
-  
+
   res.json(openApiSpec);
 };
 
@@ -113,7 +115,7 @@ export const handleDemoInfractions: RequestHandler = (req, res) => {
           typeInfractionLibelle: "Daily Driving",
           causeInfractionLibelle: "Exceeded daily driving limit",
           dateInfraction: "2024-01-15T10:30:00Z",
-          amendeMontant: 150.0
+          amendeMontant: 150.0,
         },
         {
           infractionId: "demo-002",
@@ -123,16 +125,16 @@ export const handleDemoInfractions: RequestHandler = (req, res) => {
           typeInfractionLibelle: "Weekly Rest",
           causeInfractionLibelle: "Insufficient weekly rest period",
           dateInfraction: "2024-01-14T08:15:00Z",
-          amendeMontant: 200.0
-        }
+          amendeMontant: 200.0,
+        },
       ],
       page: 0,
       pageCount: 1,
       totalCount: 2,
       itemsCount: 2,
       hasPreviousPage: false,
-      hasNextPage: false
-    }
+      hasNextPage: false,
+    },
   };
 
   res.json(mockResponse);

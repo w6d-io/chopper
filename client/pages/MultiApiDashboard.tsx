@@ -1,32 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { 
-  Globe, 
-  Search, 
-  Code, 
-  Settings, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Globe,
+  Search,
+  Code,
+  Settings,
   FileText,
   Send,
   Copy,
-  Activity
-} from 'lucide-react';
-import { ApiDashboard } from '@/components/ApiDashboard';
-import { ApiSelector } from '@/components/ApiSelector';
-import { apiManager } from '@/lib/apiManager';
-import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+  Activity,
+} from "lucide-react";
+import { ApiDashboard } from "@/components/ApiDashboard";
+import { ApiSelector } from "@/components/ApiSelector";
+import { apiManager } from "@/lib/apiManager";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function MultiApiDashboard() {
-  const [selectedApi, setSelectedApi] = useState<string>('');
-  const [activeTab, setActiveTab] = useState('overview');
-  const [requestEndpoint, setRequestEndpoint] = useState('/api/infractions');
-  const [requestMethod, setRequestMethod] = useState<'GET' | 'POST' | 'PUT' | 'DELETE'>('POST');
+  const [selectedApi, setSelectedApi] = useState<string>("");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [requestEndpoint, setRequestEndpoint] = useState("/api/infractions");
+  const [requestMethod, setRequestMethod] = useState<
+    "GET" | "POST" | "PUT" | "DELETE"
+  >("POST");
   const [requestHeaders, setRequestHeaders] = useState(`{
   "Content-Type": "application/json",
   "Tenant": "business",
@@ -55,7 +63,7 @@ export default function MultiApiDashboard() {
 
   const makeApiRequest = async () => {
     if (!selectedApi) {
-      toast.error('Please select an API');
+      toast.error("Please select an API");
       return;
     }
 
@@ -68,7 +76,7 @@ export default function MultiApiDashboard() {
       try {
         headers = JSON.parse(requestHeaders);
       } catch {
-        toast.error('Invalid JSON in headers');
+        toast.error("Invalid JSON in headers");
         return;
       }
 
@@ -79,29 +87,34 @@ export default function MultiApiDashboard() {
       };
 
       // Add body for POST/PUT requests
-      if (['POST', 'PUT'].includes(requestMethod) && requestBody.trim()) {
+      if (["POST", "PUT"].includes(requestMethod) && requestBody.trim()) {
         try {
           JSON.parse(requestBody); // Validate JSON
           options.body = requestBody;
         } catch {
-          toast.error('Invalid JSON in request body');
+          toast.error("Invalid JSON in request body");
           return;
         }
       }
 
       // Make the request through our API manager
-      const result = await apiManager.callApi(selectedApi, requestEndpoint, options);
+      const result = await apiManager.callApi(
+        selectedApi,
+        requestEndpoint,
+        options,
+      );
       setResponse(result);
-      setActiveTab('tester'); // Switch to tester tab to show results
-      toast.success('Request completed successfully');
+      setActiveTab("tester"); // Switch to tester tab to show results
+      toast.success("Request completed successfully");
     } catch (error) {
-      console.error('API request failed:', error);
+      console.error("API request failed:", error);
       setResponse({
         error: true,
-        message: error instanceof Error ? error.message : 'Unknown error occurred'
+        message:
+          error instanceof Error ? error.message : "Unknown error occurred",
       });
-      toast.error('Request failed', {
-        description: error instanceof Error ? error.message : 'Unknown error'
+      toast.error("Request failed", {
+        description: error instanceof Error ? error.message : "Unknown error",
       });
     } finally {
       setIsLoading(false);
@@ -110,14 +123,14 @@ export default function MultiApiDashboard() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success("Copied to clipboard");
   };
 
   const generateCurlCommand = () => {
-    if (!selectedApi) return '';
+    if (!selectedApi) return "";
 
     const api = apiManager.getApi(selectedApi);
-    if (!api) return '';
+    if (!api) return "";
 
     let headers: Record<string, string> = {};
     try {
@@ -128,12 +141,12 @@ export default function MultiApiDashboard() {
 
     let command = `curl -X ${requestMethod} \\\n`;
     command += `  '${api.baseUrl}${requestEndpoint}' \\\n`;
-    
+
     Object.entries(headers).forEach(([key, value]) => {
       command += `  -H '${key}: ${value}' \\\n`;
     });
 
-    if (['POST', 'PUT'].includes(requestMethod) && requestBody.trim()) {
+    if (["POST", "PUT"].includes(requestMethod) && requestBody.trim()) {
       command += `  -d '${requestBody.replace(/'/g, "'\\''")}' \\\n`;
     }
 
@@ -158,8 +171,8 @@ export default function MultiApiDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <ApiSelector 
-                value={selectedApi} 
+              <ApiSelector
+                value={selectedApi}
                 onValueChange={setSelectedApi}
                 className="w-64"
               />
@@ -172,7 +185,11 @@ export default function MultiApiDashboard() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-4 h-auto">
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
@@ -193,10 +210,10 @@ export default function MultiApiDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <ApiDashboard 
+            <ApiDashboard
               onApiSelect={(apiName) => {
                 setSelectedApi(apiName);
-                setActiveTab('tester');
+                setActiveTab("tester");
               }}
               selectedApi={selectedApi}
             />
@@ -212,7 +229,8 @@ export default function MultiApiDashboard() {
                     <span>API Request</span>
                   </CardTitle>
                   <CardDescription>
-                    Configure and send requests to {selectedApi || 'selected'} API
+                    Configure and send requests to {selectedApi || "selected"}{" "}
+                    API
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -222,7 +240,9 @@ export default function MultiApiDashboard() {
                       <select
                         className="w-full px-3 py-2 border rounded-md"
                         value={requestMethod}
-                        onChange={(e) => setRequestMethod(e.target.value as any)}
+                        onChange={(e) =>
+                          setRequestMethod(e.target.value as any)
+                        }
                       >
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
@@ -250,7 +270,7 @@ export default function MultiApiDashboard() {
                     />
                   </div>
 
-                  {['POST', 'PUT'].includes(requestMethod) && (
+                  {["POST", "PUT"].includes(requestMethod) && (
                     <div className="space-y-2">
                       <Label>Request Body (JSON)</Label>
                       <Textarea
@@ -263,16 +283,16 @@ export default function MultiApiDashboard() {
                   )}
 
                   <div className="flex space-x-2">
-                    <Button 
-                      onClick={makeApiRequest} 
+                    <Button
+                      onClick={makeApiRequest}
                       disabled={isLoading || !selectedApi}
                       className="flex-1"
                     >
                       <Send className="mr-2 h-4 w-4" />
-                      {isLoading ? 'Sending...' : 'Send Request'}
+                      {isLoading ? "Sending..." : "Send Request"}
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => copyToClipboard(generateCurlCommand())}
                     >
                       <Copy className="h-4 w-4" />
@@ -306,11 +326,11 @@ export default function MultiApiDashboard() {
                   {response ? (
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
-                        <Badge 
-                          variant={response.error ? 'destructive' : 'default'}
+                        <Badge
+                          variant={response.error ? "destructive" : "default"}
                           className="text-sm"
                         >
-                          {response.error ? 'Error' : 'Success'}
+                          {response.error ? "Error" : "Success"}
                         </Badge>
                         {response.status_code && (
                           <Badge variant="outline">
@@ -318,17 +338,19 @@ export default function MultiApiDashboard() {
                           </Badge>
                         )}
                       </div>
-                      
+
                       <div className="bg-muted rounded-lg p-4">
                         <pre className="text-sm overflow-x-auto whitespace-pre-wrap">
                           {JSON.stringify(response, null, 2)}
                         </pre>
                       </div>
 
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
-                        onClick={() => copyToClipboard(JSON.stringify(response, null, 2))}
+                        onClick={() =>
+                          copyToClipboard(JSON.stringify(response, null, 2))
+                        }
                       >
                         <Copy className="mr-2 h-4 w-4" />
                         Copy Response
@@ -337,7 +359,9 @@ export default function MultiApiDashboard() {
                   ) : (
                     <div className="text-center py-12">
                       <Search className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">No Response Yet</h3>
+                      <h3 className="text-lg font-medium mb-2">
+                        No Response Yet
+                      </h3>
                       <p className="text-muted-foreground">
                         Send a request to see the API response here.
                       </p>
@@ -361,7 +385,8 @@ export default function MultiApiDashboard() {
                   <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">Documentation</h3>
                   <p className="text-muted-foreground">
-                    API documentation will be loaded dynamically based on OpenAPI specs.
+                    API documentation will be loaded dynamically based on
+                    OpenAPI specs.
                   </p>
                 </div>
               </CardContent>
@@ -379,38 +404,50 @@ export default function MultiApiDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-medium mb-2">Environment Configuration</h4>
+                    <h4 className="font-medium mb-2">
+                      Environment Configuration
+                    </h4>
                     <p className="text-sm text-muted-foreground mb-3">
-                      APIs are configured via environment variables. Each API follows the pattern:
-                      <code className="bg-background px-1 py-0.5 rounded mx-1">name:base_url</code>
+                      APIs are configured via environment variables. Each API
+                      follows the pattern:
+                      <code className="bg-background px-1 py-0.5 rounded mx-1">
+                        name:base_url
+                      </code>
                     </p>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-xs font-medium mb-1">Single API Example:</p>
+                        <p className="text-xs font-medium mb-1">
+                          Single API Example:
+                        </p>
                         <pre className="text-xs bg-background p-3 rounded border">
-API_CONFIGS=infractions:http://localhost:8000
+                          API_CONFIGS=infractions:http://localhost:8000
                         </pre>
                       </div>
 
                       <div>
-                        <p className="text-xs font-medium mb-1">Multiple APIs Example:</p>
+                        <p className="text-xs font-medium mb-1">
+                          Multiple APIs Example:
+                        </p>
                         <pre className="text-xs bg-background p-3 rounded border">
-{`API_CONFIGS=infractions:http://localhost:8000,users:http://localhost:8001,orders:http://api.example.com
+                          {`API_CONFIGS=infractions:http://localhost:8000,users:http://localhost:8001,orders:http://api.example.com
 DEFAULT_TENANT=business
 DEFAULT_LANGUAGE=en`}
                         </pre>
                       </div>
 
                       <div>
-                        <p className="text-xs font-medium mb-1">Current Configuration:</p>
+                        <p className="text-xs font-medium mb-1">
+                          Current Configuration:
+                        </p>
                         <p className="text-xs text-muted-foreground mb-2">
-                          Current configuration is loaded from server environment variables.
-                          Check the Overview tab to see active APIs.
+                          Current configuration is loaded from server
+                          environment variables. Check the Overview tab to see
+                          active APIs.
                         </p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-4">
                     <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
                       API Endpoint Structure
@@ -419,10 +456,22 @@ DEFAULT_LANGUAGE=en`}
                       Each configured API should provide these endpoints:
                     </p>
                     <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 font-mono">
-                      <li>• <strong>/api/{'{apiname}'}</strong> - Main API endpoint</li>
-                      <li>• <strong>/api/{'{apiname}'}/liveness</strong> - Health check (should return {'{"status": "ok"}'})</li>
-                      <li>• <strong>/api/{'{apiname}'}/readiness</strong> - Readiness check (should return {'{"status": "ready"}'})</li>
-                      <li>• <strong>/api/{'{apiname}'}/openapi.json</strong> - OpenAPI specification</li>
+                      <li>
+                        • <strong>/api/{"{apiname}"}</strong> - Main API
+                        endpoint
+                      </li>
+                      <li>
+                        • <strong>/api/{"{apiname}"}/liveness</strong> - Health
+                        check (should return {'{"status": "ok"}'})
+                      </li>
+                      <li>
+                        • <strong>/api/{"{apiname}"}/readiness</strong> -
+                        Readiness check (should return {'{"status": "ready"}'})
+                      </li>
+                      <li>
+                        • <strong>/api/{"{apiname}"}/openapi.json</strong> -
+                        OpenAPI specification
+                      </li>
                     </ul>
                   </div>
 
@@ -431,10 +480,22 @@ DEFAULT_LANGUAGE=en`}
                       Important Notes
                     </h4>
                     <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                      <li>• Restart the server after changing environment variables</li>
-                      <li>• Ensure your APIs support CORS or use proper proxy configuration</li>
-                      <li>• APIs are accessed through the proxy at <code>/api/{'{apiname}'}/*</code></li>
-                      <li>• Headers (Tenant, Language, Authorization) are automatically forwarded</li>
+                      <li>
+                        • Restart the server after changing environment
+                        variables
+                      </li>
+                      <li>
+                        • Ensure your APIs support CORS or use proper proxy
+                        configuration
+                      </li>
+                      <li>
+                        • APIs are accessed through the proxy at{" "}
+                        <code>/api/{"{apiname}"}/*</code>
+                      </li>
+                      <li>
+                        • Headers (Tenant, Language, Authorization) are
+                        automatically forwarded
+                      </li>
                     </ul>
                   </div>
                 </div>

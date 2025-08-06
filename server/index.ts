@@ -7,7 +7,7 @@ import {
   handleDemoLiveness,
   handleDemoReadiness,
   handleDemoOpenApi,
-  handleDemoInfractions
+  handleDemoInfractions,
 } from "./routes/demo-infractions";
 
 export function createServer() {
