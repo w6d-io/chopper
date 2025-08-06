@@ -412,6 +412,21 @@ DEFAULT_LANGUAGE=${process.env.DEFAULT_LANGUAGE || 'en'}`}
                     </div>
                   </div>
                   
+                  <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-4">
+                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                      API Endpoint Structure
+                    </h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                      Each configured API should provide these endpoints:
+                    </p>
+                    <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 font-mono">
+                      <li>• <strong>/api/{{apiname}}</strong> - Main API endpoint</li>
+                      <li>• <strong>/api/{{apiname}}/liveness</strong> - Health check (should return {{"status": "ok"}})</li>
+                      <li>• <strong>/api/{{apiname}}/readiness</strong> - Readiness check (should return {{"status": "ready"}})</li>
+                      <li>• <strong>/api/{{apiname}}/openapi.json</strong> - OpenAPI specification</li>
+                    </ul>
+                  </div>
+
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20 p-4">
                     <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
                       Important Notes
@@ -419,7 +434,8 @@ DEFAULT_LANGUAGE=${process.env.DEFAULT_LANGUAGE || 'en'}`}
                     <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
                       <li>• Restart the server after changing environment variables</li>
                       <li>• Ensure your APIs support CORS or use proper proxy configuration</li>
-                      <li>• Health checks expect /liveness and /readiness endpoints</li>
+                      <li>• APIs are accessed through the proxy at <code>/api/{{apiname}}/*</code></li>
+                      <li>• Headers (Tenant, Language, Authorization) are automatically forwarded</li>
                     </ul>
                   </div>
                 </div>
