@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface ApiDashboardProps {
-  onApiSelect?: (apiName: string) => void;
+  onApiSelect?: (apiId: string) => void;
   selectedApi?: string;
 }
 
@@ -38,7 +38,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
   const loadApiStatuses = async () => {
     setIsLoading(true);
     try {
-      apiManager.initialize();
+      await apiManager.initialize();
       const statuses = await apiManager.checkAllApisHealth();
       setApiStatuses(statuses);
       setLastRefresh(new Date());
@@ -250,15 +250,15 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
           <div className="space-y-4">
             {apiStatuses.map((api) => (
               <div
-                key={api.name}
+                key={api.id || `${api.name}-${api.baseUrl}`}
                 className={cn(
                   "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                  selectedApi === api.name
+                  selectedApi === (api.id || api.name)
                     ? "border-primary bg-primary/5"
                     : "hover:bg-muted/50",
                   onApiSelect && "cursor-pointer",
                 )}
-                onClick={() => onApiSelect?.(api.name)}
+                onClick={() => onApiSelect?.(api.id || api.name)}
               >
                 <div className="flex items-center space-x-4">
                   <div
@@ -287,7 +287,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
                           <span className="text-xs text-blue-600">Auth</span>
                         </div>
                       )}
-                      {selectedApi === api.name && (
+                      {selectedApi === (api.id || api.name) && (
                         <Badge variant="outline" className="text-xs">
                           Active
                         </Badge>

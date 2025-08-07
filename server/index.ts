@@ -1,13 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
-import { createApiProxy } from "./routes/proxy";
-import {
-  handleDemoLiveness,
-  handleDemoReadiness,
-  handleDemoOpenApi,
-  handleDemoInfractions,
-} from "./routes/demo-infractions";
+import { handleConfig } from "./routes/config";
 
 export function createServer() {
   const app = express();
@@ -28,7 +21,7 @@ export function createServer() {
       status: "ok",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      service: "Infractions API Manager",
+      service: "Multi-API Manager",
     });
   });
 
@@ -58,34 +51,8 @@ export function createServer() {
     }
   });
 
-  app.get("/api/demo", handleDemo);
-
-  // Demo API endpoints (for testing when real APIs are not available)
-  // These must come BEFORE the proxy routes to avoid being intercepted
-
-  // Infractions API demo endpoints
-  app.get("/api/infractions/liveness", handleDemoLiveness);
-  app.get("/api/infractions/readiness", handleDemoReadiness);
-  app.get("/api/infractions/openapi.json", handleDemoOpenApi);
-  app.post("/api/infractions", handleDemoInfractions);
-  app.get("/api/infractions", handleDemoInfractions);
-
-  // Demo API endpoints (self-referencing for demo purposes)
-  app.get("/api/demo/liveness", handleDemoLiveness);
-  app.get("/api/demo/readiness", handleDemoReadiness);
-  app.get("/api/demo/openapi.json", handleDemoOpenApi);
-  app.post("/api/demo", handleDemoInfractions);
-  app.get("/api/demo", handleDemoInfractions);
-
-  // Dynamic API proxy routes (catch-all, must be last)
-  // Matches /api/{apiname}/* and forwards to configured API
-  app.all("/api/:apiname/*", createApiProxy);
-  app.all("/api/:apiname", createApiProxy);
-
-  // Special endpoint for OpenAPI docs
-  app.get("/api/:apiname/docs", (req, res) => {
-    res.redirect(`/api/${req.params.apiname}/openapi.json`);
-  });
+  // API configuration endpoint
+  app.get("/api/config", handleConfig);
 
   return app;
 }

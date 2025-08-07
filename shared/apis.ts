@@ -8,6 +8,7 @@ export interface ApiConfig {
   label?: string;
   requiresAuth?: boolean;
   authToken?: string;
+  id?: string; // Unique identifier for multiple APIs with same name
 }
 
 export interface ApiHealthCheck {
@@ -92,6 +93,7 @@ export function parseApiConfigs(configString?: string): ApiConfig[] {
         label: label || undefined,
         requiresAuth: false, // Auth determined at runtime
         authToken: undefined, // Tokens provided at runtime only
+        id: `${name}-${baseUrl.replace(/[^a-zA-Z0-9]/g, "-")}`, // Generate unique ID
       };
     })
     .filter((config) => config !== null) as ApiConfig[];

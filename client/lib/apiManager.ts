@@ -13,11 +13,15 @@ class ApiManager {
   > = new Map();
   private readonly CACHE_DURATION = 30000; // 30 seconds
 
-  // Initialize API configurations from environment variables
-  initialize(): void {
+  // Initialize API configurations from server
+  async initialize(): Promise<void> {
     try {
-      const apiConfigString = __API_CONFIGS__;
-      this.configs = parseApiConfigs(apiConfigString);
+      const response = await fetch("/api/config");
+      if (!response.ok) {
+        throw new Error(`Failed to load config: ${response.statusText}`);
+      }
+      const config = await response.json();
+      this.configs = config.apis || [];
     } catch (error) {
       console.error("Failed to load API configurations:", error);
       this.configs = [];
@@ -29,9 +33,14 @@ class ApiManager {
     return [...this.configs];
   }
 
-  // Get API by name
+  // Get API by name (returns first match)
   getApi(name: string): ApiConfig | undefined {
     return this.configs.find((api) => api.name === name);
+  }
+
+  // Get API by unique ID
+  getApiById(id: string): ApiConfig | undefined {
+    return this.configs.find((api) => api.id === id);
   }
 
   // Check health of a specific API
@@ -53,13 +62,15 @@ class ApiManager {
     }
 
     try {
-      // Use our proxy endpoints
+      // Make direct calls to the API
       const [livenessResponse, readinessResponse] = await Promise.allSettled([
-        fetch(`/api/${apiName}/liveness`, {
+        fetch(`${api.baseUrl}/api/${apiName}/liveness`, {
           signal: AbortSignal.timeout(5000),
+          mode: "cors",
         }),
-        fetch(`/api/${apiName}/readiness`, {
+        fetch(`${api.baseUrl}/api/${apiName}/readiness`, {
           signal: AbortSignal.timeout(5000),
+          mode: "cors",
         }),
       ]);
 
@@ -139,12 +150,13 @@ class ApiManager {
       throw new Error(`API '${apiName}' not found`);
     }
 
-    const url = `/api/${apiName}${endpoint}`;
+    const url = `${api.baseUrl}/api/${apiName}${endpoint}`;
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      mode: "cors",
       ...options,
     });
 

@@ -13,7 +13,7 @@ import { CheckCircle2, AlertCircle, Clock, Shield } from "lucide-react";
 
 interface ApiSelectorProps {
   value?: string;
-  onValueChange: (apiName: string) => void;
+  onValueChange: (apiId: string) => void;
   className?: string;
 }
 
@@ -34,7 +34,7 @@ export function ApiSelector({
 
         // Auto-select first API if none selected
         if (!value && availableApis.length > 0) {
-          onValueChange(availableApis[0].name);
+          onValueChange(availableApis[0].id || availableApis[0].name);
         }
       } catch (error) {
         console.error("Failed to load APIs:", error);
@@ -83,28 +83,39 @@ export function ApiSelector({
         <SelectValue placeholder="Select an API">
           {value && (
             <div className="flex items-center space-x-2">
-              {getStatusIcon(
-                apis.find((api) => api.name === value)?.status || "unknown",
-              )}
-              <span>{value}</span>
-              {apis.find((api) => api.name === value)?.label && (
-                <Badge variant="outline" className="text-xs">
-                  {apis.find((api) => api.name === value)?.label}
-                </Badge>
-              )}
-              {apis.find((api) => api.name === value)?.requiresAuth && (
-                <Shield
-                  className="h-3 w-3 text-blue-600"
-                  title="Requires Authentication"
-                />
-              )}
+              {(() => {
+                const selectedApi = apis.find(
+                  (api) => (api.id || api.name) === value,
+                );
+                if (!selectedApi) return null;
+                return (
+                  <>
+                    {getStatusIcon(selectedApi.status || "unknown")}
+                    <span>{selectedApi.name}</span>
+                    {selectedApi.label && (
+                      <Badge variant="outline" className="text-xs">
+                        {selectedApi.label}
+                      </Badge>
+                    )}
+                    {selectedApi.requiresAuth && (
+                      <Shield
+                        className="h-3 w-3 text-blue-600"
+                        title="Requires Authentication"
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {apis.map((api) => (
-          <SelectItem key={api.name} value={api.name}>
+          <SelectItem
+            key={api.id || `${api.name}-${api.baseUrl}`}
+            value={api.id || api.name}
+          >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-2">
                 {getStatusIcon(api.status)}

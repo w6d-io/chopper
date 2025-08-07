@@ -19,13 +19,6 @@ export default defineConfig(({ mode }) => ({
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
-  define: {
-    __API_CONFIGS__: JSON.stringify(process.env.API_CONFIGS || ""),
-    __DEFAULT_TENANT__: JSON.stringify(
-      process.env.DEFAULT_TENANT || "business",
-    ),
-    __DEFAULT_LANGUAGE__: JSON.stringify(process.env.DEFAULT_LANGUAGE || "en"),
-  },
 }));
 
 function expressPlugin(): Plugin {
