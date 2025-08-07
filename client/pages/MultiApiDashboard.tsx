@@ -123,7 +123,7 @@ export default function MultiApiDashboard() {
       const api =
         apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
       if (api) {
-        setRequestEndpoint(`/api/${api.name}`);
+        setRequestEndpoint("");
       }
     }
   }, [selectedApi]);
@@ -310,7 +310,13 @@ export default function MultiApiDashboard() {
     }
 
     let command = `curl -X ${requestMethod} \\\n`;
-    command += `  '${api.baseUrl}${requestEndpoint}' \\\n`;
+    let url: string;
+    if (requestEndpoint.startsWith(`/api/${api.name}`)) {
+      url = `${api.baseUrl}${requestEndpoint}`;
+    } else {
+      url = `${api.baseUrl}/api/${api.name}${requestEndpoint}`;
+    }
+    command += `  '${url}' \\\n`;
 
     Object.entries(headers).forEach(([key, value]) => {
       command += `  -H '${key}: ${value}' \\\n`;
@@ -330,13 +336,15 @@ export default function MultiApiDashboard() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-sm">
+                C
+              </div>
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                  API Dashboard
+                  Chopper API Dashboard
                 </h1>
                 <p className="text-muted-foreground mt-1">
-                  Monitor and interact with API services
+                  Monitor, test, and manage your API services
                 </p>
               </div>
             </div>
@@ -361,7 +369,7 @@ export default function MultiApiDashboard() {
           className="space-y-6"
         >
           <TabsList
-            className={`grid w-full h-auto ${import.meta.env.PROD ? "grid-cols-3" : "grid-cols-4"}`}
+            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV === "production" ? "grid-cols-4" : "grid-cols-3"}`}
           >
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
@@ -375,7 +383,7 @@ export default function MultiApiDashboard() {
               <FileText className="mr-2 h-4 w-4" />
               Documentation
             </TabsTrigger>
-            {!import.meta.env.PROD && (
+            {import.meta.env.VITE_NODE_ENV === "production" && (
               <TabsTrigger value="settings" className="text-sm">
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
@@ -427,13 +435,11 @@ export default function MultiApiDashboard() {
                       <Input
                         value={requestEndpoint}
                         onChange={(e) => setRequestEndpoint(e.target.value)}
-                        placeholder={
-                          selectedApi ? `/api/${selectedApi}` : "/api/endpoint"
-                        }
+                        placeholder="/endpoint"
                       />
                       <p className="text-xs text-muted-foreground">
-                        Endpoint path (automatically updates when API is
-                        selected)
+                        Endpoint path (will be appended to the selected API's
+                        base URL)
                       </p>
                     </div>
                   </div>
@@ -1095,7 +1101,7 @@ export default function MultiApiDashboard() {
             </Card>
           </TabsContent>
 
-          {!import.meta.env.PROD && (
+          {import.meta.env.VITE_NODE_ENV === "production" && (
             <TabsContent value="settings" className="space-y-6">
               <Card>
                 <CardHeader>

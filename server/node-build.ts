@@ -1,3 +1,4 @@
+import "dotenv/config";
 import path from "path";
 import { createServer } from "./index";
 import * as express from "express";
@@ -5,7 +6,7 @@ import * as express from "express";
 const app = createServer();
 const port = process.env.PORT || 3000;
 
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -125,8 +125,10 @@ class ApiManager {
     const promises = this.configs.map(async (api): Promise<ApiStatus> => {
       const health = await this.checkApiHealth(api.name);
       const isHealthy =
-        health.liveness?.status === "ok" &&
-        health.readiness?.status === "ready";
+        (health.liveness?.status === "ok" ||
+          health.liveness?.status === "200") &&
+        (health.readiness?.status === "ready" ||
+          health.readiness?.status === "200");
 
       return {
         ...api,
@@ -150,7 +152,15 @@ class ApiManager {
       throw new Error(`API '${apiName}' not found`);
     }
 
-    const url = `${api.baseUrl}/api/${apiName}${endpoint}`;
+    // Handle endpoint properly - if it already includes /api/{apiName}, use baseUrl directly
+    // Otherwise, prepend /api/{apiName}
+    let url: string;
+    if (endpoint.startsWith(`/api/${apiName}`)) {
+      url = `${api.baseUrl}${endpoint}`;
+    } else {
+      url = `${api.baseUrl}/api/${apiName}${endpoint}`;
+    }
+
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
