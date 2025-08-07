@@ -27,7 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Globe,
   Search,
   Code,
   Settings,
