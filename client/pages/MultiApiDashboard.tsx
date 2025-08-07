@@ -336,7 +336,7 @@ export default function MultiApiDashboard() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <img src="/logo.png" alt="Logo" className="h-8 w-8" />
+              <img src="/logo.png" alt="Chopper API Dashboard" className="h-8 w-8" />
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
                   Chopper API Dashboard
