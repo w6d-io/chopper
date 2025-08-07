@@ -29,24 +29,27 @@ A production-ready multi-API dashboard for monitoring, testing, and managing you
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm, yarn, or pnpm
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd chopper-api-dashboard
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Configure your APIs**
    Create a `.env` file in the root directory:
+
    ```env
    API_CONFIGS=infractions:http://localhost:8000:local,oathkeeper:https://api.example.com:production
    DEFAULT_TENANT=business
@@ -54,6 +57,7 @@ A production-ready multi-API dashboard for monitoring, testing, and managing you
    ```
 
 4. **Start the development server**
+
    ```bash
    npm run dev
    ```
@@ -68,7 +72,9 @@ A production-ready multi-API dashboard for monitoring, testing, and managing you
 The dashboard is configured using environment variables:
 
 #### API_CONFIGS
+
 Define your APIs using the following format:
+
 ```
 API_CONFIGS=name:base_url[:label][,name2:base_url2[:label2]]
 ```
@@ -87,6 +93,7 @@ API_CONFIGS=infractions:http://localhost:8000:local,infractions:https://api.stag
 ```
 
 #### Default Settings
+
 ```env
 DEFAULT_TENANT=business     # Default tenant for API requests
 DEFAULT_LANGUAGE=en         # Default language for API requests
@@ -102,6 +109,7 @@ Each configured API should provide these endpoints:
 - **`/api/{apiname}/openapi.json`** - OpenAPI specification (optional but recommended)
 
 **Example API Structure:**
+
 ```
 https://api.example.com
 ├── /liveness                           # Health check
@@ -116,6 +124,7 @@ https://api.example.com
 ### 1. API Overview
 
 The **Overview** tab shows:
+
 - Total number of configured APIs
 - Health status summary (healthy/unhealthy count)
 - Last check timestamp
@@ -137,6 +146,7 @@ The **API Tester** tab allows you to:
 #### Specialized Infractions API Interface
 
 For APIs named "infractions", the dashboard provides a specialized interface with:
+
 - Date range picker
 - Tenant and language selection
 - Per-page results configuration
@@ -146,6 +156,7 @@ For APIs named "infractions", the dashboard provides a specialized interface wit
 ### 3. Documentation
 
 The **Documentation** tab provides:
+
 - OpenAPI specification viewer
 - Interactive endpoint documentation
 - Request/response schemas
@@ -155,6 +166,7 @@ The **Documentation** tab provides:
 ### 4. Configuration (Production Mode)
 
 In production mode, the **Settings** tab shows:
+
 - Environment configuration examples
 - API endpoint structure requirements
 - Setup instructions
@@ -165,18 +177,21 @@ In production mode, the **Settings** tab shows:
 The dashboard supports flexible endpoint patterns:
 
 ### Option 1: Full API Path
+
 ```
 Input: /api/infractions/search
 Result: https://api.example.com/api/infractions/search
 ```
 
 ### Option 2: Relative Path (Recommended)
+
 ```
 Input: /search
 Result: https://api.example.com/api/infractions/search
 ```
 
 ### Option 3: Root Path
+
 ```
 Input: /
 Result: https://api.example.com/api/infractions/
@@ -185,12 +200,15 @@ Result: https://api.example.com/api/infractions/
 ## Authentication
 
 ### Bearer Tokens
+
 - Enter Bearer tokens in the dedicated field in the API Tester
 - Tokens are automatically added as `Authorization: Bearer <token>` headers
 - **Security Note**: Tokens are only stored in memory, never persisted
 
 ### Custom Headers
+
 Add custom authentication headers in the Headers JSON field:
+
 ```json
 {
   "Content-Type": "application/json",
@@ -237,11 +255,13 @@ npm run format.fix   # Format code with Prettier
 ### Adding New Features
 
 #### Adding a New API Route
+
 1. Create handler in `server/routes/your-route.ts`
 2. Register route in `server/index.ts`
 3. Add shared types in `shared/api.ts` (optional)
 
 #### Adding New UI Components
+
 1. Create component in `client/components/`
 2. Follow existing patterns using Radix UI + TailwindCSS
 3. Use the `cn()` utility for conditional classes
@@ -249,6 +269,7 @@ npm run format.fix   # Format code with Prettier
 ### Testing APIs
 
 #### Health Check Testing
+
 ```bash
 # Test liveness
 curl http://localhost:8080/liveness
@@ -258,6 +279,7 @@ curl http://localhost:8080/readiness
 ```
 
 #### API Configuration Testing
+
 ```bash
 # Get current configuration
 curl http://localhost:8080/api/config
@@ -268,11 +290,13 @@ curl http://localhost:8080/api/config
 ### Build and Deploy
 
 1. **Build the application**
+
    ```bash
    npm run build
    ```
 
 2. **Set production environment variables**
+
    ```env
    NODE_ENV=production
    API_CONFIGS=your-production-apis
@@ -303,6 +327,7 @@ docker run -p 8080:8080 \
 ### Environment-Specific Configurations
 
 #### Development
+
 ```env
 API_CONFIGS=infractions:http://localhost:8000:local,users:http://localhost:8001:local
 DEFAULT_TENANT=business
@@ -310,6 +335,7 @@ DEFAULT_LANGUAGE=en
 ```
 
 #### Staging
+
 ```env
 API_CONFIGS=infractions:https://api.staging.com:staging,users:https://users.staging.com:staging
 DEFAULT_TENANT=staging
@@ -317,6 +343,7 @@ DEFAULT_LANGUAGE=en
 ```
 
 #### Production
+
 ```env
 API_CONFIGS=infractions:https://api.prod.com:production,users:https://users.prod.com:production
 DEFAULT_TENANT=production
@@ -328,33 +355,40 @@ DEFAULT_LANGUAGE=en
 ### Common Issues
 
 #### APIs Showing as Unhealthy
+
 1. Check that your APIs provide `/liveness` and `/readiness` endpoints
 2. Verify the API base URLs are accessible
 3. Ensure CORS is properly configured on your APIs
 4. Check browser network tab for specific error details
 
 #### Authentication Errors
+
 1. Verify Bearer tokens are correct and active
 2. Check that APIs accept the `Authorization` header
 3. Ensure tokens have necessary permissions
 
 #### Configuration Issues
+
 1. Restart server after changing environment variables
 2. Verify `API_CONFIGS` format is correct
 3. Check server logs for configuration parsing errors
 
 #### CORS Issues
+
 ```javascript
 // Example API CORS setup (Express)
-app.use(cors({
-  origin: ['http://localhost:8080', 'https://your-dashboard-domain.com'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:8080", "https://your-dashboard-domain.com"],
+    credentials: true,
+  }),
+);
 ```
 
 ### Debug Mode
 
 Enable debug logging by setting:
+
 ```env
 DEBUG=1
 LOG_LEVEL=debug
@@ -383,6 +417,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Support
 
 For support and questions:
+
 - Check the troubleshooting section above
 - Review the configuration examples
 - Check server logs for detailed error messages

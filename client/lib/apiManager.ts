@@ -154,14 +154,16 @@ class ApiManager {
 
     // Handle endpoint properly - ensure clean URL construction
     let url: string;
-    const cleanEndpoint = endpoint || '/';
+    const cleanEndpoint = endpoint || "/";
 
     if (cleanEndpoint.startsWith(`/api/${apiName}`)) {
       // Endpoint already includes the full API path
       url = `${api.baseUrl}${cleanEndpoint}`;
     } else {
       // Prepend /api/{apiName} to the endpoint
-      const normalizedEndpoint = cleanEndpoint.startsWith('/') ? cleanEndpoint : `/${cleanEndpoint}`;
+      const normalizedEndpoint = cleanEndpoint.startsWith("/")
+        ? cleanEndpoint
+        : `/${cleanEndpoint}`;
       url = `${api.baseUrl}/api/${apiName}${normalizedEndpoint}`;
     }
 

@@ -314,12 +314,14 @@ export default function MultiApiDashboard() {
 
     let command = `curl -X ${requestMethod} \\\n`;
     let url: string;
-    const endpoint = requestEndpoint || '/';
+    const endpoint = requestEndpoint || "/";
     if (endpoint.startsWith(`/api/${api.name}`)) {
       url = `${api.baseUrl}${endpoint}`;
     } else {
       // Ensure endpoint starts with / and doesn't duplicate /api/apiname
-      const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      const cleanEndpoint = endpoint.startsWith("/")
+        ? endpoint
+        : `/${endpoint}`;
       url = `${api.baseUrl}/api/${api.name}${cleanEndpoint}`;
     }
     command += `  '${url}' \\\n`;
@@ -444,10 +446,14 @@ export default function MultiApiDashboard() {
                         placeholder="/api/[apiname]/your-endpoint"
                       />
                       <p className="text-xs text-muted-foreground">
-                        Endpoint path (e.g. /api/{(() => {
-                          const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
-                          return api?.name || 'apiname';
-                        })()}/your-endpoint or just /your-endpoint)
+                        Endpoint path (e.g. /api/
+                        {(() => {
+                          const api =
+                            apiManager.getApiById(selectedApi) ||
+                            apiManager.getApi(selectedApi);
+                          return api?.name || "apiname";
+                        })()}
+                        /your-endpoint or just /your-endpoint)
                       </p>
                     </div>
                   </div>
@@ -715,12 +721,24 @@ export default function MultiApiDashboard() {
                   <div className="space-y-2">
                     <Label>Generated cURL Command</Label>
                     {(() => {
-                      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
-                      return api && (
-                        <div className="text-xs text-muted-foreground mb-2">
-                          Base URL: <code className="bg-muted px-1 py-0.5 rounded">{api.baseUrl}</code>
-                          {api.label && <span className="ml-2">Environment: <span className="font-medium">{api.label}</span></span>}
-                        </div>
+                      const api =
+                        apiManager.getApiById(selectedApi) ||
+                        apiManager.getApi(selectedApi);
+                      return (
+                        api && (
+                          <div className="text-xs text-muted-foreground mb-2">
+                            Base URL:{" "}
+                            <code className="bg-muted px-1 py-0.5 rounded">
+                              {api.baseUrl}
+                            </code>
+                            {api.label && (
+                              <span className="ml-2">
+                                Environment:{" "}
+                                <span className="font-medium">{api.label}</span>
+                              </span>
+                            )}
+                          </div>
+                        )
                       );
                     })()}
                     <div className="bg-muted p-3 rounded-lg">
@@ -802,11 +820,17 @@ export default function MultiApiDashboard() {
                     <CardDescription>
                       Interactive OpenAPI documentation for{" "}
                       {(() => {
-                        const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
-                        return api ? `${api.name} (${api.baseUrl})` : "selected API";
+                        const api =
+                          apiManager.getApiById(selectedApi) ||
+                          apiManager.getApi(selectedApi);
+                        return api
+                          ? `${api.name} (${api.baseUrl})`
+                          : "selected API";
                       })()}
                       {(() => {
-                        const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                        const api =
+                          apiManager.getApiById(selectedApi) ||
+                          apiManager.getApi(selectedApi);
                         return api?.label ? ` - ${api.label}` : "";
                       })()}
                     </CardDescription>
