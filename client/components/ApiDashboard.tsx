@@ -248,11 +248,9 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {apiStatuses.map((api) => {
-              const uniqueKey = `${api.name}-${api.baseUrl}`;
-              return (
+            {apiStatuses.map((api) => (
               <div
-                key={uniqueKey}
+                key={api.id || `${api.name}-${api.baseUrl}`}
                 className={cn(
                   "flex items-center justify-between p-4 rounded-lg border transition-colors",
                   selectedApi === api.name
@@ -341,8 +339,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
                   </Button>
                 </div>
               </div>
-              );
-            })}
+            ))}
           </div>
         </CardContent>
       </Card>
