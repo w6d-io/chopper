@@ -244,7 +244,8 @@ export default function MultiApiDashboard() {
 
   // Update request body and headers when infractions parameters change
   useEffect(() => {
-    if (selectedApi === "infractions") {
+    const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+    if (api && api.name === "infractions") {
       updateInfractionsRequestBody();
       updateInfractionsHeaders();
     }
