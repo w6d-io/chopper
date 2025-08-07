@@ -1068,10 +1068,11 @@ export default function MultiApiDashboard() {
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configuration</CardTitle>
+          {!import.meta.env.PROD && (
+            <TabsContent value="settings" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Configuration</CardTitle>
                 <CardDescription>
                   Manage your API configurations and settings
                 </CardDescription>
@@ -1188,6 +1189,7 @@ DEFAULT_LANGUAGE=en`}
               </CardContent>
             </Card>
           </TabsContent>
+          )}
         </Tabs>
       </div>
     </div>
