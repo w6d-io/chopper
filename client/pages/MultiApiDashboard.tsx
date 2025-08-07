@@ -381,7 +381,7 @@ export default function MultiApiDashboard() {
               <FileText className="mr-2 h-4 w-4" />
               Documentation
             </TabsTrigger>
-            {!import.meta.env.PROD && (
+            {!(import.meta.env.PROD || import.meta.env.NODE_ENV === 'production') && (
               <TabsTrigger value="settings" className="text-sm">
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
