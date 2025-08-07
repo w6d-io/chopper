@@ -13,7 +13,7 @@ import { CheckCircle2, AlertCircle, Clock, Shield } from "lucide-react";
 
 interface ApiSelectorProps {
   value?: string;
-  onValueChange: (apiName: string) => void;
+  onValueChange: (apiId: string) => void;
   className?: string;
 }
 
