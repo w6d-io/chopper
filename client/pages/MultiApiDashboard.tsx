@@ -1098,7 +1098,7 @@ export default function MultiApiDashboard() {
             </Card>
           </TabsContent>
 
-          {!(import.meta.env.PROD || import.meta.env.NODE_ENV === 'production') && (
+          {import.meta.env.VITE_NODE_ENV === 'production' && (
             <TabsContent value="settings" className="space-y-6">
               <Card>
                 <CardHeader>
