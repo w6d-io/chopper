@@ -1,13 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { handleDemo } from "./routes/demo";
 import { createApiProxy } from "./routes/proxy";
-import {
-  handleDemoLiveness,
-  handleDemoReadiness,
-  handleDemoOpenApi,
-  handleDemoInfractions,
-} from "./routes/demo-infractions";
+import { handleConfig } from "./routes/config";
 
 export function createServer() {
   const app = express();
