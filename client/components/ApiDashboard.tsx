@@ -322,7 +322,8 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
                     <div
                       className={cn(
                         "w-3 h-3 rounded-full",
-                        api.health.readiness?.status === "ready"
+                        api.health.readiness?.status === "ready" ||
+                          api.health.readiness?.status === "200"
                           ? "bg-green-500"
                           : "bg-red-500",
                       )}
