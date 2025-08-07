@@ -279,7 +279,10 @@ export default function MultiApiDashboard() {
         toast.error("Selected API not found");
         return;
       }
-      const result = await apiManager.callApi(api.name, `/api/infractions/openapi.json`);
+      const result = await apiManager.callApi(
+        api.name,
+        `/api/infractions/openapi.json`,
+      );
       setOpenApiSpec(result);
       toast.success("Documentation loaded successfully!");
     } catch (error) {
