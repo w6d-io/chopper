@@ -121,7 +121,10 @@ export default function MultiApiDashboard() {
   // Update endpoint when selectedApi changes
   useEffect(() => {
     if (selectedApi) {
-      setRequestEndpoint(`/api/${selectedApi}`);
+      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      if (api) {
+        setRequestEndpoint(`/api/${api.name}`);
+      }
     }
   }, [selectedApi]);
 
