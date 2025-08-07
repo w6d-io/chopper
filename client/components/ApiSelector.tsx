@@ -83,21 +83,27 @@ export function ApiSelector({
         <SelectValue placeholder="Select an API">
           {value && (
             <div className="flex items-center space-x-2">
-              {getStatusIcon(
-                apis.find((api) => api.name === value)?.status || "unknown",
-              )}
-              <span>{value}</span>
-              {apis.find((api) => api.name === value)?.label && (
-                <Badge variant="outline" className="text-xs">
-                  {apis.find((api) => api.name === value)?.label}
-                </Badge>
-              )}
-              {apis.find((api) => api.name === value)?.requiresAuth && (
-                <Shield
-                  className="h-3 w-3 text-blue-600"
-                  title="Requires Authentication"
-                />
-              )}
+              {(() => {
+                const selectedApi = apis.find((api) => (api.id || api.name) === value);
+                if (!selectedApi) return null;
+                return (
+                  <>
+                    {getStatusIcon(selectedApi.status || "unknown")}
+                    <span>{selectedApi.name}</span>
+                    {selectedApi.label && (
+                      <Badge variant="outline" className="text-xs">
+                        {selectedApi.label}
+                      </Badge>
+                    )}
+                    {selectedApi.requiresAuth && (
+                      <Shield
+                        className="h-3 w-3 text-blue-600"
+                        title="Requires Authentication"
+                      />
+                    )}
+                  </>
+                );
+              })()}
             </div>
           )}
         </SelectValue>
