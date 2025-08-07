@@ -340,7 +340,7 @@ export default function MultiApiDashboard() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsList className={`grid w-full h-auto ${import.meta.env.PROD ? "grid-cols-3" : "grid-cols-4"}`}>
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
               Overview
@@ -353,10 +353,12 @@ export default function MultiApiDashboard() {
               <FileText className="mr-2 h-4 w-4" />
               Documentation
             </TabsTrigger>
-            <TabsTrigger value="settings" className="text-sm">
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </TabsTrigger>
+            {!import.meta.env.PROD && (
+              <TabsTrigger value="settings" className="text-sm">
+                <Settings className="mr-2 h-4 w-4" />
+                Settings
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
