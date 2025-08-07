@@ -287,7 +287,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
                           <span className="text-xs text-blue-600">Auth</span>
                         </div>
                       )}
-                      {selectedApi === api.name && (
+                      {selectedApi === (api.id || api.name) && (
                         <Badge variant="outline" className="text-xs">
                           Active
                         </Badge>
