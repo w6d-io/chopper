@@ -378,8 +378,8 @@ export default function MultiApiDashboard() {
 
           <TabsContent value="overview" className="space-y-6">
             <ApiDashboard
-              onApiSelect={(apiName) => {
-                setSelectedApi(apiName);
+              onApiSelect={(apiId) => {
+                setSelectedApi(apiId);
                 setActiveTab("tester");
               }}
               selectedApi={selectedApi}
