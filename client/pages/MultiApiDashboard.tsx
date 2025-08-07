@@ -123,7 +123,10 @@ export default function MultiApiDashboard() {
       const api =
         apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
       if (api) {
-        setRequestEndpoint("");
+        // Pre-fill with the API pattern if endpoint is empty
+        if (!requestEndpoint) {
+          setRequestEndpoint(`/api/${api.name}/`);
+        }
       }
     }
   }, [selectedApi]);
