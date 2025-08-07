@@ -1098,7 +1098,7 @@ export default function MultiApiDashboard() {
             </Card>
           </TabsContent>
 
-          {!import.meta.env.PROD && (
+          {!(import.meta.env.PROD || import.meta.env.NODE_ENV === 'production') && (
             <TabsContent value="settings" className="space-y-6">
               <Card>
                 <CardHeader>
@@ -1189,7 +1189,7 @@ DEFAULT_LANGUAGE=en`}
                           )
                         </li>
                         <li>
-                          • <strong>/api/{"{apiname}"}/openapi.json</strong> -
+                          �� <strong>/api/{"{apiname}"}/openapi.json</strong> -
                           OpenAPI specification
                         </li>
                       </ul>
