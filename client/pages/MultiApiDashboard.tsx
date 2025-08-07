@@ -169,9 +169,16 @@ export default function MultiApiDashboard() {
         }
       }
 
+      // Get the actual API name from the selected API ID
+      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      if (!api) {
+        toast.error("Selected API not found");
+        return;
+      }
+
       // Make the request through our API manager
       const result = await apiManager.callApi(
-        selectedApi,
+        api.name,
         requestEndpoint,
         options,
       );
