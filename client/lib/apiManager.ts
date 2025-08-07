@@ -125,8 +125,10 @@ class ApiManager {
     const promises = this.configs.map(async (api): Promise<ApiStatus> => {
       const health = await this.checkApiHealth(api.name);
       const isHealthy =
-        (health.liveness?.status === "ok" || health.liveness?.status === "200") &&
-        (health.readiness?.status === "ready" || health.readiness?.status === "200");
+        (health.liveness?.status === "ok" ||
+          health.liveness?.status === "200") &&
+        (health.readiness?.status === "ready" ||
+          health.readiness?.status === "200");
 
       return {
         ...api,

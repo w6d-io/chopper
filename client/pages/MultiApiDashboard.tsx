@@ -369,7 +369,7 @@ export default function MultiApiDashboard() {
           className="space-y-6"
         >
           <TabsList
-            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV === 'production' ? "grid-cols-4" : "grid-cols-3"}`}
+            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV === "production" ? "grid-cols-4" : "grid-cols-3"}`}
           >
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
@@ -383,7 +383,7 @@ export default function MultiApiDashboard() {
               <FileText className="mr-2 h-4 w-4" />
               Documentation
             </TabsTrigger>
-            {import.meta.env.VITE_NODE_ENV === 'production' && (
+            {import.meta.env.VITE_NODE_ENV === "production" && (
               <TabsTrigger value="settings" className="text-sm">
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
@@ -438,7 +438,8 @@ export default function MultiApiDashboard() {
                         placeholder="/endpoint"
                       />
                       <p className="text-xs text-muted-foreground">
-                        Endpoint path (will be appended to the selected API's base URL)
+                        Endpoint path (will be appended to the selected API's
+                        base URL)
                       </p>
                     </div>
                   </div>
@@ -1100,7 +1101,7 @@ export default function MultiApiDashboard() {
             </Card>
           </TabsContent>
 
-          {import.meta.env.VITE_NODE_ENV === 'production' && (
+          {import.meta.env.VITE_NODE_ENV === "production" && (
             <TabsContent value="settings" className="space-y-6">
               <Card>
                 <CardHeader>
