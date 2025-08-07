@@ -123,7 +123,7 @@ export default function MultiApiDashboard() {
       const api =
         apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
       if (api) {
-        setRequestEndpoint(`/api/${api.name}`);
+        setRequestEndpoint("");
       }
     }
   }, [selectedApi]);
