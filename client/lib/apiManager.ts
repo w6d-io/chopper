@@ -64,11 +64,11 @@ class ApiManager {
     try {
       // Make direct calls to the API
       const [livenessResponse, readinessResponse] = await Promise.allSettled([
-        fetch(`${api.baseUrl}/api/${apiName}/liveness`, {
+        fetch(`${api.baseUrl}/liveness`, {
           signal: AbortSignal.timeout(5000),
           mode: "cors",
         }),
-        fetch(`${api.baseUrl}/api/${apiName}/readiness`, {
+        fetch(`${api.baseUrl}/readiness`, {
           signal: AbortSignal.timeout(5000),
           mode: "cors",
         }),
@@ -152,13 +152,19 @@ class ApiManager {
       throw new Error(`API '${apiName}' not found`);
     }
 
-    // Handle endpoint properly - if it already includes /api/{apiName}, use baseUrl directly
-    // Otherwise, prepend /api/{apiName}
+    // Handle endpoint properly - ensure clean URL construction
     let url: string;
-    if (endpoint.startsWith(`/api/${apiName}`)) {
-      url = `${api.baseUrl}${endpoint}`;
+    const cleanEndpoint = endpoint || "/";
+
+    if (cleanEndpoint.startsWith(`/api/${apiName}`)) {
+      // Endpoint already includes the full API path
+      url = `${api.baseUrl}${cleanEndpoint}`;
     } else {
-      url = `${api.baseUrl}/api/${apiName}${endpoint}`;
+      // Prepend /api/{apiName} to the endpoint
+      const normalizedEndpoint = cleanEndpoint.startsWith("/")
+        ? cleanEndpoint
+        : `/${cleanEndpoint}`;
+      url = `${api.baseUrl}/api/${apiName}${normalizedEndpoint}`;
     }
 
     const response = await fetch(url, {

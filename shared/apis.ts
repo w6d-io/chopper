@@ -83,8 +83,8 @@ export function parseApiConfigs(configString?: string): ApiConfig[] {
         authToken = parts[2]?.trim() || undefined;
       }
 
-      // Clean up baseUrl - remove trailing slashes
-      baseUrl = baseUrl.replace(/\/$/, "");
+      // Clean up baseUrl - remove trailing slashes and normalize
+      baseUrl = baseUrl.replace(/\/+$/, "").trim();
 
       return {
         name,
