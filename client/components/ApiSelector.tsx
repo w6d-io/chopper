@@ -34,7 +34,7 @@ export function ApiSelector({
 
         // Auto-select first API if none selected
         if (!value && availableApis.length > 0) {
-          onValueChange(availableApis[0].name);
+          onValueChange(availableApis[0].id || availableApis[0].name);
         }
       } catch (error) {
         console.error("Failed to load APIs:", error);
