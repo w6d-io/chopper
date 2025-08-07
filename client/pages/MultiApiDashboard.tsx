@@ -112,7 +112,7 @@ export default function MultiApiDashboard() {
       await apiManager.initialize();
       const apis = apiManager.getApis();
       if (apis.length > 0 && !selectedApi) {
-        setSelectedApi(apis[0].name);
+        setSelectedApi(apis[0].id || apis[0].name);
       }
     };
     initializeApi();
