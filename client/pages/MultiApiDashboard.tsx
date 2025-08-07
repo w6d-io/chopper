@@ -314,10 +314,13 @@ export default function MultiApiDashboard() {
 
     let command = `curl -X ${requestMethod} \\\n`;
     let url: string;
-    if (requestEndpoint.startsWith(`/api/${api.name}`)) {
-      url = `${api.baseUrl}${requestEndpoint}`;
+    const endpoint = requestEndpoint || '/';
+    if (endpoint.startsWith(`/api/${api.name}`)) {
+      url = `${api.baseUrl}${endpoint}`;
     } else {
-      url = `${api.baseUrl}/api/${api.name}${requestEndpoint}`;
+      // Ensure endpoint starts with / and doesn't duplicate /api/apiname
+      const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      url = `${api.baseUrl}/api/${api.name}${cleanEndpoint}`;
     }
     command += `  '${url}' \\\n`;
 
