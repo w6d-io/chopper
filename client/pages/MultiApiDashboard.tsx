@@ -714,6 +714,15 @@ export default function MultiApiDashboard() {
                   {/* cURL Command */}
                   <div className="space-y-2">
                     <Label>Generated cURL Command</Label>
+                    {(() => {
+                      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                      return api && (
+                        <div className="text-xs text-muted-foreground mb-2">
+                          Base URL: <code className="bg-muted px-1 py-0.5 rounded">{api.baseUrl}</code>
+                          {api.label && <span className="ml-2">Environment: <span className="font-medium">{api.label}</span></span>}
+                        </div>
+                      );
+                    })()}
                     <div className="bg-muted p-3 rounded-lg">
                       <pre className="text-xs overflow-x-auto whitespace-pre-wrap font-mono">
                         {generateCurlCommand()}
