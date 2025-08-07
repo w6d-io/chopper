@@ -145,12 +145,13 @@ class ApiManager {
       throw new Error(`API '${apiName}' not found`);
     }
 
-    const url = `/api/${apiName}${endpoint}`;
+    const url = `${api.baseUrl}/api/${apiName}${endpoint}`;
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      mode: 'cors',
       ...options,
     });
 
