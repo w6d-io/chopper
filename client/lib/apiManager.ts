@@ -57,13 +57,15 @@ class ApiManager {
     }
 
     try {
-      // Use our proxy endpoints
+      // Make direct calls to the API
       const [livenessResponse, readinessResponse] = await Promise.allSettled([
-        fetch(`/api/${apiName}/liveness`, {
+        fetch(`${api.baseUrl}/api/${apiName}/liveness`, {
           signal: AbortSignal.timeout(5000),
+          mode: 'cors',
         }),
-        fetch(`/api/${apiName}/readiness`, {
+        fetch(`${api.baseUrl}/api/${apiName}/readiness`, {
           signal: AbortSignal.timeout(5000),
+          mode: 'cors',
         }),
       ]);
 
