@@ -377,7 +377,7 @@ export default function MultiApiDashboard() {
           className="space-y-6"
         >
           <TabsList
-            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV === "production" ? "grid-cols-4" : "grid-cols-3"}`}
+            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV !== "production" ? "grid-cols-4" : "grid-cols-3"}`}
           >
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
