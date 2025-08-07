@@ -446,7 +446,10 @@ export default function MultiApiDashboard() {
                   </div>
 
                   {/* Infractions-specific UI */}
-                  {selectedApi === "infractions" && (
+                  {(() => {
+                    const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                    return api && api.name === "infractions";
+                  })() && (
                     <>
                       <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
                         <h3 className="font-semibold text-primary">
