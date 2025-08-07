@@ -792,7 +792,14 @@ export default function MultiApiDashboard() {
                     <CardTitle>API Documentation</CardTitle>
                     <CardDescription>
                       Interactive OpenAPI documentation for{" "}
-                      {selectedApi || "selected API"}
+                      {(() => {
+                        const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                        return api ? `${api.name} (${api.baseUrl})` : "selected API";
+                      })()}
+                      {(() => {
+                        const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                        return api?.label ? ` - ${api.label}` : "";
+                      })()}
                     </CardDescription>
                   </div>
                   <Button
