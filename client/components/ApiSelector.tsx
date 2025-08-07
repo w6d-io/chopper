@@ -104,7 +104,7 @@ export function ApiSelector({
       </SelectTrigger>
       <SelectContent>
         {apis.map((api) => (
-          <SelectItem key={api.id || `${api.name}-${api.baseUrl}`} value={api.name}>
+          <SelectItem key={api.id || `${api.name}-${api.baseUrl}`} value={api.id || api.name}>
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-2">
                 {getStatusIcon(api.status)}
