@@ -55,15 +55,5 @@ export function createServer() {
   // API configuration endpoint
   app.get("/api/config", handleConfig);
 
-  // Dynamic API proxy routes (catch-all, must be last)
-  // Matches /api/{apiname}/* and forwards to configured API
-  app.all("/api/:apiname/*", createApiProxy);
-  app.all("/api/:apiname", createApiProxy);
-
-  // Special endpoint for OpenAPI docs
-  app.get("/api/:apiname/docs", (req, res) => {
-    res.redirect(`/api/${req.params.apiname}/openapi.json`);
-  });
-
   return app;
 }
