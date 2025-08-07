@@ -310,7 +310,13 @@ export default function MultiApiDashboard() {
     }
 
     let command = `curl -X ${requestMethod} \\\n`;
-    command += `  '${api.baseUrl}${requestEndpoint}' \\\n`;
+    let url: string;
+    if (requestEndpoint.startsWith(`/api/${api.name}`)) {
+      url = `${api.baseUrl}${requestEndpoint}`;
+    } else {
+      url = `${api.baseUrl}/api/${api.name}${requestEndpoint}`;
+    }
+    command += `  '${url}' \\\n`;
 
     Object.entries(headers).forEach(([key, value]) => {
       command += `  -H '${key}: ${value}' \\\n`;
