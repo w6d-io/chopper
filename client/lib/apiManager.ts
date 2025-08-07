@@ -33,9 +33,14 @@ class ApiManager {
     return [...this.configs];
   }
 
-  // Get API by name
+  // Get API by name (returns first match)
   getApi(name: string): ApiConfig | undefined {
     return this.configs.find((api) => api.name === name);
+  }
+
+  // Get API by unique ID
+  getApiById(id: string): ApiConfig | undefined {
+    return this.configs.find((api) => api.id === id);
   }
 
   // Check health of a specific API
