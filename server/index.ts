@@ -52,24 +52,8 @@ export function createServer() {
     }
   });
 
-  app.get("/api/demo", handleDemo);
-
-  // Demo API endpoints (for testing when real APIs are not available)
-  // These must come BEFORE the proxy routes to avoid being intercepted
-
-  // Infractions API demo endpoints
-  app.get("/api/infractions/liveness", handleDemoLiveness);
-  app.get("/api/infractions/readiness", handleDemoReadiness);
-  app.get("/api/infractions/openapi.json", handleDemoOpenApi);
-  app.post("/api/infractions", handleDemoInfractions);
-  app.get("/api/infractions", handleDemoInfractions);
-
-  // Demo API endpoints (self-referencing for demo purposes)
-  app.get("/api/demo/liveness", handleDemoLiveness);
-  app.get("/api/demo/readiness", handleDemoReadiness);
-  app.get("/api/demo/openapi.json", handleDemoOpenApi);
-  app.post("/api/demo", handleDemoInfractions);
-  app.get("/api/demo", handleDemoInfractions);
+  // API configuration endpoint
+  app.get("/api/config", handleConfig);
 
   // Dynamic API proxy routes (catch-all, must be last)
   // Matches /api/{apiname}/* and forwards to configured API
