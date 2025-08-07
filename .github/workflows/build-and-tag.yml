@@ -90,7 +90,22 @@ jobs:
         run: |
           echo "image=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}" >> $GITHUB_OUTPUT
 
+  update-chart:
+    runs-on: ubuntu-latest
+    needs: [ prepare-build, build ]
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Update Helm Chart
+        uses: ./.github/actions/update-helm-chart
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ needs.prepare-build.outputs.version }}
+          helm-repo: w6d-io/charts
+          path-to-chart: charts/chopper
 
   release-drafter:
     runs-on: ubuntu-latest
