@@ -13,11 +13,15 @@ class ApiManager {
   > = new Map();
   private readonly CACHE_DURATION = 30000; // 30 seconds
 
-  // Initialize API configurations from environment variables
-  initialize(): void {
+  // Initialize API configurations from server
+  async initialize(): Promise<void> {
     try {
-      const apiConfigString = __API_CONFIGS__;
-      this.configs = parseApiConfigs(apiConfigString);
+      const response = await fetch("/api/config");
+      if (!response.ok) {
+        throw new Error(`Failed to load config: ${response.statusText}`);
+      }
+      const config = await response.json();
+      this.configs = config.apis || [];
     } catch (error) {
       console.error("Failed to load API configurations:", error);
       this.configs = [];
