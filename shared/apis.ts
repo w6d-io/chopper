@@ -8,6 +8,7 @@ export interface ApiConfig {
   label?: string;
   requiresAuth?: boolean;
   authToken?: string;
+  id?: string; // Unique identifier for multiple APIs with same name
 }
 
 export interface ApiHealthCheck {
