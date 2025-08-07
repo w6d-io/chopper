@@ -55,8 +55,8 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
       apiManager.clearHealthCache();
       const health = await apiManager.checkApiHealth(apiName);
       const isHealthy =
-        health.liveness?.status === "ok" &&
-        health.readiness?.status === "ready";
+        (health.liveness?.status === "ok" || health.liveness?.status === "200") &&
+        (health.readiness?.status === "ready" || health.readiness?.status === "200");
 
       setApiStatuses((prev) =>
         prev.map((api) =>
