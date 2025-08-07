@@ -120,7 +120,8 @@ export default function MultiApiDashboard() {
   // Update endpoint when selectedApi changes
   useEffect(() => {
     if (selectedApi) {
-      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      const api =
+        apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
       if (api) {
         setRequestEndpoint(`/api/${api.name}`);
       }
@@ -169,7 +170,8 @@ export default function MultiApiDashboard() {
       }
 
       // Get the actual API name from the selected API ID
-      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      const api =
+        apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
       if (!api) {
         toast.error("Selected API not found");
         return;
@@ -243,7 +245,8 @@ export default function MultiApiDashboard() {
 
   // Update request body and headers when infractions parameters change
   useEffect(() => {
-    const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+    const api =
+      apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
     if (api && api.name === "infractions") {
       updateInfractionsRequestBody();
       updateInfractionsHeaders();
@@ -267,7 +270,8 @@ export default function MultiApiDashboard() {
 
     setIsLoadingDocs(true);
     try {
-      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      const api =
+        apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
       if (!api) {
         toast.error("Selected API not found");
         return;
@@ -289,7 +293,8 @@ export default function MultiApiDashboard() {
   const generateCurlCommand = () => {
     if (!selectedApi) return "";
 
-    const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+    const api =
+      apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
     if (!api) return "";
 
     let headers: Record<string, string> = {};
@@ -355,7 +360,9 @@ export default function MultiApiDashboard() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className={`grid w-full h-auto ${import.meta.env.PROD ? "grid-cols-3" : "grid-cols-4"}`}>
+          <TabsList
+            className={`grid w-full h-auto ${import.meta.env.PROD ? "grid-cols-3" : "grid-cols-4"}`}
+          >
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
               Overview
@@ -446,7 +453,9 @@ export default function MultiApiDashboard() {
 
                   {/* Infractions-specific UI */}
                   {(() => {
-                    const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                    const api =
+                      apiManager.getApiById(selectedApi) ||
+                      apiManager.getApi(selectedApi);
                     return api && api.name === "infractions";
                   })() && (
                     <>
@@ -1091,122 +1100,125 @@ export default function MultiApiDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Configuration</CardTitle>
-                <CardDescription>
-                  Manage your API configurations and settings
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-medium mb-2">
-                      Environment Configuration
-                    </h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      APIs are configured via environment variables. Each API
-                      follows the pattern:
-                      <code className="bg-background px-1 py-0.5 rounded mx-1">
-                        name:base_url[:label]
-                      </code>
-                      <br />
-                      <strong>Security Note:</strong> Bearer tokens should be
-                      entered at runtime in the API Tester tab, not stored in
-                      environment variables.
-                    </p>
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-medium mb-1">
-                          Simple API Example:
-                        </p>
-                        <pre className="text-xs bg-background p-3 rounded border">
-                          API_CONFIGS=infractions:http://localhost:8000
-                        </pre>
-                      </div>
+                  <CardDescription>
+                    Manage your API configurations and settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="rounded-lg bg-muted p-4">
+                      <h4 className="font-medium mb-2">
+                        Environment Configuration
+                      </h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        APIs are configured via environment variables. Each API
+                        follows the pattern:
+                        <code className="bg-background px-1 py-0.5 rounded mx-1">
+                          name:base_url[:label]
+                        </code>
+                        <br />
+                        <strong>Security Note:</strong> Bearer tokens should be
+                        entered at runtime in the API Tester tab, not stored in
+                        environment variables.
+                      </p>
+                      <div className="space-y-3">
+                        <div>
+                          <p className="text-xs font-medium mb-1">
+                            Simple API Example:
+                          </p>
+                          <pre className="text-xs bg-background p-3 rounded border">
+                            API_CONFIGS=infractions:http://localhost:8000
+                          </pre>
+                        </div>
 
-                      <div>
-                        <p className="text-xs font-medium mb-1">With Labels:</p>
-                        <pre className="text-xs bg-background p-3 rounded border">
-                          API_CONFIGS=infractions:http://localhost:8000:local,users:http://localhost:8001:staging
-                        </pre>
-                      </div>
+                        <div>
+                          <p className="text-xs font-medium mb-1">
+                            With Labels:
+                          </p>
+                          <pre className="text-xs bg-background p-3 rounded border">
+                            API_CONFIGS=infractions:http://localhost:8000:local,users:http://localhost:8001:staging
+                          </pre>
+                        </div>
 
-                      <div>
-                        <p className="text-xs font-medium mb-1">
-                          Complete Configuration:
-                        </p>
-                        <pre className="text-xs bg-background p-3 rounded border">
-                          {`API_CONFIGS=infractions:http://localhost:8000:local,oathkeeper:https://api.example.com:production
+                        <div>
+                          <p className="text-xs font-medium mb-1">
+                            Complete Configuration:
+                          </p>
+                          <pre className="text-xs bg-background p-3 rounded border">
+                            {`API_CONFIGS=infractions:http://localhost:8000:local,oathkeeper:https://api.example.com:production
 DEFAULT_TENANT=business
 DEFAULT_LANGUAGE=en`}
-                        </pre>
-                      </div>
+                          </pre>
+                        </div>
 
-                      <div>
-                        <p className="text-xs font-medium mb-1">
-                          Current Configuration:
-                        </p>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          Current configuration is loaded from server
-                          environment variables. Check the Overview tab to see
-                          active APIs.
-                        </p>
+                        <div>
+                          <p className="text-xs font-medium mb-1">
+                            Current Configuration:
+                          </p>
+                          <p className="text-xs text-muted-foreground mb-2">
+                            Current configuration is loaded from server
+                            environment variables. Check the Overview tab to see
+                            active APIs.
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-4">
-                    <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
-                      API Endpoint Structure
-                    </h4>
-                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
-                      Each configured API should provide these endpoints:
-                    </p>
-                    <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 font-mono">
-                      <li>
-                        • <strong>/api/{"{apiname}"}</strong> - Main API
-                        endpoint
-                      </li>
-                      <li>
-                        • <strong>/api/{"{apiname}"}/liveness</strong> - Health
-                        check (should return {'{"status": "ok"}'})
-                      </li>
-                      <li>
-                        • <strong>/api/{"{apiname}"}/readiness</strong> -
-                        Readiness check (should return {'{"status": "ready"}'})
-                      </li>
-                      <li>
-                        • <strong>/api/{"{apiname}"}/openapi.json</strong> -
-                        OpenAPI specification
-                      </li>
-                    </ul>
-                  </div>
+                    <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-4">
+                      <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
+                        API Endpoint Structure
+                      </h4>
+                      <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                        Each configured API should provide these endpoints:
+                      </p>
+                      <ul className="text-xs text-blue-700 dark:text-blue-300 space-y-1 font-mono">
+                        <li>
+                          • <strong>/api/{"{apiname}"}</strong> - Main API
+                          endpoint
+                        </li>
+                        <li>
+                          • <strong>/api/{"{apiname}"}/liveness</strong> -
+                          Health check (should return {'{"status": "ok"}'})
+                        </li>
+                        <li>
+                          • <strong>/api/{"{apiname}"}/readiness</strong> -
+                          Readiness check (should return {'{"status": "ready"}'}
+                          )
+                        </li>
+                        <li>
+                          • <strong>/api/{"{apiname}"}/openapi.json</strong> -
+                          OpenAPI specification
+                        </li>
+                      </ul>
+                    </div>
 
-                  <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20 p-4">
-                    <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
-                      Important Notes
-                    </h4>
-                    <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
-                      <li>
-                        • Restart the server after changing environment
-                        variables
-                      </li>
-                      <li>
-                        • Ensure your APIs support CORS or use proper proxy
-                        configuration
-                      </li>
-                      <li>
-                        • APIs are accessed through the proxy at{" "}
-                        <code>/api/{"{apiname}"}/*</code>
-                      </li>
-                      <li>
-                        • Headers (Tenant, Language, Authorization) are
-                        automatically forwarded
-                      </li>
-                    </ul>
+                    <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950/20 p-4">
+                      <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">
+                        Important Notes
+                      </h4>
+                      <ul className="text-sm text-yellow-700 dark:text-yellow-300 space-y-1">
+                        <li>
+                          • Restart the server after changing environment
+                          variables
+                        </li>
+                        <li>
+                          • Ensure your APIs support CORS or use proper proxy
+                          configuration
+                        </li>
+                        <li>
+                          • APIs are accessed through the proxy at{" "}
+                          <code>/api/{"{apiname}"}/*</code>
+                        </li>
+                        <li>
+                          • Headers (Tenant, Language, Authorization) are
+                          automatically forwarded
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </CardContent>
+              </Card>
+            </TabsContent>
           )}
         </Tabs>
       </div>

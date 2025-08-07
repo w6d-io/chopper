@@ -84,7 +84,9 @@ export function ApiSelector({
           {value && (
             <div className="flex items-center space-x-2">
               {(() => {
-                const selectedApi = apis.find((api) => (api.id || api.name) === value);
+                const selectedApi = apis.find(
+                  (api) => (api.id || api.name) === value,
+                );
                 if (!selectedApi) return null;
                 return (
                   <>
@@ -110,7 +112,10 @@ export function ApiSelector({
       </SelectTrigger>
       <SelectContent>
         {apis.map((api) => (
-          <SelectItem key={api.id || `${api.name}-${api.baseUrl}`} value={api.id || api.name}>
+          <SelectItem
+            key={api.id || `${api.name}-${api.baseUrl}`}
+            value={api.id || api.name}
+          >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-2">
                 {getStatusIcon(api.status)}

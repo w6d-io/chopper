@@ -66,11 +66,11 @@ class ApiManager {
       const [livenessResponse, readinessResponse] = await Promise.allSettled([
         fetch(`${api.baseUrl}/api/${apiName}/liveness`, {
           signal: AbortSignal.timeout(5000),
-          mode: 'cors',
+          mode: "cors",
         }),
         fetch(`${api.baseUrl}/api/${apiName}/readiness`, {
           signal: AbortSignal.timeout(5000),
-          mode: 'cors',
+          mode: "cors",
         }),
       ]);
 
@@ -156,7 +156,7 @@ class ApiManager {
         "Content-Type": "application/json",
         ...options.headers,
       },
-      mode: 'cors',
+      mode: "cors",
       ...options,
     });
 
