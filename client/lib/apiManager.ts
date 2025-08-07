@@ -150,7 +150,15 @@ class ApiManager {
       throw new Error(`API '${apiName}' not found`);
     }
 
-    const url = `${api.baseUrl}/api/${apiName}${endpoint}`;
+    // Handle endpoint properly - if it already includes /api/{apiName}, use baseUrl directly
+    // Otherwise, prepend /api/{apiName}
+    let url: string;
+    if (endpoint.startsWith(`/api/${apiName}`)) {
+      url = `${api.baseUrl}${endpoint}`;
+    } else {
+      url = `${api.baseUrl}/api/${apiName}${endpoint}`;
+    }
+
     const response = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
