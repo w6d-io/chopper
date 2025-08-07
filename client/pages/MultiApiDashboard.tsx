@@ -367,7 +367,7 @@ export default function MultiApiDashboard() {
           className="space-y-6"
         >
           <TabsList
-            className={`grid w-full h-auto ${import.meta.env.PROD || import.meta.env.NODE_ENV === 'production' ? "grid-cols-3" : "grid-cols-4"}`}
+            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV === 'production' ? "grid-cols-4" : "grid-cols-3"}`}
           >
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
@@ -1189,7 +1189,7 @@ DEFAULT_LANGUAGE=en`}
                           )
                         </li>
                         <li>
-                          �� <strong>/api/{"{apiname}"}/openapi.json</strong> -
+                          • <strong>/api/{"{apiname}"}/openapi.json</strong> -
                           OpenAPI specification
                         </li>
                       </ul>
