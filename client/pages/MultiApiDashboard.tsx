@@ -339,10 +339,10 @@ export default function MultiApiDashboard() {
               <img src="/logo.png" alt="Logo" className="h-8 w-8" />
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                  API Dashboard
+                  Chopper API Dashboard
                 </h1>
                 <p className="text-muted-foreground mt-1">
-                  Monitor and interact with API services
+                  Monitor, test, and manage your API services
                 </p>
               </div>
             </div>
