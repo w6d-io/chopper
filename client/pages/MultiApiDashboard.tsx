@@ -435,11 +435,13 @@ export default function MultiApiDashboard() {
                       <Input
                         value={requestEndpoint}
                         onChange={(e) => setRequestEndpoint(e.target.value)}
-                        placeholder="/endpoint"
+                        placeholder="/api/[apiname]/your-endpoint"
                       />
                       <p className="text-xs text-muted-foreground">
-                        Endpoint path (will be appended to the selected API's
-                        base URL)
+                        Endpoint path (e.g. /api/{(() => {
+                          const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+                          return api?.name || 'apiname';
+                        })()}/your-endpoint or just /your-endpoint)
                       </p>
                     </div>
                   </div>
