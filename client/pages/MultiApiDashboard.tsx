@@ -108,8 +108,8 @@ export default function MultiApiDashboard() {
 
   // Auto-select first API on mount and update endpoint
   useEffect(() => {
-    const initializeApi = () => {
-      apiManager.initialize();
+    const initializeApi = async () => {
+      await apiManager.initialize();
       const apis = apiManager.getApis();
       if (apis.length > 0 && !selectedApi) {
         setSelectedApi(apis[0].name);
