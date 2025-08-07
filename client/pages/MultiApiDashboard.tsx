@@ -267,7 +267,12 @@ export default function MultiApiDashboard() {
 
     setIsLoadingDocs(true);
     try {
-      const result = await apiManager.callApi(selectedApi, "/openapi.json");
+      const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      if (!api) {
+        toast.error("Selected API not found");
+        return;
+      }
+      const result = await apiManager.callApi(api.name, "/openapi.json");
       setOpenApiSpec(result);
       toast.success("Documentation loaded successfully!");
     } catch (error) {
