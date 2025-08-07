@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Set app version
       id: app_version
-      uses: catalystcommunity/action-release-update-chart@undefined
+      uses: catalystcommunity/action-release-update-chart@main
       with:
         # Github token to use, this should be a PAT so that it can trigger workflows on
         # the destination helm repository
