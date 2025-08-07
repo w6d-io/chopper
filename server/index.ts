@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { createApiProxy } from "./routes/proxy";
 import { handleConfig } from "./routes/config";
 
 export function createServer() {
