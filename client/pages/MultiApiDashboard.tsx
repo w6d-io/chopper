@@ -289,7 +289,7 @@ export default function MultiApiDashboard() {
   const generateCurlCommand = () => {
     if (!selectedApi) return "";
 
-    const api = apiManager.getApi(selectedApi);
+    const api = apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
     if (!api) return "";
 
     let headers: Record<string, string> = {};
