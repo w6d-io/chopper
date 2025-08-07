@@ -103,10 +103,8 @@ export function ApiSelector({
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {apis.map((api) => {
-          const uniqueKey = `${api.name}-${api.baseUrl}`;
-          return (
-          <SelectItem key={uniqueKey} value={api.name}>
+        {apis.map((api) => (
+          <SelectItem key={api.id || `${api.name}-${api.baseUrl}`} value={api.name}>
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center space-x-2">
                 {getStatusIcon(api.status)}
@@ -144,8 +142,7 @@ export function ApiSelector({
               </Badge>
             </div>
           </SelectItem>
-          );
-        })}
+        ))}
       </SelectContent>
     </Select>
   );
