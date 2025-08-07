@@ -22,7 +22,7 @@ export function createServer() {
       status: "ok",
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      service: "Infractions API Manager",
+      service: "Multi-API Manager",
     });
   });
 
