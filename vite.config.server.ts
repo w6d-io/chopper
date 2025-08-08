@@ -7,7 +7,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, "server/node-build.ts"),
       name: "server",
-      fileName: "production",
+      fileName: "development",
       formats: ["es"],
     },
     outDir: "dist/server",
@@ -48,6 +48,6 @@ export default defineConfig({
     },
   },
   define: {
-    "process.env.NODE_ENV": '"production"',
+    "process.env.NODE_ENV": '"development"',
   },
 });

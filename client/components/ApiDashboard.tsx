@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Activity,
   AlertCircle,
@@ -26,9 +25,35 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface ApiDashboardProps {
-  onApiSelect?: (apiId: string) => void;
-  selectedApi?: string;
+  onApiSelect?: (apiKey: string) => void; // <-- key, not just name
+  selectedApi?: string; // key from parent (id or name@baseUrl)
 }
+
+const apiKey = (api: ApiStatus) => api.id || `${api.name}@${api.baseUrl}`;
+
+const normalizeStatus = (v: any) => {
+  const s =
+    typeof v === "string"
+      ? v
+      : typeof v?.status === "string"
+        ? v.status
+        : v?.status;
+  return s ? String(s).toLowerCase() : "";
+};
+
+const isLivenessGreen = (liveness: any) => {
+  const val = normalizeStatus(liveness);
+  return new Set(["ok", "alive", "200", "up", "pass", "healthy"]).has(val);
+};
+
+const isReadinessGreen = (readiness: any) => {
+  const val = normalizeStatus(readiness);
+  return new Set(["ok", "ready", "200", "up", "pass", "healthy"]).has(val);
+};
+
+const isApiHealthy = (health: any) => {
+  return isLivenessGreen(health?.liveness) && isReadinessGreen(health?.readiness);
+};
 
 export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
   const [apiStatuses, setApiStatuses] = useState<ApiStatus[]>([]);
@@ -50,38 +75,37 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
     }
   };
 
-  const refreshApiStatus = async (apiName: string) => {
+  // Refresh one row by KEY (NOT by name)
+  const refreshApiStatus = async (apiKeyValue: string) => {
     try {
+      const row = apiStatuses.find((a) => apiKey(a) === apiKeyValue);
+      if (!row) return;
+
       apiManager.clearHealthCache();
-      const health = await apiManager.checkApiHealth(apiName);
-      const isHealthy =
-        (health.liveness?.status === "ok" ||
-          health.liveness?.status === "200") &&
-        (health.readiness?.status === "ready" ||
-          health.readiness?.status === "200");
+      const health = await apiManager.checkApiHealthByKey(apiKeyValue);
+      const healthy = isApiHealthy(health);
 
       setApiStatuses((prev) =>
         prev.map((api) =>
-          api.name === apiName
+          apiKey(api) === apiKeyValue
             ? {
                 ...api,
-                status: isHealthy ? "healthy" : "unhealthy",
+                status: healthy ? "healthy" : "unhealthy",
                 health,
                 lastChecked: new Date(),
               }
-            : api,
-        ),
+            : api
+        )
       );
 
-      toast.success(`${apiName} API status refreshed`);
+      toast.success(`${row.name}${row.label ? ` (${row.label})` : ""} status refreshed`);
     } catch (error) {
-      toast.error(`Failed to refresh ${apiName} API status`);
+      toast.error(`Failed to refresh status`);
     }
   };
 
   useEffect(() => {
     loadApiStatuses();
-    // Auto-refresh every 60 seconds
     const interval = setInterval(loadApiStatuses, 60000);
     return () => clearInterval(interval);
   }, []);
@@ -145,9 +169,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
               Configure your APIs in the environment variables to get started.
             </p>
             <p className="text-sm text-muted-foreground">
-              Set{" "}
-              <code className="bg-muted px-1 py-0.5 rounded">API_CONFIGS</code>{" "}
-              in your environment.
+              Set <code className="bg-muted px-1 py-0.5 rounded">API_CONFIGS</code> in your environment.
             </p>
           </div>
         </CardContent>
@@ -155,12 +177,8 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
     );
   }
 
-  const healthyCount = apiStatuses.filter(
-    (api) => api.status === "healthy",
-  ).length;
-  const unhealthyCount = apiStatuses.filter(
-    (api) => api.status === "unhealthy",
-  ).length;
+  const healthyCount = apiStatuses.filter((api) => api.status === "healthy").length;
+  const unhealthyCount = apiStatuses.filter((api) => api.status === "unhealthy").length;
 
   return (
     <div className="space-y-6">
@@ -183,12 +201,8 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
             <CheckCircle2 className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {healthyCount}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Services operational
-            </p>
+            <div className="text-2xl font-bold text-green-600">{(healthyCount)}</div>
+            <p className="text-xs text-muted-foreground">Services operational</p>
           </CardContent>
         </Card>
 
@@ -198,9 +212,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
             <AlertCircle className="h-4 w-4 text-red-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
-              {unhealthyCount}
-            </div>
+            <div className="text-2xl font-bold text-red-600">{(unhealthyCount)}</div>
             <p className="text-xs text-muted-foreground">Services down</p>
           </CardContent>
         </Card>
@@ -212,10 +224,7 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {lastRefresh.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+              {lastRefresh.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
             </div>
             <p className="text-xs text-muted-foreground">
               {lastRefresh.toLocaleDateString()}
@@ -232,118 +241,93 @@ export function ApiDashboard({ onApiSelect, selectedApi }: ApiDashboardProps) {
               <Server className="h-5 w-5" />
               <CardTitle>API Services</CardTitle>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={loadApiStatuses}
-              disabled={isLoading}
-            >
-              <RefreshCw
-                className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")}
-              />
+            <Button variant="outline" size="sm" onClick={loadApiStatuses} disabled={isLoading}>
+              <RefreshCw className={cn("mr-2 h-4 w-4", isLoading && "animate-spin")} />
               Refresh All
             </Button>
           </div>
-          <CardDescription>
-            Monitor and manage your connected API services
-          </CardDescription>
+          <CardDescription>Monitor and manage your connected API services</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {apiStatuses.map((api) => (
-              <div
-                key={api.id || `${api.name}-${api.baseUrl}`}
-                className={cn(
-                  "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                  selectedApi === (api.id || api.name)
-                    ? "border-primary bg-primary/5"
-                    : "hover:bg-muted/50",
-                  onApiSelect && "cursor-pointer",
-                )}
-                onClick={() => onApiSelect?.(api.id || api.name)}
-              >
-                <div className="flex items-center space-x-4">
-                  <div
-                    className={cn(
-                      "flex items-center space-x-2 px-3 py-1 rounded-full",
-                      getStatusColor(api.status),
-                    )}
-                  >
-                    {getStatusIcon(api.status)}
-                    <span className="text-sm font-medium capitalize">
-                      {api.status}
-                    </span>
-                  </div>
+            {apiStatuses.map((api) => {
+              const key = apiKey(api);
+              const selected = selectedApi === key;
 
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-lg">{api.name}</h3>
-                      {api.label && (
-                        <Badge variant="secondary" className="text-xs">
-                          {api.label}
-                        </Badge>
-                      )}
-                      {api.requiresAuth && (
-                        <div className="flex items-center space-x-1">
-                          <Shield className="h-4 w-4 text-blue-600" />
-                          <span className="text-xs text-blue-600">Auth</span>
-                        </div>
-                      )}
-                      {selectedApi === (api.id || api.name) && (
-                        <Badge variant="outline" className="text-xs">
-                          Active
-                        </Badge>
+              return (
+                <div
+                  key={key}
+                  className={cn(
+                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
+                    selected ? "border-primary bg-primary/5" : "hover:bg-muted/50",
+                    onApiSelect && "cursor-pointer",
+                  )}
+                  onClick={() => onApiSelect?.(key)} // pass the KEY up
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className={cn("flex items-center space-x-2 px-3 py-1 rounded-full", getStatusColor(api.status))}>
+                      {getStatusIcon(api.status)}
+                      <span className="text-sm font-medium capitalize">{api.status}</span>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-semibold text-lg">{api.name}</h3>
+                        {api.label && (
+                          <Badge variant="secondary" className="text-xs">
+                            {api.label}
+                          </Badge>
+                        )}
+                        {api.requiresAuth && (
+                          <div className="flex items-center space-x-1">
+                            <Shield className="h-4 w-4 text-blue-600" />
+                            <span className="text-xs text-blue-600">Auth</span>
+                          </div>
+                        )}
+                        {selected && <Badge variant="outline" className="text-xs">Active</Badge>}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{api.baseUrl}</p>
+                      {api.lastChecked && (
+                        <p className="text-xs text-muted-foreground">
+                          Last checked: {api.lastChecked.toLocaleTimeString()}
+                        </p>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {api.baseUrl}
-                    </p>
-                    {api.lastChecked && (
-                      <p className="text-xs text-muted-foreground">
-                        Last checked: {api.lastChecked.toLocaleTimeString()}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  {/* Health Details */}
-                  <div className="flex space-x-1">
-                    <div
-                      className={cn(
-                        "w-3 h-3 rounded-full",
-                        api.health.liveness?.status === "ok" ||
-                          api.health.liveness?.status === "200"
-                          ? "bg-green-500"
-                          : "bg-red-500",
-                      )}
-                      title={`Liveness: ${api.health.liveness?.status || "unknown"}`}
-                    />
-                    <div
-                      className={cn(
-                        "w-3 h-3 rounded-full",
-                        api.health.readiness?.status === "ready" ||
-                          api.health.readiness?.status === "200"
-                          ? "bg-green-500"
-                          : "bg-red-500",
-                      )}
-                      title={`Readiness: ${api.health.readiness?.status || "unknown"}`}
-                    />
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      refreshApiStatus(api.name);
-                    }}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center space-x-2">
+                    {/* Health Details */}
+                    <div className="flex space-x-1">
+                      <div
+                        className={cn(
+                          "w-3 h-3 rounded-full",
+                          isLivenessGreen(api.health.liveness) ? "bg-green-500" : "bg-red-500",
+                        )}
+                        title={`Liveness: ${normalizeStatus(api.health.liveness) || "unknown"}`}
+                      />
+                      <div
+                        className={cn(
+                          "w-3 h-3 rounded-full",
+                          isReadinessGreen(api.health.readiness) ? "bg-green-500" : "bg-red-500",
+                        )}
+                        title={`Readiness: ${normalizeStatus(api.health.readiness) || "unknown"}`}
+                      />
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        refreshApiStatus(key); // refresh by KEY
+                      }}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>

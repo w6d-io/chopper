@@ -43,7 +43,13 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Link } from "react-router-dom";
 import { format, addDays } from "date-fns";
-
+const resolveApiByKey = (key: string) => {
+  return (
+    apiManager.getApiByKey(key) ||
+    apiManager.getApiById(key) ||
+    apiManager.getApi(key)
+  );
+};
 // Infraction types for the specialized interface
 const INFRACTION_TYPES = [
   "ContinuousDriving",
@@ -111,7 +117,8 @@ export default function MultiApiDashboard() {
       await apiManager.initialize();
       const apis = apiManager.getApis();
       if (apis.length > 0 && !selectedApi) {
-        setSelectedApi(apis[0].id || apis[0].name);
+        const firstKey = apis[0].id || `${apis[0].name}@${apis[0].baseUrl}`;
+        setSelectedApi(firstKey);
       }
     };
     initializeApi();
@@ -121,16 +128,51 @@ export default function MultiApiDashboard() {
   useEffect(() => {
     if (selectedApi) {
       const api =
-        apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
-      if (api) {
-        // Pre-fill with the API pattern if endpoint is empty
-        if (!requestEndpoint) {
-          setRequestEndpoint(`/api/${api.name}/`);
-        }
+        resolveApiByKey(selectedApi);
+      if (api && !requestEndpoint) {
+        setRequestEndpoint(`/api/${api.name}`); // no trailing slash
       }
     }
   }, [selectedApi]);
+  const buildInfractionsQuery = () => {
+    const params = new URLSearchParams();
 
+    // Add tenant & language
+    if (tenant) params.set("tenant", tenant);
+    if (language) params.set("language", language);
+
+    // selectedTypes -> repeated typeInfractionLibelles params
+    if (selectedTypes.length > 0) {
+      selectedTypes.forEach((t) => params.append("typeInfractionLibelles", t));
+    }
+
+    if (dateRange.from) params.set("startDate", dateRange.from.toISOString());
+    if (dateRange.to) params.set("endDate", dateRange.to.toISOString());
+    params.set("page", String(currentPage));
+    params.set("perPage", String(perPage));
+
+    const qs = params.toString();
+    return qs ? `?${qs}` : "";
+};
+
+  const normalizeEndpoint = (apiName: string, endpoint: string) => {
+    const clean = endpoint || "/";
+    const normalized = clean.startsWith("/") ? clean : `/${clean}`;
+    // DO NOT include baseUrl here; apiManager.callApiByKey adds baseUrl
+    if (normalized.startsWith(`/api/${apiName}`)) return normalized;
+    return `/api/${apiName}${normalized}`;
+  };
+
+  const maybeAppendInfractionsQuery = (apiName: string, endpoint: string) => {
+    // only for GET + infractions
+    if (requestMethod !== "GET" || apiName !== "infractions") return endpoint;
+    // avoid double '?'
+    const query = buildInfractionsQuery();
+    if (!query) return endpoint;
+    return endpoint.includes("?") ? `${endpoint}&${query.slice(1)}` : `${endpoint}${query}`;
+  };
+
+  // ---------- request ----------
   const makeApiRequest = async () => {
     if (!selectedApi) {
       toast.error("Please select an API");
@@ -155,16 +197,22 @@ export default function MultiApiDashboard() {
         headers.Authorization = `Bearer ${bearerToken.trim()}`;
       }
 
+      const api = resolveApiByKey(selectedApi);
+      if (!api) {
+        toast.error("Selected API not found");
+        return;
+      }
+
       // Prepare request options
       const options: RequestInit = {
         method: requestMethod,
         headers,
       };
 
-      // Add body for POST requests
+      // For POST we send JSON body (already in your UI)
       if (requestMethod === "POST" && requestBody.trim()) {
         try {
-          JSON.parse(requestBody); // Validate JSON
+          JSON.parse(requestBody);
           options.body = requestBody;
         } catch {
           toast.error("Invalid JSON in request body");
@@ -172,29 +220,24 @@ export default function MultiApiDashboard() {
         }
       }
 
-      // Get the actual API name from the selected API ID
-      const api =
-        apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
-      if (!api) {
-        toast.error("Selected API not found");
-        return;
-      }
+      // Build endpoint and (for infractions GET) append query
+      let ep = normalizeEndpoint(api.name, requestEndpoint || "/");
+      ep = maybeAppendInfractionsQuery(api.name, ep);
 
-      // Make the request through our API manager
-      const result = await apiManager.callApi(
-        api.name,
-        requestEndpoint,
-        options,
+      const result = await apiManager.callApiByKey(
+        selectedApi, // <-- key
+        ep,
+        options
       );
+
       setResponse(result);
-      setActiveTab("tester"); // Switch to tester tab to show results
+      setActiveTab("tester");
       toast.success("Request completed successfully");
     } catch (error) {
       console.error("API request failed:", error);
       setResponse({
         error: true,
-        message:
-          error instanceof Error ? error.message : "Unknown error occurred",
+        message: error instanceof Error ? error.message : "Unknown error occurred",
       });
       toast.error("Request failed", {
         description: error instanceof Error ? error.message : "Unknown error",
@@ -203,6 +246,7 @@ export default function MultiApiDashboard() {
       setIsLoading(false);
     }
   };
+  
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -249,7 +293,7 @@ export default function MultiApiDashboard() {
   // Update request body and headers when infractions parameters change
   useEffect(() => {
     const api =
-      apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      resolveApiByKey(selectedApi);
     if (api && api.name === "infractions") {
       updateInfractionsRequestBody();
       updateInfractionsHeaders();
@@ -273,15 +317,16 @@ export default function MultiApiDashboard() {
 
     setIsLoadingDocs(true);
     try {
-      const api =
-        apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+      const api = resolveApiByKey(selectedApi);
       if (!api) {
         toast.error("Selected API not found");
         return;
       }
-      const result = await apiManager.callApi(
-        api.name,
-        `/api/infractions/openapi.json`,
+      // Using callApiByKey and a generic endpoint. This becomes:
+      //  {baseUrl}/api/{api.name}/openapi.json
+      const result = await apiManager.callApiByKey(
+        selectedApi,
+        "/openapi.json"
       );
       setOpenApiSpec(result);
       toast.success("Documentation loaded successfully!");
@@ -296,11 +341,11 @@ export default function MultiApiDashboard() {
     }
   };
 
-  const generateCurlCommand = () => {
+
+   const generateCurlCommand = () => {
     if (!selectedApi) return "";
 
-    const api =
-      apiManager.getApiById(selectedApi) || apiManager.getApi(selectedApi);
+    const api = resolveApiByKey(selectedApi);
     if (!api) return "";
 
     let headers: Record<string, string> = {};
@@ -310,35 +355,36 @@ export default function MultiApiDashboard() {
       headers = {};
     }
 
-    // Add Bearer token if provided
     if (bearerToken.trim()) {
       headers.Authorization = `Bearer ${bearerToken.trim()}`;
     }
 
-    let command = `curl -X ${requestMethod} \\\n`;
-    let url: string;
-    const endpoint = requestEndpoint || "/";
-    if (endpoint.startsWith(`/api/${api.name}`)) {
-      url = `${api.baseUrl}${endpoint}`;
-    } else {
-      // Ensure endpoint starts with / and doesn't duplicate /api/apiname
-      const cleanEndpoint = endpoint.startsWith("/")
-        ? endpoint
-        : `/${endpoint}`;
-      url = `${api.baseUrl}/api/${api.name}${cleanEndpoint}`;
+    const method = requestMethod;
+    let endpoint = normalizeEndpoint(api.name, requestEndpoint || "/");
+    if (method === "GET" && api.name === "infractions") {
+      endpoint = maybeAppendInfractionsQuery(api.name, endpoint);
     }
+
+    // For the curl we need the full URL (baseUrl + endpoint)
+    const url =
+      endpoint.startsWith(`/api/${api.name}`)
+        ? `${api.baseUrl}${endpoint}`
+        : `${api.baseUrl}/api/${api.name}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
+
+    let command = `curl -X ${method} \\\n`;
     command += `  '${url}' \\\n`;
 
     Object.entries(headers).forEach(([key, value]) => {
       command += `  -H '${key}: ${value}' \\\n`;
     });
 
-    if (requestMethod === "POST" && requestBody.trim()) {
+    if (method === "POST" && requestBody.trim()) {
       command += `  -d '${requestBody.replace(/'/g, "'\\''")}' \\\n`;
     }
 
-    return command.slice(0, -3); // Remove trailing backslash
+    return command.slice(0, -3); // strip trailing backslash
   };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -347,9 +393,13 @@ export default function MultiApiDashboard() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-sm">
-                C
-              </div>
+              <Link to="/" className="inline-flex">
+                <img
+                  src="/logo.png"        // resolves to public/logo.png
+                  alt="Logo"
+                  className="h-8 w-8 rounded-lg object-contain"
+                />
+              </Link>
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
                   Chopper API Dashboard
@@ -451,9 +501,7 @@ export default function MultiApiDashboard() {
                       <p className="text-xs text-muted-foreground">
                         Endpoint path (e.g. /api/
                         {(() => {
-                          const api =
-                            apiManager.getApiById(selectedApi) ||
-                            apiManager.getApi(selectedApi);
+                          const api = resolveApiByKey(selectedApi);
                           return api?.name || "apiname";
                         })()}
                         /your-endpoint or just /your-endpoint)
@@ -476,11 +524,9 @@ export default function MultiApiDashboard() {
 
                   {/* Infractions-specific UI */}
                   {(() => {
-                    const api =
-                      apiManager.getApiById(selectedApi) ||
-                      apiManager.getApi(selectedApi);
+                    const api = resolveApiByKey(selectedApi);
                     return api && api.name === "infractions";
-                  })() && (
+                  })() &&  (
                     <>
                       <div className="space-y-4 p-4 border border-primary/20 rounded-lg bg-primary/5">
                         <h3 className="font-semibold text-primary">
@@ -723,27 +769,21 @@ export default function MultiApiDashboard() {
                   {/* cURL Command */}
                   <div className="space-y-2">
                     <Label>Generated cURL Command</Label>
-                    {(() => {
-                      const api =
-                        apiManager.getApiById(selectedApi) ||
-                        apiManager.getApi(selectedApi);
-                      return (
-                        api && (
-                          <div className="text-xs text-muted-foreground mb-2">
-                            Base URL:{" "}
-                            <code className="bg-muted px-1 py-0.5 rounded">
-                              {api.baseUrl}
-                            </code>
-                            {api.label && (
-                              <span className="ml-2">
-                                Environment:{" "}
-                                <span className="font-medium">{api.label}</span>
-                              </span>
-                            )}
-                          </div>
-                        )
-                      );
-                    })()}
+                      {(() => {
+                        const api = resolveApiByKey(selectedApi);
+                        return (
+                          api && (
+                            <div className="text-xs text-muted-foreground mb-2">
+                              Base URL: <code className="bg-muted px-1 py-0.5 rounded">{api.baseUrl}</code>
+                              {api.label && (
+                                <span className="ml-2">
+                                  Environment: <span className="font-medium">{api.label}</span>
+                                </span>
+                              )}
+                            </div>
+                          )
+                        );
+                      })()}
                     <div className="bg-muted p-3 rounded-lg">
                       <pre className="text-xs overflow-x-auto whitespace-pre-wrap font-mono">
                         {generateCurlCommand()}
