@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -7,45 +7,98 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ApiConfig } from "@shared/apis";
+import { ApiConfig, ApiStatus } from "@shared/apis";
 import { apiManager } from "@/lib/apiManager";
 import { CheckCircle2, AlertCircle, Clock, Shield } from "lucide-react";
 
 interface ApiSelectorProps {
   value?: string;
-  onValueChange: (apiId: string) => void;
+  onValueChange: (apiKey: string) => void;
   className?: string;
 }
 
-export function ApiSelector({
-  value,
-  onValueChange,
-  className,
-}: ApiSelectorProps) {
+const apiKeyFor = (a: ApiConfig) => a.id || `${a.name}@${a.baseUrl}`;
+
+export function ApiSelector({ value, onValueChange, className }: ApiSelectorProps) {
+  // ---- Hooks (always called, no conditionals) ----
   const [apis, setApis] = useState<ApiConfig[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadApis = () => {
-      try {
-        apiManager.initialize();
-        const availableApis = apiManager.getApis();
-        setApis(availableApis);
+  // live statuses keyed by api key
+  const [statuses, setStatuses] = useState<Map<string, ApiStatus>>(new Map());
 
-        // Auto-select first API if none selected
+  // ---- Effects ----
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      try {
+        await apiManager.initialize();
+        const availableApis = apiManager.getApis();
+        if (!mounted) return;
+
+        setApis(availableApis);
         if (!value && availableApis.length > 0) {
-          onValueChange(availableApis[0].id || availableApis[0].name);
+          onValueChange(apiKeyFor(availableApis[0]));
         }
-      } catch (error) {
-        console.error("Failed to load APIs:", error);
+
+        // initial health load
+        const list = await apiManager.checkAllApisHealth();
+        if (!mounted) return;
+        const map = new Map<string, ApiStatus>();
+        for (const s of list) {
+          map.set(s.id || `${s.name}@${s.baseUrl}`, s);
+        }
+        setStatuses(map);
+      } catch (e) {
+        console.error("Failed to load APIs/statuses:", e);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
-    loadApis();
-  }, [value, onValueChange]);
+    load();
 
+    // refresh statuses every 60s (matches dashboard)
+    const interval = setInterval(async () => {
+      try {
+        const list = await apiManager.checkAllApisHealth();
+        if (!mounted) return;
+        const map = new Map<string, ApiStatus>();
+        for (const s of list) {
+          map.set(s.id || `${s.name}@${s.baseUrl}`, s);
+        }
+        setStatuses(map);
+      } catch (e) {
+        console.error("Failed to refresh statuses:", e);
+      }
+    }, 60000);
+
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [onValueChange, value]);
+
+  // ---- Helpers (plain variables, NOT hooks) ----
+  const getApiStatus = (a: ApiConfig): string => {
+    const key = apiKeyFor(a);
+    const s = statuses.get(key);
+    return s?.status || a.status || "unknown";
+  };
+
+  const getStatusIcon = (status?: string) => {
+    switch (status) {
+      case "healthy":
+        return <CheckCircle2 className="h-3 w-3 text-green-600" />;
+      case "unhealthy":
+        return <AlertCircle className="h-3 w-3 text-red-600" />;
+      default:
+        return <Clock className="h-3 w-3 text-yellow-600" />;
+    }
+  };
+
+  // early returns are fine now (no hooks below this point)
   if (loading) {
     return (
       <Select disabled>
@@ -66,94 +119,77 @@ export function ApiSelector({
     );
   }
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "healthy":
-        return <CheckCircle2 className="h-3 w-3 text-green-600" />;
-      case "unhealthy":
-        return <AlertCircle className="h-3 w-3 text-red-600" />;
-      default:
-        return <Clock className="h-3 w-3 text-yellow-600" />;
-    }
-  };
+  const selectedApi = apis.find((a) => apiKeyFor(a) === value);
+  const selectedStatus = selectedApi ? getApiStatus(selectedApi) : "unknown";
 
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className={className}>
         <SelectValue placeholder="Select an API">
-          {value && (
+          {value && selectedApi && (
             <div className="flex items-center space-x-2">
-              {(() => {
-                const selectedApi = apis.find(
-                  (api) => (api.id || api.name) === value,
-                );
-                if (!selectedApi) return null;
-                return (
-                  <>
-                    {getStatusIcon(selectedApi.status || "unknown")}
-                    <span>{selectedApi.name}</span>
-                    {selectedApi.label && (
-                      <Badge variant="outline" className="text-xs">
-                        {selectedApi.label}
-                      </Badge>
-                    )}
-                    {selectedApi.requiresAuth && (
-                      <Shield
-                        className="h-3 w-3 text-blue-600"
-                        title="Requires Authentication"
-                      />
-                    )}
-                  </>
-                );
-              })()}
+              {getStatusIcon(selectedStatus)}
+              <span>{selectedApi.name}</span>
+              {selectedApi.label && (
+                <Badge variant="outline" className="text-xs">
+                  {selectedApi.label}
+                </Badge>
+              )}
+              {selectedApi.requiresAuth && (
+                <Shield
+                  className="h-3 w-3 text-blue-600"
+                  title="Requires Authentication"
+                />
+              )}
             </div>
           )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
-        {apis.map((api) => (
-          <SelectItem
-            key={api.id || `${api.name}-${api.baseUrl}`}
-            value={api.id || api.name}
-          >
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center space-x-2">
-                {getStatusIcon(api.status)}
-                <div className="flex flex-col">
-                  <div className="flex items-center space-x-2">
-                    <span>{api.name}</span>
-                    {api.label && (
-                      <Badge variant="outline" className="text-xs">
-                        {api.label}
-                      </Badge>
-                    )}
-                    {api.requiresAuth && (
-                      <Shield
-                        className="h-3 w-3 text-blue-600"
-                        title="Requires Authentication"
-                      />
-                    )}
+        {apis.map((api) => {
+          const key = apiKeyFor(api);
+          const status = getApiStatus(api);
+          return (
+            <SelectItem key={key} value={key}>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center space-x-2">
+                  {getStatusIcon(status)}
+                  <div className="flex flex-col">
+                    <div className="flex items-center space-x-2">
+                      <span>{api.name}</span>
+                      {api.label && (
+                        <Badge variant="outline" className="text-xs">
+                          {api.label}
+                        </Badge>
+                      )}
+                      {api.requiresAuth && (
+                        <Shield
+                          className="h-3 w-3 text-blue-600"
+                          title="Requires Authentication"
+                        />
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground truncate max-w-[200px]">
+                      {api.baseUrl}
+                    </span>
                   </div>
-                  <span className="text-xs text-muted-foreground truncate max-w-[200px]">
-                    {api.baseUrl}
-                  </span>
                 </div>
-              </div>
-              <Badge
-                variant={
-                  api.status === "healthy"
-                    ? "default"
-                    : api.status === "unhealthy"
+                <Badge
+                  variant={
+                    status === "healthy"
+                      ? "default"
+                      : status === "unhealthy"
                       ? "destructive"
                       : "secondary"
-                }
-                className="ml-2 text-xs"
-              >
-                {api.status}
-              </Badge>
-            </div>
-          </SelectItem>
-        ))}
+                  }
+                  className="ml-2 text-xs"
+                >
+                  {status}
+                </Badge>
+              </div>
+            </SelectItem>
+          );
+        })}
       </SelectContent>
     </Select>
   );
