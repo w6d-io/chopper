@@ -62,13 +62,13 @@ class ApiManager {
     }
 
     try {
-      // Make direct calls to the API
+      // Make calls to the proper API endpoints with API name prefix
       const [livenessResponse, readinessResponse] = await Promise.allSettled([
-        fetch(`${api.baseUrl}/liveness`, {
+        fetch(`${api.baseUrl}/api/${api.name}/liveness`, {
           signal: AbortSignal.timeout(5000),
           mode: "cors",
         }),
-        fetch(`${api.baseUrl}/readiness`, {
+        fetch(`${api.baseUrl}/api/${api.name}/readiness`, {
           signal: AbortSignal.timeout(5000),
           mode: "cors",
         }),

@@ -279,7 +279,10 @@ export default function MultiApiDashboard() {
         toast.error("Selected API not found");
         return;
       }
-      const result = await apiManager.callApi(api.name, "/openapi.json");
+      const result = await apiManager.callApi(
+        api.name,
+        `/api/infractions/openapi.json`,
+      );
       setOpenApiSpec(result);
       toast.success("Documentation loaded successfully!");
     } catch (error) {
@@ -377,7 +380,7 @@ export default function MultiApiDashboard() {
           className="space-y-6"
         >
           <TabsList
-            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV === "production" ? "grid-cols-4" : "grid-cols-3"}`}
+            className={`grid w-full h-auto ${import.meta.env.VITE_NODE_ENV !== "production" ? "grid-cols-4" : "grid-cols-3"}`}
           >
             <TabsTrigger value="overview" className="text-sm">
               <Activity className="mr-2 h-4 w-4" />
@@ -391,7 +394,7 @@ export default function MultiApiDashboard() {
               <FileText className="mr-2 h-4 w-4" />
               Documentation
             </TabsTrigger>
-            {import.meta.env.VITE_NODE_ENV === "production" && (
+            {import.meta.env.VITE_NODE_ENV !== "production" && (
               <TabsTrigger value="settings" className="text-sm">
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
@@ -1149,7 +1152,7 @@ export default function MultiApiDashboard() {
             </Card>
           </TabsContent>
 
-          {import.meta.env.VITE_NODE_ENV === "production" && (
+          {import.meta.env.VITE_NODE_ENV !== "production" && (
             <TabsContent value="settings" className="space-y-6">
               <Card>
                 <CardHeader>
